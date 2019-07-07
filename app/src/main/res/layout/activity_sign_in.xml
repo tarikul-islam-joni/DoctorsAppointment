@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_above="@id/bottom_section"
+        android:id="@+id/email_sign_in_section"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <EditText
+            android:id="@+id/signin_email_et"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Email"/>
+        <EditText
+            android:id="@+id/signin_password_et"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Password"/>
+        <Button
+            android:id="@+id/signin_email_signin_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Sign In"/>
+    </LinearLayout>
+    <LinearLayout
+        android:visibility="gone"
+        android:layout_above="@id/bottom_section"
+        android:id="@+id/phone_sign_in_section"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <EditText
+            android:id="@+id/signin_phone_et"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Phone number"/>
+        <Button
+            android:id="@+id/signin_send_verification_code_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Send Verification Code"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_centerVertical="true"
+        android:id="@+id/bottom_section"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <Button
+            android:id="@+id/signin_choose_email_or_phone_section_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Phone Sign In"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <Button
+                android:id="@+id/signin_google_signin_btn"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Google"/>
+            <Button
+                android:id="@+id/signin_facebook_signin_btn"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Facebook"/>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/signin_need_account_signup_btn"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Need Account ? Sign Up"
+            android:textAllCaps="false" />
+    </LinearLayout>
+</RelativeLayout>
