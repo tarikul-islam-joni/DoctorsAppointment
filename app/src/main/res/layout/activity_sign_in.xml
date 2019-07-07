@@ -55,21 +55,29 @@
             android:layout_height="wrap_content"
             android:text="Phone Sign In"/>
         <LinearLayout
+            android:background="#FFFFFF"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="40dp"
             android:orientation="horizontal">
-            <Button
+            <com.google.android.gms.common.SignInButton
                 android:id="@+id/signin_google_signin_btn"
                 android:layout_weight="1"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="Google"/>
-            <Button
-                android:id="@+id/signin_facebook_signin_btn"
+                android:layout_height="40dp"/>
+            <LinearLayout
                 android:layout_weight="1"
+                android:background="#3C5A99"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="Facebook"/>
+                android:layout_height="match_parent">
+                <com.facebook.login.widget.LoginButton
+                    android:id="@+id/signin_facebook_signin_btn"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:gravity="center"/>
+            </LinearLayout>
+
         </LinearLayout>
 
         <Button

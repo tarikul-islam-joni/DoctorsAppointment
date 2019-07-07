@@ -49,7 +49,7 @@ public class MyTextWatcher implements TextWatcher
     }
     private boolean CheckPhoneValidityMethod()
     {
-        return ValidationPattern.getPhone_Pattern().matcher(CheckString).matches();
+        return ValidationPattern.getPhone_Pattern().matcher(CheckString).matches() && CheckString.length()==11;
     }
     private boolean CheckPasswordValidityMethod()
     {

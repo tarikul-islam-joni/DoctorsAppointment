@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Doctors Appointment</string>
+    <string name="facebook_app_id">1378098839011681</string>
+    <string name="fb_login_protocol_scheme">fb1378098839011681</string>
 </resources>
