@@ -4,17 +4,17 @@
     android:layout_height="match_parent">
     <LinearLayout
         android:layout_above="@id/bottom_section"
-        android:id="@+id/email_sign_in_section"
+        android:id="@+id/email_sign_up_section"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
         <EditText
-            android:id="@+id/signin_email_et"
+            android:id="@+id/signup_email_et"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Email"/>
         <EditText
-            android:id="@+id/signin_password_et"
+            android:id="@+id/signup_password_et"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Password"/>
@@ -27,18 +27,18 @@
     <LinearLayout
         android:visibility="gone"
         android:layout_above="@id/bottom_section"
-        android:id="@+id/phone_sign_in_section"
+        android:id="@+id/phone_sign_up_section"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
         <EditText
-            android:id="@+id/signin_phone_et"
+            android:id="@+id/signup_phone_et"
             android:gravity="center"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Phone number"/>
         <Button
-            android:id="@+id/signin_send_verification_code_btn"
+            android:id="@+id/signup_send_verification_code_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Send Verification Code"/>

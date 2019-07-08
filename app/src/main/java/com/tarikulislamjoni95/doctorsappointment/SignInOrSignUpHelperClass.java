@@ -9,7 +9,6 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.bumptech.glide.load.engine.Initializable;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -26,9 +25,9 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
@@ -39,6 +38,8 @@ import static android.app.Activity.RESULT_OK;
 
 public class SignInOrSignUpHelperClass
 {
+    private FirebaseUser User=null;
+    private MyToastClass myToast;
     private MyCommunicator myCommunicator;
     private AuthCredential credential;
     private FirebaseAuth mAuth;
@@ -48,19 +49,17 @@ public class SignInOrSignUpHelperClass
     private Activity activity;
     private String EmailString,PasswordString,PhoneString,PhoneVerificationCodeString,FromWhichMethod;
     private LoginButton SignInFacebookSignInBtn;
-    private SignInButton GoogleSignInButton;
     //Constructor
     public SignInOrSignUpHelperClass(Activity activity)
     {
         this.activity=activity;
-        mAuth=FirebaseAuth.getInstance();
+        myToast=new MyToastClass(activity);
         myCommunicator=(MyCommunicator)activity;
-        InitializationCallBack();
     }
-    //Public Access Method For SignIn Or SignUp
-    //Email SignIn Or SignUp Method
+    ///*************************Email SignIn Or SignUp Section Starting*************************///
     public void EmailSignInOrUp(String WhichActivity,String EmailString,String PasswordString)
     {
+        mAuth=FirebaseAuth.getInstance();
         this.EmailString=EmailString;
         this.PasswordString=PasswordString;
         if (WhichActivity.matches(CONST_VARIABLE.SIGN_IN_ACTIVITY))
@@ -72,51 +71,16 @@ public class SignInOrSignUpHelperClass
             EmailSignUpMethod();
         }
     }
-    //Phone SignIn Method
-    public void PhoneSignIn(String PhoneString)
+    public void ResendEmailVerification(FirebaseUser User)
     {
-        this.PhoneString=PhoneString;
-        PhoneSignInMethod();
+        this.User=User;
+        ResendEmailVerificationMethod();
     }
-    //Google SignIn Method
-    public void GoogleSignIn(int GoogleSignInId)
+    public void CheckEmailVerificationStatus(FirebaseUser User)
     {
-        Log.d(CONST_VARIABLE.SIGN_IN_ACTIVITY,"SignInOrSignUpClassCalled");
-        GoogleSignInButton=activity.findViewById(GoogleSignInId);
-        GoogleSignInMethod();
+        this.User=User;
+        CheckEmailVerificationStatusMethod();
     }
-    //Facebook SignIn Method
-    public void FacebookSignIn(int FacebookSignInId)
-    {
-        SignInFacebookSignInBtn=activity.findViewById(FacebookSignInId);
-        FacebookSignInMethod();
-    }
-    //Phone Verification Completing Method
-    public void PhoneVerificationComplete(String PhoneVerificationCodeString)
-    {
-        this.PhoneVerificationCodeString=PhoneVerificationCodeString;
-        PhoneVerificationCompleteMethod();
-    }
-    // Get onActivityResult Method data from Activity
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (requestCode==CONST_VARIABLE.GOOGLE_SIGN_IN_REQUEST_CODE && resultCode==RESULT_OK && data!=null)
-        {
-            try {
-                Task<GoogleSignInAccount> task=GoogleSignIn.getSignedInAccountFromIntent(data);
-                GoogleSignInAccount account=task.getResult(ApiException.class);
-                credential= GoogleAuthProvider.getCredential(account.getIdToken(),null);
-                FirebaseAutheticationWithCredential(CONST_VARIABLE.GOOGLE_SIGN_IN,credential);
-            } catch (ApiException e)
-            {
-                Log.d(CONST_VARIABLE.SIGN_IN_ACTIVITY,e.toString());
-            }
-
-        }
-        FacebookCallBack.onActivityResult(requestCode,resultCode,data);
-    }
-
-    //Private Access For Completing All Those Public Method
-    //Email SignUp Method
     private void EmailSignUpMethod()
     {
         mAuth.createUserWithEmailAndPassword(EmailString,PasswordString).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -144,14 +108,7 @@ public class SignInOrSignUpHelperClass
             {
                 if (task.isSuccessful())
                 {
-                    if (mAuth.getCurrentUser().isEmailVerified())
-                    {
-                        myCommunicator.Communicator(CONST_VARIABLE.EMAIL_VERIFICATION_STATUS,true);
-                    }
-                    else
-                    {
-                        myCommunicator.Communicator(CONST_VARIABLE.EMAIL_VERIFICATION_STATUS,false);
-                    }
+                    myCommunicator.Communicator(CONST_VARIABLE.EMAIL_SIGN_IN,true);
                 }
                 else
                 {
@@ -160,37 +117,78 @@ public class SignInOrSignUpHelperClass
             }
         });
     }
+    private void ResendEmailVerificationMethod()
+    {
+        User.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task)
+            {
+                if (task.isSuccessful())
+                {
+                    myCommunicator.Communicator(CONST_VARIABLE.RESEND_EMAIL_VERIFICATION_STATUS,true);
+                }
+                else
+                {
+                    myCommunicator.Communicator(CONST_VARIABLE.RESEND_EMAIL_VERIFICATION_STATUS,false);
+                }
+            }
+        });
+    }
+    private void CheckEmailVerificationStatusMethod()
+    {
+        if (FirebaseAuth.getInstance().getCurrentUser().isEmailVerified())
+        {
+            myCommunicator.Communicator(CONST_VARIABLE.EMAIL_VERIFICATION_STATUS,true);
+        }
+        else
+        {
+            myCommunicator.Communicator(CONST_VARIABLE.EMAIL_VERIFICATION_STATUS,false);
+        }
+    }
+    ///*************************Email SignIn Or SignUp Section Ending*************************///
+
+    ///*************************Phone SignIn Or SignUp Section Starting*************************///
     //Phone SignIn Method
+    public void PhoneSignIn(String PhoneString)
+    {
+        this.PhoneString=PhoneString;
+        InitializationPhoneCallBack();
+        PhoneSignInMethod();
+    }
     private void PhoneSignInMethod()
     {
         PhoneAuthProvider.getInstance().verifyPhoneNumber(PhoneString,60, TimeUnit.SECONDS,activity,PhoneCallBack);
     }
-    private void InitializationCallBack()
+    private void InitializationPhoneCallBack()
     {
         PhoneCallBack=new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
             @Override
             public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential)
             {
                 credential=(AuthCredential) phoneAuthCredential;
-                FirebaseAutheticationWithCredential(CONST_VARIABLE.PHONE_SIGN_IN,credential);
+                FirebaseAutheticationWithCredential(CONST_VARIABLE.PHONE_SIGN_IN_STATUS,credential);
             }
             @Override
-            public void onCodeSent(String ValidationID, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
+            public void onCodeSent(String ValidationID, PhoneAuthProvider.ForceResendingToken forceResendingToken)
+            {
                 super.onCodeSent(ValidationID, forceResendingToken);
-                //Saving Code Validation ID into SharedPreference
                 SharedPreferences sharedPreferences=activity.getSharedPreferences(CONST_VARIABLE.VALIDATION_ID, Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor=sharedPreferences.edit();
                 editor.putString(CONST_VARIABLE.VALIDATION_ID,ValidationID);
                 editor.commit();
-                myCommunicator.Communicator(CONST_VARIABLE.PHONE_SIGN_IN,false);
+                myCommunicator.Communicator(CONST_VARIABLE.PHONE_VERIFICATION_MANUAL_COMPLETE,true);
             }
             @Override
             public void onVerificationFailed(FirebaseException e)
             {
-                myCommunicator.Communicator(CONST_VARIABLE.PHONE_VERIFICATION_ERROR,false);
+                myCommunicator.Communicator(CONST_VARIABLE.PHONE_SIGN_IN_EXCEPTION,true);
             }
         };
-        FacebookCallBack=CallbackManager.Factory.create();
+    }
+    public void PhoneVerificationComplete(String PhoneVerificationCodeString)
+    {
+        this.PhoneVerificationCodeString=PhoneVerificationCodeString;
+        PhoneVerificationCompleteMethod();
     }
     private void  PhoneVerificationCompleteMethod()
     {
@@ -200,14 +198,29 @@ public class SignInOrSignUpHelperClass
         {
             PhoneAuthCredential phoneAuthCredential = PhoneAuthProvider.getCredential(VerificationSavedCode, PhoneVerificationCodeString);
             credential=(AuthCredential) phoneAuthCredential;
-            FirebaseAutheticationWithCredential(CONST_VARIABLE.PHONE_SIGN_IN,credential);
+            FirebaseAutheticationWithCredential(CONST_VARIABLE.PHONE_SIGN_IN_STATUS,credential);
         }
         else
         {
             myCommunicator.Communicator(CONST_VARIABLE.PHONE_VERIFICATION_ERROR,true);
         }
     }
-    //Google SignIn Method
+    public void ResendPhoneVerificationCode(String PhoneString)
+    {
+        PhoneSignIn(PhoneString);
+    }
+    ///*************************Phone SignIn Or SignUp Section Ending*************************///
+
+    ///*******************Google & Facebook SignIn Or SignUp Section Starting*******************///
+    public void GoogleSignIn()
+    {
+        GoogleSignInMethod();
+    }
+    public void FacebookSignIn(int FacebookSignInId)
+    {
+        SignInFacebookSignInBtn=activity.findViewById(FacebookSignInId);
+        FacebookSignInMethod();
+    }
     private void GoogleSignInMethod()
     {
         GoogleSignInOptions gso=new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken(activity.getString(R.string.default_web_client_id)).requestEmail().build();
@@ -215,31 +228,48 @@ public class SignInOrSignUpHelperClass
         intent=signInClient.getSignInIntent();
         activity.startActivityForResult(intent,CONST_VARIABLE.GOOGLE_SIGN_IN_REQUEST_CODE);
     }
-    //Facebook SignIn Method
     private void FacebookSignInMethod()
     {
+        FacebookCallBack=CallbackManager.Factory.create();
         SignInFacebookSignInBtn.setReadPermissions("email","public_profile");
         SignInFacebookSignInBtn.registerCallback(FacebookCallBack, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult)
             {
                 credential= FacebookAuthProvider.getCredential(loginResult.getAccessToken().getToken());
-                FirebaseAutheticationWithCredential(CONST_VARIABLE.FACEBOOK_SIGN_IN,credential);
+                FirebaseAutheticationWithCredential(CONST_VARIABLE.FACEBOOK_SIGN_IN_STATUS,credential);
             }
             @Override
-            public void onCancel()
-            {
-            }
+            public void onCancel() { }
             @Override
             public void onError(FacebookException error)
             {
-                myCommunicator.Communicator(CONST_VARIABLE.FACEBOOK_SIGN_IN,false);
+                myCommunicator.Communicator(CONST_VARIABLE.FACEBOOK_SIGN_IN_EXCEEPTION,false);
             }
         });
     }
-    //SignIn With Firebase Credential Method
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode==CONST_VARIABLE.GOOGLE_SIGN_IN_REQUEST_CODE && resultCode==RESULT_OK && data!=null)
+        {
+            try {
+                Task<GoogleSignInAccount> task=GoogleSignIn.getSignedInAccountFromIntent(data);
+                GoogleSignInAccount account=task.getResult(ApiException.class);
+                credential= GoogleAuthProvider.getCredential(account.getIdToken(),null);
+                FirebaseAutheticationWithCredential(CONST_VARIABLE.GOOGLE_SIGN_IN_STATUS,credential);
+            } catch (ApiException e)
+            {
+                myCommunicator.Communicator(CONST_VARIABLE.GOOGLE_SIGN_IN_EXCEPTION,true);
+            }
+            return;
+        }
+        FacebookCallBack.onActivityResult(requestCode,resultCode,data);
+    }
+    ///*******************Google & Facebook SignIn Or SignUp Section Starting*******************///
+
+    ///*************************Firebase Authentication Section Starting*************************///
     private void FirebaseAutheticationWithCredential(final String FromWhichMethod, AuthCredential credential)
     {
+        mAuth=FirebaseAuth.getInstance();
         this.FromWhichMethod=FromWhichMethod;
         mAuth.signInWithCredential(credential).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
@@ -256,4 +286,5 @@ public class SignInOrSignUpHelperClass
             }
         });
     }
+    ///*************************Firebase Authentication Section Starting*************************///
 }
