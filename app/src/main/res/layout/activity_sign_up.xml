@@ -15,7 +15,7 @@
             android:layout_gravity="center_horizontal"
             android:layout_width="150dp"
             android:layout_height="150dp"
-            android:src="@color/colorRed"/>
+            android:src="@drawable/patient"/>
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -55,6 +55,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
             <LinearLayout
+                android:visibility="visible"
                 android:layout_above="@id/bottom_section"
                 android:id="@+id/email_sign_up_section"
                 android:layout_width="match_parent"
@@ -88,17 +89,53 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
-                <EditText
-                    android:id="@+id/signup_phone_et"
-                    android:gravity="center"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Phone number"/>
-                <Button
-                    android:id="@+id/signup_send_verification_code_btn"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:text="+88"
+                        android:textSize="25sp"/>
+                    <EditText
+                        android:textSize="25sp"
+                        android:id="@+id/signup_phone_et"
+                        android:gravity="center"
+                        android:layout_weight="2"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:hint="01#########"/>
+                    <Button
+                        android:id="@+id/signup_send_verification_code_btn"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:textSize="18sp"
+                        android:text="Send Code"/>
+                </LinearLayout>
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Send Verification Code"/>
+                    android:orientation="horizontal">
+                    <EditText
+                        android:enabled="false"
+                        android:textSize="25sp"
+                        android:id="@+id/signup_phone_verification_code_et"
+                        android:gravity="center"
+                        android:layout_weight="2"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:hint="Verification Code"/>
+                    <Button
+                        android:enabled="false"
+                        android:textSize="18sp"
+                        android:id="@+id/signup_phone_confirm_btn"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="Confirm"/>
+                </LinearLayout>
             </LinearLayout>
             <LinearLayout
                 android:id="@+id/bottom_section"

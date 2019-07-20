@@ -2,39 +2,63 @@ package com.tarikulislamjoni95.doctorsappointment;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.common.SignInButton;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.tarikulislamjoni95.doctorsappointment.HelperClass.VARConst;
+import com.tarikulislamjoni95.doctorsappointment.HelperClass.DBConst;
+import com.tarikulislamjoni95.doctorsappointment.HelperClass.MyLoadingDailog;
+import com.tarikulislamjoni95.doctorsappointment.HelperClass.MyTextWatcher;
+import com.tarikulislamjoni95.doctorsappointment.HelperClass.MyToastClass;
+import com.tarikulislamjoni95.doctorsappointment.Interface.MyCommunicator;
+
 import java.util.Map;
-public class SignInActivity extends AppCompatActivity implements View.OnClickListener,MyCommunicator, MyDialogClass.MyAlertDialogCommunicator
+
+public class SignInActivity extends AppCompatActivity implements View.OnClickListener, MyCommunicator
 {
     //Class Variable
     private SignInOrSignUpHelperClass SignInHelperClass;
-    private MyDialogClass myDialogClass;
+    private MyLoadingDailog myLoadingDailog;
     private MyToastClass myToast;
 
     //Primitive Variable
     private boolean ChooseEmailOrPhoneSignIn=true;
     private int VALIDATION_GREEN;
     private String EmailString,PasswordString,PhoneString;
+    private int RESEND_PHONE_COUNTER=3;
+    private int RESEND_EMAIL_COUNTER=1;
+    private int DELAY_TIMER=60;
+    private int SET_DELAY_TIMER=60000;
 
     //Component Variable
-    private AlertDialog dialog;
     private Activity activity;
     private Intent intent;
+    private AlertDialog dialog;
 
     //UI Variable
     private LinearLayout EmailSignInSection,PhoneSignInSection;
-    private EditText SignInEmailEt,SignInPasswordEt,SignInPhoneEt;
-    private Button SignInEmailSignInBtn,SignInSendPhoneVerificationBtn,SignInChooseEmailOrPhoneSectionBtn,SignInNeddAccountSignUpBtn;
+    private EditText SignInEmailEt,SignInPasswordEt,SignInPhoneEt,SignInPhoneVerificationCodeEt;
+    private Button SignInEmailSignInBtn,SignInSendPhoneVerificationBtn,SignInPhoneConfirmBtn;
+    private Button SignInChooseEmailOrPhoneSectionBtn,SignInNeddAccountSignUpBtn;
     private LoginButton SignInFacebookSignInBtn;
     private SignInButton SignInGoogleSignInBtn;
     @Override
@@ -48,60 +72,67 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
     private void Initialization()
     {
         activity=SignInActivity.this;
-        VALIDATION_GREEN=getResources().getColor(R.color.colorGreen);
+        VALIDATION_GREEN=ContextCompat.getColor(activity,R.color.colorGreen);
     }
     private void InitializationUI()
     {
-        EmailSignInSection=findViewById(R.id.email_sign_up_section);
-        PhoneSignInSection=findViewById(R.id.phone_sign_up_section);
+        EmailSignInSection=findViewById(R.id.email_sign_in_section);
+        PhoneSignInSection=findViewById(R.id.phone_sign_in_section);
 
-        SignInEmailEt=findViewById(R.id.signup_email_et);
-        SignInEmailEt.addTextChangedListener(new MyTextWatcher(activity,CONST_VARIABLE.EMAIL_VALIDITY,R.id.signup_email_et));
-        SignInPhoneEt=findViewById(R.id.signup_phone_et);
-        SignInPhoneEt.addTextChangedListener(new MyTextWatcher(activity,CONST_VARIABLE.PHONE_VALIDITY,R.id.signup_phone_et));
-        SignInPasswordEt=findViewById(R.id.signup_password_et);
-        SignInPasswordEt.addTextChangedListener(new MyTextWatcher(activity,CONST_VARIABLE.PASSWORD_VALIDITY,R.id.signup_password_et));
+        SignInEmailEt=findViewById(R.id.sign_in_email_et);
+        SignInEmailEt.addTextChangedListener(new MyTextWatcher(activity, VARConst.EMAIL_VALIDITY,R.id.sign_in_email_et));
+        SignInPhoneEt=findViewById(R.id.sign_in_phone_et);
+        SignInPhoneEt.addTextChangedListener(new MyTextWatcher(activity, VARConst.PHONE_VALIDITY,R.id.sign_in_phone_et));
+        SignInPhoneVerificationCodeEt=findViewById(R.id.sign_in_phone_verification_code_et);
+        SignInPhoneVerificationCodeEt.addTextChangedListener(new MyTextWatcher(activity, VARConst.VERIFICATION_CODE_VALIDITY,R.id.sign_in_phone_verification_code_et));
+        SignInPasswordEt=findViewById(R.id.sign_in_password_et);
+        SignInPasswordEt.addTextChangedListener(new MyTextWatcher(activity, VARConst.PASSWORD_VALIDITY,R.id.sign_in_password_et));
 
-        SignInEmailSignInBtn=findViewById(R.id.signin_email_signin_btn);
+        SignInEmailSignInBtn=findViewById(R.id.sign_in_email_signin_btn);
         SignInEmailSignInBtn.setOnClickListener(this);
-        SignInSendPhoneVerificationBtn=findViewById(R.id.signup_send_verification_code_btn);
+        SignInSendPhoneVerificationBtn=findViewById(R.id.sign_in_phone_send_verification_code_btn);
         SignInSendPhoneVerificationBtn.setOnClickListener(this);
-        SignInGoogleSignInBtn=findViewById(R.id.signin_google_signin_btn);
+        SignInPhoneConfirmBtn=findViewById(R.id.sign_in_phone_signin_confirm_btn);
+        SignInPhoneConfirmBtn.setOnClickListener(this);
+        SignInGoogleSignInBtn=findViewById(R.id.sign_in_google_signin_btn);
         SignInGoogleSignInBtn.setOnClickListener(this);
-        SignInFacebookSignInBtn=findViewById(R.id.signin_facebook_signin_btn);
+        SignInFacebookSignInBtn=findViewById(R.id.sign_in_facebook_signin_btn);
         SignInFacebookSignInBtn.setOnClickListener(this);
-        SignInChooseEmailOrPhoneSectionBtn=findViewById(R.id.signin_choose_email_or_phone_section_btn);
+        SignInChooseEmailOrPhoneSectionBtn=findViewById(R.id.sign_in_choose_email_or_phone_section_btn);
         SignInChooseEmailOrPhoneSectionBtn.setOnClickListener(this);
-        SignInNeddAccountSignUpBtn=findViewById(R.id.signin_need_account_signup_btn);
+        SignInNeddAccountSignUpBtn=findViewById(R.id.sign_in_need_account_signup_btn);
         SignInNeddAccountSignUpBtn.setOnClickListener(this);
     }
     private void InitializationClass()
     {
         myToast=new MyToastClass(activity);
-        myDialogClass=new MyDialogClass(activity);
         SignInHelperClass=new SignInOrSignUpHelperClass(activity);
+        myLoadingDailog=new MyLoadingDailog(activity,R.drawable.spinner);
     }
     @Override
     public void onClick(View view)
     {
         switch (view.getId())
         {
-            case R.id.signin_email_signin_btn:
+            case R.id.sign_in_email_signin_btn:
                 EmailSignInMethod();
                 break;
-            case R.id.signup_send_verification_code_btn:
+            case R.id.sign_in_phone_send_verification_code_btn:
                 SendPhoneVerificationMethod();
                 break;
-            case R.id.signin_google_signin_btn:
+            case R.id.sign_in_phone_signin_confirm_btn:
+                PhoneSignInConfirmMethod();
+                break;
+            case R.id.sign_in_google_signin_btn:
                 GoogleSignInMethod();
                 break;
-            case R.id.signin_facebook_signin_btn:
+            case R.id.sign_in_facebook_signin_btn:
                 FacebookSignInMethod();
                 break;
-            case R.id.signin_choose_email_or_phone_section_btn:
+            case R.id.sign_in_choose_email_or_phone_section_btn:
                 ChooseEmailOrPhoneSectionMethod();
                 break;
-            case R.id.signin_need_account_signup_btn:
+            case R.id.sign_in_need_account_signup_btn:
                 NeedAccountSignUpMethod();
                 break;
         }
@@ -117,9 +148,10 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         }
         else
         {
+            myLoadingDailog.show();
             EmailString=SignInEmailEt.getText().toString();
             PasswordString=SignInPasswordEt.getText().toString();
-            SignInHelperClass.EmailSignInOrUp(CONST_VARIABLE.SIGN_IN_ACTIVITY,EmailString,PasswordString);
+            SignInHelperClass.EmailSignInOrUp(VARConst.SIGN_IN_ACTIVITY,EmailString,PasswordString);
         }
     }
     private void SendPhoneVerificationMethod()
@@ -130,18 +162,58 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         }
         else
         {
+            myLoadingDailog.show();
             PhoneString="+88"+SignInPhoneEt.getText().toString();
             SignInHelperClass.PhoneSignIn(PhoneString);
+
+            SignInPhoneVerificationCodeEt.setEnabled(true);
+            SignInPhoneConfirmBtn.setEnabled(true);
+
+            SignInPhoneEt.setEnabled(false);
+            SignInSendPhoneVerificationBtn.setEnabled(false);
+            ResendDelayMethod();
+        }
+    }
+    private void ResendDelayMethod()
+    {
+        RESEND_PHONE_COUNTER--;
+        if (RESEND_PHONE_COUNTER>0)
+        {
+            DELAY_TIMER=60;
+            new CountDownTimer(SET_DELAY_TIMER,1000)
+            {
+                @Override
+                public void onTick(long l)
+                {
+                    DELAY_TIMER--;
+                    SignInSendPhoneVerificationBtn.setText(String.valueOf(DELAY_TIMER));
+                }
+
+                @Override
+                public void onFinish()
+                {
+                    SignInSendPhoneVerificationBtn.setEnabled(true);
+                    SignInSendPhoneVerificationBtn.setText("Resend");
+                    DELAY_TIMER=60;
+                }
+            }.start();
+        }
+    }
+    private void PhoneSignInConfirmMethod()
+    {
+        myLoadingDailog.show();
+        if (SignInPhoneVerificationCodeEt.getCurrentTextColor()==VALIDATION_GREEN)
+        {
+            SignInHelperClass.PhoneVerificationComplete(SignInPhoneVerificationCodeEt.getText().toString());
         }
     }
     private void GoogleSignInMethod()
     {
         SignInHelperClass.GoogleSignIn();
     }
-
     private void FacebookSignInMethod()
     {
-        SignInHelperClass.FacebookSignIn(R.id.signin_facebook_signin_btn);
+        SignInHelperClass.FacebookSignIn(R.id.sign_in_facebook_signin_btn);
     }
     private void ChooseEmailOrPhoneSectionMethod()
     {
@@ -165,11 +237,29 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         intent=new Intent(activity,SignUpActivity.class);
         startActivity(intent);
     }
-    private void GotoMainActivity()
+    private void ResendEmailVerificationMethod()
     {
-        intent=new Intent(activity,MainActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
+        if (RESEND_EMAIL_COUNTER>0)
+        {
+            final AlertDialog.Builder builder=new AlertDialog.Builder(activity);
+            builder.setTitle("Email Verification Status");
+            builder.setMessage(EmailString+" is not verified\nPlease verify first then sign in....");
+            builder.setNeutralButton("Resend Verification", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i)
+                {
+                    myLoadingDailog.show();
+                    SignInHelperClass.ResendEmailVerification(FirebaseAuth.getInstance().getCurrentUser());
+                    dialog.cancel();
+                }
+            });
+            dialog=builder.create();
+            dialog.show();
+        }
+        else
+        {
+            myToast.LToast("Check email and verify");
+        }
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -180,152 +270,156 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
     @Override
     public void Communicator(String FromWhichMethod, boolean result)
     {
-        switch (FromWhichMethod) {
-            case CONST_VARIABLE.EMAIL_SIGN_IN:
+        if (myLoadingDailog.isShowing())
+        {
+            myLoadingDailog.dismiss();
+        }
+        switch (FromWhichMethod)
+        {
+            case VARConst.EMAIL_SIGN_IN:
                 if (result)
                 {
                     SignInHelperClass.CheckEmailVerificationStatus(FirebaseAuth.getInstance().getCurrentUser());
                 }
                 else
                 {
-                    myToast.LToast("Failed to sign in...");
+                    myToast.LToast("wrong password or email");
                 }
                 break;
-            case CONST_VARIABLE.EMAIL_VERIFICATION_STATUS:
+            case VARConst.EMAIL_VERIFICATION_STATUS:
                 if (result)
                 {
-                    CancelDialog();
-                    GotoMainActivity();
+                    GotoNextStep();
                 }
                 else
                 {
-                    ShowEmailVerificationDialog();
+                    ResendEmailVerificationMethod();
                 }
                 break;
-            case CONST_VARIABLE.RESEND_EMAIL_VERIFICATION_STATUS:
+            case VARConst.RESEND_EMAIL_VERIFICATION_STATUS:
                 if (result)
                 {
-                    myToast.SToast("Verification email sent to "+EmailString);
+                    RESEND_EMAIL_COUNTER--;
+                    myToast.LToast("Verification code send to "+EmailString);
                 }
                 else
                 {
-                    myToast.LToast("Failed to send verification email");
-                }
-            case CONST_VARIABLE.PHONE_VERIFICATION_MANUAL_COMPLETE:
-                if (result)
-                {
-                    ShowPhoneVerificationDialog();
+                    myToast.LToast("Verification couldn't send to "+EmailString);
                 }
                 break;
-            case CONST_VARIABLE.PHONE_VERIFICATION_ERROR:
+            case VARConst.PHONE_SIGN_IN:
                 if (result)
                 {
-                    myToast.SToast("Verification code not matched");
-                }
-                break;
-            case CONST_VARIABLE.PHONE_SIGN_IN_EXCEPTION:
-                if (result)
-                {
-                    myToast.SToast("Verification code couldn't send\nCheck the phone number that you have provided\nAlso check your internet conncetion...");
-                }
-            case CONST_VARIABLE.PHONE_SIGN_IN_STATUS:
-                if (result)
-                {
-                    CancelDialog();
-                    GotoMainActivity();
+                    myToast.LToast("Code sent to "+PhoneString);
                 }
                 else
                 {
-                    myToast.SToast("Sign in unsuccessful");
+                    myToast.LToast("Code couldn't sent to "+PhoneString);
                 }
                 break;
-            case CONST_VARIABLE.GOOGLE_SIGN_IN_EXCEPTION:
+            case VARConst.PHONE_SIGN_IN_STATUS:
                 if (result)
                 {
-                    myToast.SToast("Something error occurred.\nPlease try again...");
-                }
-                break;
-            case CONST_VARIABLE.GOOGLE_SIGN_IN_STATUS:
-                if (result)
-                {
-                    GotoMainActivity();
+                    GotoNextStep();
                 }
                 else
                 {
-                    myToast.SToast("Failed to sign in...");
+                    myToast.LToast("Verification code doesn't match\nFailed to sign in...");
                 }
                 break;
-            case CONST_VARIABLE.FACEBOOK_SIGN_IN_EXCEEPTION:
+            case VARConst.GOOGLE_SIGN_IN_STATUS:
                 if (result)
                 {
-                    myToast.SToast("Something error occurred\nPlease try again");
-                }
-                break;
-            case CONST_VARIABLE.FACEBOOK_SIGN_IN_STATUS:
-                if (result)
-                {
-                    GotoMainActivity();
+                    GotoNextStep();
                 }
                 else
                 {
-                    myToast.SToast("Failed to sign in...");
+                    myToast.LToast("Failed to sign in...\nPlease retry...");
                 }
                 break;
-        }
-    }
-    private void ShowPhoneVerificationDialog()
-    {
-        int[] btn={R.id.confirm_btn,R.id.resend_btn,R.id.cancel_btn};
-        int[] Et={R.id.verification_code_et};
-        String[] information={"ConfirmBtn","ResendBtn","CancelBtn"};
-        dialog=myDialogClass.MyCustomDialog(R.layout.verification_code,btn,Et,information,"Verification Code","Please complete verification step");
-        dialog.setCancelable(false);
-        dialog.show();
-    }
-    private void ShowEmailVerificationDialog()
-    {
-        dialog=myDialogClass.MyAlertDialog(CONST_VARIABLE.EMAIL_SIGN_IN,"Email Verification Status",
-                EmailString+" is unverified\nPlease verify first and sign in.","Resend Verification","Cancel");
-        dialog.setCancelable(false);
-        dialog.show();
-    }
-    private void CancelDialog()
-    {
-        dialog.cancel();
-    }
-    @Override
-    public void DialogResultSuccess(String WhichField,String result)
-    {
-        switch (WhichField)
-        {
-            case CONST_VARIABLE.EMAIL_SIGN_IN:
-                switch (result)
+            case VARConst.GOOGLE_SIGN_IN_EXCEPTION:
+                myToast.LToast("Google sign in exception occurred.Retry later...");
+                break;
+            case VARConst.FACEBOOK_SIGN_IN_STATUS:
+                if (result)
                 {
-                    case "Yes":
-                        SignInHelperClass.ResendEmailVerification(FirebaseAuth.getInstance().getCurrentUser());
-                        break;
-                    case "No":
-                        CancelDialog();
-                        break;
+                    GotoNextStep();
+                }
+                else
+                {
+                    myToast.LToast("Failed to sign in...\nPlease retry...");
                 }
                 break;
-            case CONST_VARIABLE.PHONE_SIGN_IN:
-                switch (result)
-                {
-                    case "CONFIRM":
-                        String VerificationCode=myDialogClass.getVerificationCode();
-                        SignInHelperClass.PhoneVerificationComplete(VerificationCode);
-                        break;
-                    case "RESEND":
-                        SignInHelperClass.ResendPhoneVerificationCode(PhoneString);
-                        break;
-                    case "CANCEL":
-                        CancelDialog();
-                        break;
-                }
+            case VARConst.FACEBOOK_SIGN_IN_EXCEEPTION:
+                myToast.LToast("Facebook sign in exception occurred.Retry later...");
                 break;
         }
     }
     @Override
-    public void MyCustomDialogGetData(Map<Integer, String> integerStringMap) { }
+    public void GetDataFromCommunicator(String FromWhichMethod, Map<Integer, String> map) { }
+
+    private void GotoNextStep()
+    {
+        myLoadingDailog.show();
+        final String UID=FirebaseAuth.getInstance().getCurrentUser().getUid();
+        final DatabaseReference ref=FirebaseDatabase.getInstance().getReference();
+        ref.child(DBConst.AccountStatus).child(UID).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot)
+            {
+                if (myLoadingDailog.isShowing())
+                {
+                    myLoadingDailog.show();
+                }
+                if (dataSnapshot.exists())
+                {
+                    String AccountType=dataSnapshot.child(DBConst.AccountType).getValue().toString();
+                    boolean AccountCompletion=(boolean)dataSnapshot.child(DBConst.AccountCompletion).getValue();
+                    boolean AccountValidity=(boolean) dataSnapshot.child(DBConst.AccountValidity).getValue();
+                    if (AccountType.matches(DBConst.Patient))
+                    {
+                        //Goto Patient Part
+                        if (!AccountCompletion)
+                        {
+                            Intent intent=new Intent(activity, PatientProfileOneActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(intent);
+                        }
+                        else if (!AccountValidity)
+                        {
+                            Intent intent=new Intent(activity,PatientProfileTwoActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(intent);
+                        }
+                        else if (AccountCompletion && AccountValidity)
+                        {
+                            Intent intent=new Intent(activity,MainActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(intent);
+                        }
+                    }
+                    else if (AccountType.matches(DBConst.Doctor))
+                    {
+                        //Goto Doctor Part
+                    }
+                }
+                else
+                {
+                    FirebaseAuth.getInstance().getCurrentUser().delete();
+                    myToast.LToast("Sign Up first !!! Goto Sign Up Page...");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError)
+            {
+                if (myLoadingDailog.isShowing())
+                {
+                    myLoadingDailog.dismiss();
+                }
+                FirebaseAuth.getInstance().signOut();
+                finish();
+            }
+        });
+    }
 }

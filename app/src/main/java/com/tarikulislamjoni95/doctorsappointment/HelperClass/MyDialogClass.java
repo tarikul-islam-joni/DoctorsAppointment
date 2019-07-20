@@ -1,41 +1,18 @@
-package com.tarikulislamjoni95.doctorsappointment;
+package com.tarikulislamjoni95.doctorsappointment.HelperClass;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.DialogInterface;
-import android.graphics.drawable.Drawable;
-import android.os.CountDownTimer;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 //import com.bumptech.glide.Glide;
 //import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.Request;
-import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.DrawableImageViewTarget;
-import com.bumptech.glide.request.target.SizeReadyCallback;
-import com.bumptech.glide.request.target.Target;
-import com.bumptech.glide.request.transition.Transition;
-
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.TimerTask;
-import java.util.logging.Handler;
 
 public class MyDialogClass
 {
@@ -51,7 +28,7 @@ public class MyDialogClass
     public MyDialogClass(Activity activity)
     {
         this.activity=activity;
-        myAlertDialogCommunicator=(MyAlertDialogCommunicator)activity;
+        //myAlertDialogCommunicator=(MyAlertDialogCommunicator)activity;
     }
 
 
@@ -153,7 +130,7 @@ public class MyDialogClass
                 {
                     Map<Integer,String> map=GetAllData();
                     VerificationCode=map.get(0);
-                    myAlertDialogCommunicator.DialogResultSuccess(CONST_VARIABLE.PHONE_SIGN_IN,"CONFIRM");
+                    myAlertDialogCommunicator.DialogResultSuccess(VARConst.PHONE_SIGN_IN,"CONFIRM");
                 }
             }
         });
@@ -167,7 +144,7 @@ public class MyDialogClass
                 if (informationString[1]=="ResendBtn")
                 {
                     CountResend++;
-                    myAlertDialogCommunicator.DialogResultSuccess(CONST_VARIABLE.PHONE_SIGN_IN,"RESEND");
+                    myAlertDialogCommunicator.DialogResultSuccess(VARConst.PHONE_SIGN_IN,"RESEND");
 
                     if (CountResend>2)
                     {
@@ -193,7 +170,7 @@ public class MyDialogClass
             public void onClick(View v) {
                 if (informationString[2]=="CancelBtn")
                 {
-                    myAlertDialogCommunicator.DialogResultSuccess(CONST_VARIABLE.PHONE_SIGN_IN, "CANCEL");
+                    myAlertDialogCommunicator.DialogResultSuccess(VARConst.PHONE_SIGN_IN, "CANCEL");
                 }
             }
         });
@@ -225,21 +202,6 @@ public class MyDialogClass
         }
         return map;
     }
-    public Dialog ShowLoadingDialog(int LayoutId,int GifImageViewId,int GifId)
-    {
-        Dialog dialog=new Dialog(activity);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        LayoutInflater inflater=activity.getLayoutInflater();
-        View view=inflater.inflate(LayoutId,null,false);
-        dialog.setContentView(view);
-        dialog.setCancelable(false);
-        final ImageView imageView=view.findViewById(GifImageViewId);
-        DrawableImageViewTarget imageViewTarget=new DrawableImageViewTarget(imageView);
-
-        Glide.with(activity).load(GifId).into(imageViewTarget);
-
-        return dialog;
-    }
 
     public String getVerificationCode()
     {
@@ -247,7 +209,7 @@ public class MyDialogClass
     }
     interface MyAlertDialogCommunicator
     {
-        public void DialogResultSuccess(String WhichField,String result);
+        public void DialogResultSuccess(String WhichField, String result);
         public void MyCustomDialogGetData(Map<Integer, String> integerStringMap);
     }
 }

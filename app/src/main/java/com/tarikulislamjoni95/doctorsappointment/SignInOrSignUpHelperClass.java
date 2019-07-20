@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,7 +17,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -31,6 +29,9 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
+import com.tarikulislamjoni95.doctorsappointment.HelperClass.VARConst;
+import com.tarikulislamjoni95.doctorsappointment.HelperClass.MyToastClass;
+import com.tarikulislamjoni95.doctorsappointment.Interface.MyCommunicator;
 
 import java.util.concurrent.TimeUnit;
 
@@ -62,11 +63,11 @@ public class SignInOrSignUpHelperClass
         mAuth=FirebaseAuth.getInstance();
         this.EmailString=EmailString;
         this.PasswordString=PasswordString;
-        if (WhichActivity.matches(CONST_VARIABLE.SIGN_IN_ACTIVITY))
+        if (WhichActivity.matches(VARConst.SIGN_IN_ACTIVITY))
         {
             EmailSignInMethod();
         }
-        if (WhichActivity.matches(CONST_VARIABLE.SIGN_UP_ACTIVITY))
+        if (WhichActivity.matches(VARConst.SIGN_UP_ACTIVITY))
         {
             EmailSignUpMethod();
         }
@@ -90,11 +91,11 @@ public class SignInOrSignUpHelperClass
                 if (task.isSuccessful())
                 {
                     mAuth.getCurrentUser().sendEmailVerification();
-                    myCommunicator.Communicator(CONST_VARIABLE.EMAIL_SIGN_UP,true);
+                    myCommunicator.Communicator(VARConst.EMAIL_SIGN_UP,true);
                 }
                 else
                 {
-                    myCommunicator.Communicator(CONST_VARIABLE.EMAIL_SIGN_UP,false);
+                    myCommunicator.Communicator(VARConst.EMAIL_SIGN_UP,false);
                 }
             }
         });
@@ -108,11 +109,11 @@ public class SignInOrSignUpHelperClass
             {
                 if (task.isSuccessful())
                 {
-                    myCommunicator.Communicator(CONST_VARIABLE.EMAIL_SIGN_IN,true);
+                    myCommunicator.Communicator(VARConst.EMAIL_SIGN_IN,true);
                 }
                 else
                 {
-                    myCommunicator.Communicator(CONST_VARIABLE.EMAIL_SIGN_IN,false);
+                    myCommunicator.Communicator(VARConst.EMAIL_SIGN_IN,false);
                 }
             }
         });
@@ -125,24 +126,24 @@ public class SignInOrSignUpHelperClass
             {
                 if (task.isSuccessful())
                 {
-                    myCommunicator.Communicator(CONST_VARIABLE.RESEND_EMAIL_VERIFICATION_STATUS,true);
+                    myCommunicator.Communicator(VARConst.RESEND_EMAIL_VERIFICATION_STATUS,true);
                 }
                 else
                 {
-                    myCommunicator.Communicator(CONST_VARIABLE.RESEND_EMAIL_VERIFICATION_STATUS,false);
+                    myCommunicator.Communicator(VARConst.RESEND_EMAIL_VERIFICATION_STATUS,false);
                 }
             }
         });
     }
     private void CheckEmailVerificationStatusMethod()
     {
-        if (FirebaseAuth.getInstance().getCurrentUser().isEmailVerified())
+        if (User.isEmailVerified())
         {
-            myCommunicator.Communicator(CONST_VARIABLE.EMAIL_VERIFICATION_STATUS,true);
+            myCommunicator.Communicator(VARConst.EMAIL_VERIFICATION_STATUS,true);
         }
         else
         {
-            myCommunicator.Communicator(CONST_VARIABLE.EMAIL_VERIFICATION_STATUS,false);
+            myCommunicator.Communicator(VARConst.EMAIL_VERIFICATION_STATUS,false);
         }
     }
     ///*************************Email SignIn Or SignUp Section Ending*************************///
@@ -166,22 +167,23 @@ public class SignInOrSignUpHelperClass
             public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential)
             {
                 credential=(AuthCredential) phoneAuthCredential;
-                FirebaseAutheticationWithCredential(CONST_VARIABLE.PHONE_SIGN_IN_STATUS,credential);
+                myCommunicator.Communicator(VARConst.PHONE_SIGN_IN,true);
+                FirebaseAutheticationWithCredential(VARConst.PHONE_SIGN_IN_STATUS,credential);
             }
             @Override
             public void onCodeSent(String ValidationID, PhoneAuthProvider.ForceResendingToken forceResendingToken)
             {
                 super.onCodeSent(ValidationID, forceResendingToken);
-                SharedPreferences sharedPreferences=activity.getSharedPreferences(CONST_VARIABLE.VALIDATION_ID, Context.MODE_PRIVATE);
+                SharedPreferences sharedPreferences=activity.getSharedPreferences(VARConst.VALIDATION_ID, Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor=sharedPreferences.edit();
-                editor.putString(CONST_VARIABLE.VALIDATION_ID,ValidationID);
+                editor.putString(VARConst.VALIDATION_ID,ValidationID);
                 editor.commit();
-                myCommunicator.Communicator(CONST_VARIABLE.PHONE_VERIFICATION_MANUAL_COMPLETE,true);
+                myCommunicator.Communicator(VARConst.PHONE_SIGN_IN,true);
             }
             @Override
             public void onVerificationFailed(FirebaseException e)
             {
-                myCommunicator.Communicator(CONST_VARIABLE.PHONE_SIGN_IN_EXCEPTION,true);
+                myCommunicator.Communicator(VARConst.PHONE_SIGN_IN,false);
             }
         };
     }
@@ -192,17 +194,17 @@ public class SignInOrSignUpHelperClass
     }
     private void  PhoneVerificationCompleteMethod()
     {
-        SharedPreferences sharedPreferences=(activity).getSharedPreferences(CONST_VARIABLE.VALIDATION_ID, Context.MODE_PRIVATE);
-        String VerificationSavedCode=sharedPreferences.getString(CONST_VARIABLE.VALIDATION_ID,"");
+        SharedPreferences sharedPreferences=(activity).getSharedPreferences(VARConst.VALIDATION_ID, Context.MODE_PRIVATE);
+        String VerificationSavedCode=sharedPreferences.getString(VARConst.VALIDATION_ID,"");
         if (PhoneVerificationCodeString.length()>5  && VerificationSavedCode.length()>5)
         {
             PhoneAuthCredential phoneAuthCredential = PhoneAuthProvider.getCredential(VerificationSavedCode, PhoneVerificationCodeString);
             credential=(AuthCredential) phoneAuthCredential;
-            FirebaseAutheticationWithCredential(CONST_VARIABLE.PHONE_SIGN_IN_STATUS,credential);
+            FirebaseAutheticationWithCredential(VARConst.PHONE_SIGN_IN_STATUS,credential);
         }
         else
         {
-            myCommunicator.Communicator(CONST_VARIABLE.PHONE_VERIFICATION_ERROR,true);
+            myCommunicator.Communicator(VARConst.PHONE_SIGN_IN_STATUS,true);
         }
     }
     public void ResendPhoneVerificationCode(String PhoneString)
@@ -226,7 +228,7 @@ public class SignInOrSignUpHelperClass
         GoogleSignInOptions gso=new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken(activity.getString(R.string.default_web_client_id)).requestEmail().build();
         GoogleSignInClient signInClient= GoogleSignIn.getClient(activity,gso);
         intent=signInClient.getSignInIntent();
-        activity.startActivityForResult(intent,CONST_VARIABLE.GOOGLE_SIGN_IN_REQUEST_CODE);
+        activity.startActivityForResult(intent, VARConst.GOOGLE_SIGN_IN_REQUEST_CODE);
     }
     private void FacebookSignInMethod()
     {
@@ -237,32 +239,35 @@ public class SignInOrSignUpHelperClass
             public void onSuccess(LoginResult loginResult)
             {
                 credential= FacebookAuthProvider.getCredential(loginResult.getAccessToken().getToken());
-                FirebaseAutheticationWithCredential(CONST_VARIABLE.FACEBOOK_SIGN_IN_STATUS,credential);
+                FirebaseAutheticationWithCredential(VARConst.FACEBOOK_SIGN_IN_STATUS,credential);
             }
             @Override
             public void onCancel() { }
             @Override
             public void onError(FacebookException error)
             {
-                myCommunicator.Communicator(CONST_VARIABLE.FACEBOOK_SIGN_IN_EXCEEPTION,false);
+                myCommunicator.Communicator(VARConst.FACEBOOK_SIGN_IN_EXCEEPTION,false);
             }
         });
     }
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (requestCode==CONST_VARIABLE.GOOGLE_SIGN_IN_REQUEST_CODE && resultCode==RESULT_OK && data!=null)
+        if (requestCode== VARConst.GOOGLE_SIGN_IN_REQUEST_CODE && resultCode==RESULT_OK && data!=null)
         {
             try {
                 Task<GoogleSignInAccount> task=GoogleSignIn.getSignedInAccountFromIntent(data);
                 GoogleSignInAccount account=task.getResult(ApiException.class);
                 credential= GoogleAuthProvider.getCredential(account.getIdToken(),null);
-                FirebaseAutheticationWithCredential(CONST_VARIABLE.GOOGLE_SIGN_IN_STATUS,credential);
+                FirebaseAutheticationWithCredential(VARConst.GOOGLE_SIGN_IN_STATUS,credential);
             } catch (ApiException e)
             {
-                myCommunicator.Communicator(CONST_VARIABLE.GOOGLE_SIGN_IN_EXCEPTION,true);
+                myCommunicator.Communicator(VARConst.GOOGLE_SIGN_IN_EXCEPTION,true);
             }
             return;
         }
-        FacebookCallBack.onActivityResult(requestCode,resultCode,data);
+        if (resultCode==RESULT_OK && data!=null)
+        {
+            FacebookCallBack.onActivityResult(requestCode,resultCode,data);
+        }
     }
     ///*******************Google & Facebook SignIn Or SignUp Section Starting*******************///
 

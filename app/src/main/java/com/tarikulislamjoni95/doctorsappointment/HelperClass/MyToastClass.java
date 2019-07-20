@@ -1,4 +1,4 @@
-package com.tarikulislamjoni95.doctorsappointment;
+package com.tarikulislamjoni95.doctorsappointment.HelperClass;
 
 import android.app.Activity;
 import android.widget.Toast;
