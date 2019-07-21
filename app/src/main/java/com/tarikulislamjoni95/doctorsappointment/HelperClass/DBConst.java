@@ -24,10 +24,13 @@ public class DBConst
     public static final String Address="Address";
     public static final String AddressLongitude="AddressLongitude";
     public static final String AddressLatitude="AddressLatitude";
+    public static final String BirthCertificateNo="BirthCertificateNo";
+    public static final String BirthCertificateImageUrl="BirthCertificateImageUrl";
+    public static final String AnotherDocumentImageUrl="AnotherDocumentImageUrl";
 
     //SecureData DB
     public static final String SecureData="SecureData";
-    public static final String MultipleAccount="MultipleAccount";
-    public static final String BirthCertificate="BirthCertificate";
-    public static final String AnotherDocument="AnotherDocument";
+    public static final String BirthNoMultiplicity="BirthNoMultiplicity";
+    public static final String MultipleCheck="MultipleCheck";
+    public static final String UID="UID";
 }

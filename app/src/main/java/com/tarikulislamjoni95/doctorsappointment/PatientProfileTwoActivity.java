@@ -151,7 +151,7 @@ public class PatientProfileTwoActivity extends AppCompatActivity implements View
         {
             if (BnEt.getCurrentTextColor()== ContextCompat.getColor(activity,R.color.colorGreen))
             {
-                DatabaseReference ref= FirebaseDatabase.getInstance().getReference().child(DBConst.SecureData).child(BnEt.getText().toString()).child("UID");
+                DatabaseReference ref= FirebaseDatabase.getInstance().getReference().child(DBConst.BirthNoMultiplicity).child(BnEt.getText().toString());
                 ref.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -220,59 +220,87 @@ public class PatientProfileTwoActivity extends AppCompatActivity implements View
     }
     private void SaveSingleData(final String url)
     {
-        DatabaseReference myRef=FirebaseDatabase.getInstance().getReference().child(DBConst.SecureData);
-        myRef.child(BnEt.getText().toString()).child(DBConst.MultipleAccount).setValue(false);
-        myRef.child(BnEt.getText().toString()).child("UID").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child(DBConst.AnotherDocument).setValue("null");
-        myRef.child(BnEt.getText().toString()).child("UID").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child(DBConst.BirthCertificate).setValue(url)
+        final DatabaseReference AccountRef=FirebaseDatabase.getInstance().getReference().child(DBConst.Account).child(DBConst.Patient).child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        AccountRef.child(DBConst.BirthCertificateNo).setValue(BnEt.getText().toString());
+        AccountRef.child(DBConst.BirthCertificateImageUrl).setValue(url);
+        AccountRef.child(DBConst.AnotherDocumentImageUrl).setValue("")
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task)
                     {
-                        DatabaseReference ref2=FirebaseDatabase.getInstance().getReference().child(DBConst.AccountStatus).child(FirebaseAuth.getInstance().getCurrentUser().getUid());
-                        ref2.child(DBConst.AccountCompletion).setValue(true);
-                        ref2.child(DBConst.AccountValidity).setValue(true);
-                        ref2.child(DBConst.AuthorityValidity).setValue(false)
-                                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<Void> task)
-                                    {
-                                        progressDialog.dismiss();
-                                        intent=new Intent(activity,WelcomeActivity.class);
-                                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-                                        startActivity(intent);
-                                    }
-                                });
+                        if (task.isComplete())
+                        {
+                            DatabaseReference BCMRef=FirebaseDatabase.getInstance().getReference().child(DBConst.BirthNoMultiplicity).child(BnEt.getText().toString());
+                            BCMRef.child(DBConst.MultipleCheck).setValue(false);
+                            BCMRef.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).setValue("")
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task)
+                                        {
+                                            if (task.isComplete())
+                                            {
+                                                DatabaseReference AccountStatusRef=FirebaseDatabase.getInstance().getReference().child(DBConst.AccountStatus).child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                                                AccountRef.child(DBConst.AccountType).setValue(DBConst.Patient);
+                                                AccountStatusRef.child(DBConst.AccountValidity).setValue(true);
+                                                AccountStatusRef.child(DBConst.AccountCompletion).setValue(true);
+                                                AccountStatusRef.child(DBConst.AuthorityValidity).setValue(false)
+                                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                            @Override
+                                                            public void onComplete(@NonNull Task<Void> task)
+                                                            {
+                                                                intent=new Intent(activity,MainActivity.class);
+                                                                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+                                                                startActivity(intent);
+                                                            }
+                                                        });
+                                            }
+                                        }
+                                    });
+                        }
                     }
                 });
     }
     private void SaveBothData(final String url1, final String url2)
     {
-        DatabaseReference ref1=FirebaseDatabase.getInstance().getReference().child(DBConst.SecureData);
-        ref1.child(BnEt.getText().toString()).child(DBConst.MultipleAccount).setValue(true);
-        ref1.child(BnEt.getText().toString()).child("UID").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child(DBConst.AnotherDocument).setValue(url2);
-        ref1.child(BnEt.getText().toString()).child("UID").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child(DBConst.BirthCertificate).setValue(url1).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task)
-            {
-                if (task.isComplete())
-                {
-                    DatabaseReference ref2=FirebaseDatabase.getInstance().getReference().child(DBConst.AccountStatus).child(FirebaseAuth.getInstance().getCurrentUser().getUid());
-                    ref2.child(DBConst.AccountCompletion).setValue(true);
-                    ref2.child(DBConst.AccountValidity).setValue(true);
-                    ref2.child(DBConst.AuthorityValidity).setValue(false)
-                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task)
-                                {
-                                    progressDialog.dismiss();
-                                    intent=new Intent(activity,WelcomeActivity.class);
-                                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-                                    startActivity(intent);
-                                }
-                            });
-                }
-            }
-        });
+        final DatabaseReference AccountRef=FirebaseDatabase.getInstance().getReference().child(DBConst.Account).child(DBConst.Patient).child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        AccountRef.child(DBConst.BirthCertificateNo).setValue(BnEt.getText().toString());
+        AccountRef.child(DBConst.BirthCertificateImageUrl).setValue(url1);
+        AccountRef.child(DBConst.AnotherDocumentImageUrl).setValue(url2)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task)
+                    {
+                        if (task.isComplete())
+                        {
+                            DatabaseReference BCMRef=FirebaseDatabase.getInstance().getReference().child(DBConst.BirthNoMultiplicity).child(BnEt.getText().toString());
+                            BCMRef.child(DBConst.MultipleCheck).setValue(true);
+                            BCMRef.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).setValue("")
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task)
+                                        {
+                                            if (task.isComplete())
+                                            {
+                                                DatabaseReference AccountStatusRef=FirebaseDatabase.getInstance().getReference().child(DBConst.AccountStatus).child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                                                AccountRef.child(DBConst.AccountType).setValue(DBConst.Patient);
+                                                AccountStatusRef.child(DBConst.AccountValidity).setValue(true);
+                                                AccountStatusRef.child(DBConst.AccountCompletion).setValue(true);
+                                                AccountStatusRef.child(DBConst.AuthorityValidity).setValue(false)
+                                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                            @Override
+                                                            public void onComplete(@NonNull Task<Void> task)
+                                                            {
+                                                                intent=new Intent(activity,MainActivity.class);
+                                                                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+                                                                startActivity(intent);
+                                                            }
+                                                        });
+                                            }
+                                        }
+                                    });
+                        }
+                    }
+                });
     }
     private String url1,url2;
     private int counting=0;
