@@ -240,7 +240,7 @@ public class PatientProfileTwoActivity extends AppCompatActivity implements View
                                             if (task.isComplete())
                                             {
                                                 DatabaseReference AccountStatusRef=FirebaseDatabase.getInstance().getReference().child(DBConst.AccountStatus).child(FirebaseAuth.getInstance().getCurrentUser().getUid());
-                                                AccountRef.child(DBConst.AccountType).setValue(DBConst.Patient);
+                                                AccountStatusRef.child(DBConst.AccountType).setValue(DBConst.Patient);
                                                 AccountStatusRef.child(DBConst.AccountValidity).setValue(true);
                                                 AccountStatusRef.child(DBConst.AccountCompletion).setValue(true);
                                                 AccountStatusRef.child(DBConst.AuthorityValidity).setValue(false)
@@ -282,7 +282,7 @@ public class PatientProfileTwoActivity extends AppCompatActivity implements View
                                             if (task.isComplete())
                                             {
                                                 DatabaseReference AccountStatusRef=FirebaseDatabase.getInstance().getReference().child(DBConst.AccountStatus).child(FirebaseAuth.getInstance().getCurrentUser().getUid());
-                                                AccountRef.child(DBConst.AccountType).setValue(DBConst.Patient);
+                                                AccountStatusRef.child(DBConst.AccountType).setValue(DBConst.Patient);
                                                 AccountStatusRef.child(DBConst.AccountValidity).setValue(true);
                                                 AccountStatusRef.child(DBConst.AccountCompletion).setValue(true);
                                                 AccountStatusRef.child(DBConst.AuthorityValidity).setValue(false)

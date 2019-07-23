@@ -14,47 +14,104 @@
         <item>AB-</item>
     </string-array>
     <string-array name="doctor_category_array">
+        <item>Cardiology</item>
+        <item>Chest Diseases</item>
+        <item>Dentistry</item>
+        <item>Dermatology</item>
+        <item>Diabetic</item>
+        <item>Dietetics</item>
+        <item>Endocrinology</item>
+        <item>ENT</item>
+        <item>Gastroenterology</item>
+        <item>Gynecology</item>
+        <item>Hematology</item>
+        <item>Hepatology</item>
+        <item>Medicine</item>
+        <item>Nephrology</item>
+        <item>Neurology</item>
+        <item>Neorosurgery</item>
+        <item>Neoromedicine</item>
+        <item>Oncology</item>
+        <item>Ophthalmology</item>
+        <item>Orthopedics</item>
+        <item>Paediatrics</item>
+        <item>Psychiatric</item>
+        <item>Pulmonology</item>
+        <item>Physiotherapy</item>
+        <item>Rhematology</item>
+        <item>Urology</item>
+        <item>Cardiac Surgery</item>
+        <item>Dental Surgery</item>
+        <item>ENT Surgery</item>
+        <item>Eye Surgery</item>
+        <item>General Surgery</item>
+        <item>Gynecology Surgery</item>
+        <item>Laparoscopic Surgery</item>
+        <item>Maxillofacial Surgery</item>
+        <item>Orthopedic Surgery</item>
+        <item>Paediatric Surgery</item>
+        <item>Plastic Surgery</item>
+        <item>Surgical Surgery</item>
+        <item>Urology Surgery</item>
+        <item>Vascular Surgery</item>
+    </string-array>
+    <string-array name="doctor_for_patient_category_array">
         <item>Select Category</item>
-        <item>Cardiology()</item>
-        <item>Chest Diseases()</item>
-        <item>Dentistry()</item>
-        <item>Dermatology()</item>
-        <item>Diabetic()</item>
-        <item>Dietetics()</item>
-        <item>Endocrinology()</item>
-        <item>ENT()</item>
-        <item>Gastroenterology()</item>
-        <item>Gynecology()</item>
-        <item>Hematology()</item>
-        <item>Hepatology()</item>
-        <item>Medicine()</item>
-        <item>Nephrology()</item>
-        <item>Neurology()</item>
-        <item>Neorosurgery()</item>
-        <item>Neoromedicine()</item>
-        <item>Oncology()</item>
-        <item>Ophthalmology()</item>
-        <item>Orthopedics()</item>
-        <item>Paediatrics()</item>
-        <item>Psychiatric()</item>
-        <item>Pulmonology()</item>
-        <item>Physiotherapy()</item>
-        <item>Rhematology()</item>
-        <item>Urology()</item>
-        <item>Cardiac Surgery()</item>
-        <item>ENT Surgery()</item>
-        <item>General Surgery()</item>
-        <item>Gynecology Surgery()</item>
-        <item>Laparoscopic Surgery()</item>
-        <item>Maxillofacial Surgery()</item>
-        <item>Orthopedic Surgery()</item>
-        <item>Paediatric Surgery()</item>
-        <item>Plastic Surgery()</item>
-        <item>Surgical Surgery()</item>
-        <item>Urology Surgery()</item>
-        <item>Vascular Surgery()</item>
+        <item>Cardiology(হৃদরোগ)</item>
+        <item>Chest Diseases(বক্ষব্যাধি)</item>
+        <item>Dentistry(দাঁত)</item>
+        <item>Dermatology(চর্ম,এলার্জি ও যৌন)</item>
+        <item>Diabetic(ডায়াবেটিস)</item>
+        <item>Dietetics(খাদ্য ও পুষ্টি)</item>
+        <item>Endocrinology(হরমোন)</item>
+        <item>ENT(নাক,কান ও গলা)</item>
+        <item>Gastroenterology(পরিপাক তন্ত্র)</item>
+        <item>Gynecology(মহিলা ও প্রসূতি)</item>
+        <item>Hematology(রক্ত রোগ)</item>
+        <item>Hepatology(লিভার ও গলব্লাডার)</item>
+        <item>Medicine(মেডিসিন)</item>
+        <item>Nephrology(কিডনি)</item>
+        <item>Neurology(ব্রেন ও স্নায়ু)</item>
+        <item>Neorosurgery(নিউরো সার্জারি)</item>
+        <item>Neoromedicine(নিউরো মেডিসিন)</item>
+        <item>Oncology(ক্যান্সার)</item>
+        <item>Ophthalmology(চোখ)</item>
+        <item>Orthopedics(হাড়)</item>
+        <item>Paediatrics(শিশু ও নবজাতক)</item>
+        <item>Psychiatric(মানসিক স্বাস্থ্য)</item>
+        <item>Pulmonology(ফুসফুস)</item>
+        <item>Physiotherapy(ফিজিওথেরাপি)</item>
+        <item>Rhematology(বাত রোগ)</item>
+        <item>Urology(মূত্র)</item>
+        <item>Cardiac Surgery(হার্ট সার্জারি)</item>
+        <item>Dental Surgery(দন্ত সার্জারি)</item>
+        <item>ENT Surgery(নাক,কান ও গলা সার্জারি)</item>
+        <item>Eye Surgery(চক্ষু সার্জারি)</item>
+        <item>General Surgery(জেনারেল সার্জারি)</item>
+        <item>Gynecology Surgery(মহিলা ও প্রসূতি সার্জারি)</item>
+        <item>Laparoscopic Surgery</item>
+        <item>Maxillofacial Surgery</item>
+        <item>Orthopedic Surgery(হাড় সার্জারি)</item>
+        <item>Paediatric Surgery(শিশু সার্জারি)</item>
+        <item>Plastic Surgery(প্লাস্টিক সার্জারি)</item>
+        <item>Surgical Surgery(ক্যান্সার সার্জারি)</item>
+        <item>Urology Surgery(কিডনি ও মূত্র সার্জারি)</item>
+        <item>Vascular Surgery(রক্তনালী সার্জারি)</item>
+
 
     </string-array>
+
+
+    <string-array name="select_day_arrya">
+        <item>Saturday</item>
+        <item>Sunday</item>
+        <item>Monday</item>
+        <item>Tuesday</item>
+        <item>Wednesday</item>
+        <item>Thursday</item>
+        <item>Friday</item>
+    </string-array>
+
     <string name="title_activity_main">MainActivity</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>

@@ -33,7 +33,15 @@
         <activity android:name=".PatientProfileTwoActivity"></activity>
         <activity android:name=".PatientProfileView"/>
 
+        <activity android:name=".DoctorProfileEditorOneActivity">
 
+        </activity>
+        <activity android:name=".DoctorProfileEditorTwoActivity">
+
+        </activity>
+
+        <activity android:name=".MyGoogleMapClass.SearchHospitalOnMap">
+        </activity>
 
 
         <activity android:name=".AdminPanel.AdminPanelMainActivity">

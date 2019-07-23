@@ -3,18 +3,9 @@ package com.tarikulislamjoni95.doctorsappointment;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.Gravity;
-import android.view.WindowManager;
-import android.view.animation.Animation;
-import android.view.animation.LinearInterpolator;
-import android.view.animation.RotateAnimation;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -24,12 +15,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.DBConst;
-import com.tarikulislamjoni95.doctorsappointment.HelperClass.MyDialogClass;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.MyLoadingDailog;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.MyToastClass;
-import com.tarikulislamjoni95.doctorsappointment.Interface.MyCommunicator;
-
-import java.util.Map;
 
 //Welcome Activity Done
 public class WelcomeActivity extends AppCompatActivity{
@@ -116,11 +103,12 @@ public class WelcomeActivity extends AppCompatActivity{
                     {
                        if (AccountValidity&&AccountCompletion)
                        {
-                           //Go to Doctor Part
+                           Intent intent=new Intent(WelcomeActivity.this,MainActivity.class);
+                           DelayStartingActivityMethod(intent);
                        }
                        else if (!AccountCompletion)
                        {
-                           Intent intent=new Intent(WelcomeActivity.this,DoctorProfileEditorActivity.class);
+                           Intent intent=new Intent(WelcomeActivity.this, DoctorProfileEditorOneActivity.class);
                            DelayStartingActivityMethod(intent);
                        }
                        else if (!AccountValidity)

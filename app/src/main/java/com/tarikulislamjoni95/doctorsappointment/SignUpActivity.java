@@ -415,7 +415,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                                         }
                                         else if (AccoutTypeString.matches(DBConst.Doctor))
                                         {
-                                            Intent intent=new Intent(activity, DoctorProfileEditorActivity.class);
+                                            Intent intent=new Intent(activity, DoctorProfileEditorOneActivity.class);
                                             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
                                             startActivity(intent);
                                         }

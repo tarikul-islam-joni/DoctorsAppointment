@@ -11,7 +11,6 @@ public class DBConst
 
     //Account Profile DB
     public static final String Account="Account";
-    public static final String Doctor="Doctor";
     public static final String Patient="Patient";
     public static final String Image="Image";
     public static final String Name="Name";
@@ -28,9 +27,28 @@ public class DBConst
     public static final String BirthCertificateImageUrl="BirthCertificateImageUrl";
     public static final String AnotherDocumentImageUrl="AnotherDocumentImageUrl";
 
+    public static final String Doctor="Doctor";
+    public static final String Title="Title";
+    public static final String Degree="Degree";
+    public static final String StudiedCollege="StudiedCollege";
+    public static final String NoOfPracYear="NoOfPracYear";
+    public static final String BMDCRegNo="BMDCRegNo";
+    public static final String Category="Category";
+
     //SecureData DB
-    public static final String SecureData="SecureData";
     public static final String BirthNoMultiplicity="BirthNoMultiplicity";
     public static final String MultipleCheck="MultipleCheck";
     public static final String UID="UID";
+
+    //Appointment Shedule
+    public static final String AppointmentShedule="AppointmentShedule";
+    public static final String HospitalName="HospitalName";
+    public static final String AvailableDay="AvailableDay";
+    public static final String AppointmentTime="AppointmentTime";
+    public static final String UnavaiableSDate="UnavaiableSDate";
+    public static final String UnavaiableEDate="UnavaiableEDate";
+
+    //Storage
+    public static final String ProfileImages="ProfileImages";
+    public static final String SecureData="SecureData";
 }

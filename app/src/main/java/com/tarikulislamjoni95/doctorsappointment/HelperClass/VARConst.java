@@ -52,13 +52,11 @@ public class VARConst {
 
 
 
-    //Database constant
-
-    public static final String Account_Status="Account_Status";
-    public static final String Validity_Status="Validity_Status";
-    public static final String Completion_Status="Completion_Status";
-    public static final String Incomplete="Incomplete";
-    public static final String Completed="Completed";
+    public static final String Select_Available_Day="Select available day";
+    public static final String Appointment_Starting_Time="Appointment Starting Time";
+    public static final String Appointment_Ending_Time="Appointment Ending Time";
+    public static final String Unavailable_Ending_Date="Unavailable Ending Date";
+    public static final String Unavailable_Starting_Date="Unavailable Starting Date";
 
     public static final String RECEIVER="RECEIVER";
     public static final String FETCH_TYPE="FETCH_TYPE";

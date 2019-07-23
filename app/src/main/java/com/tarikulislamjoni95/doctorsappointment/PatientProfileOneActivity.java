@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -34,6 +35,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.VARConst;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.DBConst;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.MyImageGettingClass;
@@ -45,6 +47,8 @@ import com.tarikulislamjoni95.doctorsappointment.HelperClass.MyToastClass;
 import com.tarikulislamjoni95.doctorsappointment.Interface.MyCommunicator;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 public class PatientProfileOneActivity extends AppCompatActivity implements View.OnClickListener,RadioGroup.OnCheckedChangeListener,MyCommunicator
@@ -83,6 +87,8 @@ public class PatientProfileOneActivity extends AppCompatActivity implements View
         Initialization();
         InitializationUI();
         InitializationClass();
+
+        ShowDataIfAvailable();
     }
     private void Initialization()
     {
@@ -246,7 +252,7 @@ public class PatientProfileOneActivity extends AppCompatActivity implements View
         byte[] byteArray = bao.toByteArray();
 
         String UID=FirebaseAuth.getInstance().getCurrentUser().getUid().toString();
-        final StorageReference myStorageRef=FirebaseStorage.getInstance().getReference().child("ProfileImages").child(UID+".jpg");
+        final StorageReference myStorageRef=FirebaseStorage.getInstance().getReference().child(DBConst.ProfileImages).child(UID+".jpg");
         UploadTask uploadTask=myStorageRef.putBytes(byteArray);
         Task<Uri> uriTask=uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
             @Override
@@ -283,20 +289,21 @@ public class PatientProfileOneActivity extends AppCompatActivity implements View
     }
     private void SaveDataIntoFirebase()
     {
+        HashMap<String,String> hashMap=new HashMap<>();
         FirebaseAuth myAuth=FirebaseAuth.getInstance();
         DatabaseReference myRef=FirebaseDatabase.getInstance().getReference(DBConst.Account).child(DBConst.Patient).child(myAuth.getCurrentUser().getUid().toString());
-        myRef.child(DBConst.Image).setValue(ProfileImageUrl);
-        myRef.child(DBConst.Name).setValue(FullName);
-        myRef.child(DBConst.FatherName).setValue(FatherName);
-        myRef.child(DBConst.MotherName).setValue(MotherName);
-        myRef.child(DBConst.ContactNo).setValue(PhoneNumber);
-        myRef.child(DBConst.Gender).setValue(Gender);
-        myRef.child(DBConst.BloodGroup).setValue(BloodGroup);
-        myRef.child(DBConst.BirthDate).setValue(DateOfBith);
-        myRef.child(DBConst.Address).setValue(CurrentAddress);
-        myRef.child(DBConst.AddressLongitude).setValue(AddressLongitude);
-        myRef.child(DBConst.AddressLatitude).setValue(AddressLatitude)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
+        hashMap.put(DBConst.Image,ProfileImageUrl);
+        hashMap.put(DBConst.Name,FullName);
+        hashMap.put(DBConst.FatherName,FatherName);
+        hashMap.put(DBConst.MotherName,MotherName);
+        hashMap.put(DBConst.ContactNo,PhoneNumber);
+        hashMap.put(DBConst.Gender,Gender);
+        hashMap.put(DBConst.BloodGroup,BloodGroup);
+        hashMap.put(DBConst.Address,CurrentAddress);
+        hashMap.put(DBConst.BirthDate,DateOfBith);
+        hashMap.put(DBConst.AddressLatitude,AddressLatitude);
+        hashMap.put(DBConst.AddressLongitude,AddressLongitude);
+        myRef.setValue(hashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isComplete())
@@ -377,6 +384,75 @@ public class PatientProfileOneActivity extends AppCompatActivity implements View
                     AddressLatitude=map.get(1);
                     AddressLongitude=map.get(2);
                 }
+            }
+        });
+    }
+
+    private void ShowDataIfAvailable()
+    {
+        DatabaseReference reference=FirebaseDatabase.getInstance().getReference().child(DBConst.Account).child(DBConst.Patient).child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot)
+            {
+                if (dataSnapshot.exists())
+                {
+                    if(!dataSnapshot.child(DBConst.Image).getValue().toString().matches("null"))
+                    {
+                        Picasso.get().load(dataSnapshot.child(DBConst.Image).getValue().toString()).into(ProfileImageCIV);
+                    }
+                    ProfileFullNameEt.setText(dataSnapshot.child(DBConst.Name).getValue().toString());
+                    ProfileFatherNameEt.setText(dataSnapshot.child(DBConst.FatherName).getValue().toString());
+                    ProfileMotherNameEt.setText(dataSnapshot.child(DBConst.MotherName).getValue().toString());
+                    ProfileAddressManualEt.setText(dataSnapshot.child(DBConst.Address).getValue().toString());
+                    ProfileContactNumberEt.setText(dataSnapshot.child(DBConst.ContactNo).getValue().toString());
+                    if (dataSnapshot.child(DBConst.Gender).getValue().toString().matches("Male"))
+                    {
+                        RadioButton rbtn=findViewById(R.id.profile_male_rbtn);
+                        rbtn.setChecked(true);
+                    }
+                    else
+                    {
+                        RadioButton rbtn=findViewById(R.id.profile_female_rbtn);
+                        rbtn.setChecked(true);
+                    }
+                    String[] bloodarray=getResources().getStringArray(R.array.blood_group);
+                    ArrayList<String> arrayList=new ArrayList<>();
+                    DateOfBith=dataSnapshot.child(DBConst.BirthDate).getValue().toString();
+                    StringBuilder stringBuilder=new StringBuilder();
+                    for(int i=0; i<DateOfBith.length(); i++)
+                    {
+                        if (DateOfBith.charAt(i)=='/')
+                        {
+                            arrayList.add(stringBuilder.toString());
+                            stringBuilder=new StringBuilder();
+                        }
+                        else
+                        {
+                            stringBuilder.append(DateOfBith.charAt(i));
+                        }
+                    }
+                    arrayList.add(stringBuilder.toString());
+                    ProfileBirthDateEt.setText(arrayList.get(0));
+                    ProfileBirthMonthEt.setText(arrayList.get(1));
+                    ProfileBirthYearEt.setText(arrayList.get(2));
+                    arrayList.clear();
+                    arrayList.add(dataSnapshot.child(DBConst.BloodGroup).getValue().toString());
+                    for(int i=0; i<bloodarray.length; i++)
+                    {
+                        if (!bloodarray[i].matches(arrayList.get(0)))
+                        {
+                            arrayList.add(bloodarray[i]);
+                        }
+                    }
+                    ArrayAdapter<String> arrayAdapter=new ArrayAdapter<String>(activity,android.R.layout.simple_list_item_1,arrayList);
+                    ProfileBloodGroupSpinner.setAdapter(arrayAdapter);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
             }
         });
     }

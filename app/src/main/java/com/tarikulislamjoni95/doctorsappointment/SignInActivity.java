@@ -369,7 +369,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
             {
                 if (myLoadingDailog.isShowing())
                 {
-                    myLoadingDailog.show();
+                    myLoadingDailog.dismiss();
                 }
                 if (dataSnapshot.exists())
                 {
@@ -400,12 +400,34 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                     }
                     else if (AccountType.matches(DBConst.Doctor))
                     {
-                        //Goto Doctor Part
+                        //Goto Patient Part
+                        if (!AccountCompletion)
+                        {
+                            Intent intent=new Intent(activity, DoctorProfileEditorOneActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(intent);
+                        }
+                        else if (!AccountValidity)
+                        {
+                            Intent intent=new Intent(activity,DoctorProfileEditorTwoActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(intent);
+                        }
+                        else if (AccountCompletion && AccountValidity)
+                        {
+                            Intent intent=new Intent(activity,MainActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(intent);
+                        }
                     }
                 }
                 else
                 {
                     FirebaseAuth.getInstance().getCurrentUser().delete();
+                    if (myLoadingDailog.isShowing())
+                    {
+                        myLoadingDailog.dismiss();
+                    }
                     myToast.LToast("Sign Up first !!! Goto Sign Up Page...");
                 }
             }

@@ -22,6 +22,13 @@ public class MultipleIdDataModel
         BirthImageUrl = birthImageUrl;
         AnotherDocImageUrl = anotherDocImageUrl;
     }
+    public MultipleIdDataModel(String name, String birthDate, String contactNo, String birthImageUrl, String anotherDocImageUrl) {
+        Name = name;
+        BirthDate = birthDate;
+        ContactNo = contactNo;
+        BirthImageUrl = birthImageUrl;
+        AnotherDocImageUrl = anotherDocImageUrl;
+    }
 
     public String getName() {
         return Name;
