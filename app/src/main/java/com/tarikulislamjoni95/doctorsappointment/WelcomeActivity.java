@@ -103,12 +103,14 @@ public class WelcomeActivity extends AppCompatActivity{
                     {
                        if (AccountValidity&&AccountCompletion)
                        {
-                           Intent intent=new Intent(WelcomeActivity.this,MainActivity.class);
+                           Intent intent=new Intent(WelcomeActivity.this,DoctorProfileViewActivity.class);
+                           intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
                            DelayStartingActivityMethod(intent);
                        }
                        else if (!AccountCompletion)
                        {
                            Intent intent=new Intent(WelcomeActivity.this, DoctorProfileEditorOneActivity.class);
+                           intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
                            DelayStartingActivityMethod(intent);
                        }
                        else if (!AccountValidity)
@@ -143,6 +145,6 @@ public class WelcomeActivity extends AppCompatActivity{
                 }
                 startActivity(intent);
             }
-        },5000);
+        },2000);
     }
 }

@@ -24,7 +24,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Unavailable Date : null-null"/>
+    <TextView
+        android:id="@+id/appointment_fee_tv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Appointment Fee"/>
     <LinearLayout
+        android:id="@+id/appointment_edit_section"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">

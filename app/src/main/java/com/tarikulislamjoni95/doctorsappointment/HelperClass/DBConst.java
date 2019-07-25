@@ -34,6 +34,8 @@ public class DBConst
     public static final String NoOfPracYear="NoOfPracYear";
     public static final String BMDCRegNo="BMDCRegNo";
     public static final String Category="Category";
+    public static final String AvailableArea="AvailableArea";
+    public static final String Watched="Watched";
 
     //SecureData DB
     public static final String BirthNoMultiplicity="BirthNoMultiplicity";
@@ -47,8 +49,19 @@ public class DBConst
     public static final String AppointmentTime="AppointmentTime";
     public static final String UnavaiableSDate="UnavaiableSDate";
     public static final String UnavaiableEDate="UnavaiableEDate";
+    public static final String AppointmentFee="AppointmentFee";
 
     //Storage
     public static final String ProfileImages="ProfileImages";
     public static final String SecureData="SecureData";
+
+    //Temporary Appointment
+    public static final String TemporaryAppointment="TemporaryAppointment";
+    public static final String AppointmentDate="AppointmentDate";
+    public static final String AppointmentValidityTime="AppointmentValidityTime";
+
+    //Confirm Appointment
+    public static final String ConfirmAppointment="ConfirmAppointment";
+    public static final String AppointmentCreateDate="AppointmentCreateDate";
+    public static final String PatientList="PatientList";
 }

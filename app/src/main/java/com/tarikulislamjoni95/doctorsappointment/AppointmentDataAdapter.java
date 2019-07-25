@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
@@ -30,6 +31,8 @@ public class AppointmentDataAdapter extends ArrayAdapter<AppointmentDataModel> i
 {
     private MyToastClass myToastClass;
 
+    private String FromWhich;
+
     private AutoCompleteTextView ACT;
     private TextView tv1,tv2,tv3,tv4,tv5;
     private LinearLayout l1;
@@ -39,9 +42,10 @@ public class AppointmentDataAdapter extends ArrayAdapter<AppointmentDataModel> i
     private AppointmentDataModel dataModel;
     private Activity activity;
     ArrayList<AppointmentDataModel> arrayList;
-    public AppointmentDataAdapter(Activity activity, ArrayList<AppointmentDataModel> arrayList)
+    public AppointmentDataAdapter(String FromWhich,Activity activity, ArrayList<AppointmentDataModel> arrayList)
     {
         super(activity,R.layout.appointment_edit_model, arrayList);
+        this.FromWhich=FromWhich;
         this.arrayList=arrayList;
         this.activity=activity;
 
@@ -161,7 +165,7 @@ public class AppointmentDataAdapter extends ArrayAdapter<AppointmentDataModel> i
     }
     class ViewHolder
     {
-        TextView HospitalNameTv,AppointmentSheduleTv,UnavailableDateTv,AppointmentDayTv;
+        TextView HospitalNameTv,AppointmentSheduleTv,UnavailableDateTv,AppointmentDayTv,AppointmentFeeTv;
         Button EditBtn,DeleteBtn;
     }
     ViewHolder viewHolder;
@@ -176,6 +180,7 @@ public class AppointmentDataAdapter extends ArrayAdapter<AppointmentDataModel> i
         viewHolder.HospitalNameTv=convertView.findViewById(R.id.hospital_name_tv);
         viewHolder.AppointmentDayTv=convertView.findViewById(R.id.appointment_day_tv);
         viewHolder.AppointmentSheduleTv=convertView.findViewById(R.id.appointment_shedule_tv);
+        viewHolder.AppointmentFeeTv=convertView.findViewById(R.id.appointment_fee_tv);
         viewHolder.UnavailableDateTv=convertView.findViewById(R.id.unavailable_date_tv);
         viewHolder.EditBtn=convertView.findViewById(R.id.edit_btn);
         viewHolder.EditBtn.setOnClickListener(this);
@@ -184,9 +189,25 @@ public class AppointmentDataAdapter extends ArrayAdapter<AppointmentDataModel> i
         viewHolder.DeleteBtn.setOnClickListener(this);
         viewHolder.DeleteBtn.setTag(position);
 
+        if (FromWhich.matches("Show"))
+        {
+            viewHolder.EditBtn.setEnabled(false);
+            viewHolder.DeleteBtn.setEnabled(false);
+            viewHolder.EditBtn.setVisibility(View.GONE);
+            viewHolder.DeleteBtn.setVisibility(View.GONE);
+        }
+        else
+        {
+            viewHolder.EditBtn.setEnabled(true);
+            viewHolder.DeleteBtn.setEnabled(true);
+            viewHolder.EditBtn.setVisibility(View.VISIBLE);
+            viewHolder.DeleteBtn.setVisibility(View.VISIBLE);
+        }
+
         viewHolder.HospitalNameTv.setText("Hospital Name : "+dataModel.getHospitalName());
         viewHolder.AppointmentDayTv.setText("Available Day : "+dataModel.getAvailableDay());
         viewHolder.AppointmentSheduleTv.setText("Appointment Time : "+dataModel.getAppointmentTime());
+        viewHolder.AppointmentFeeTv.setText("Appointment Fee : "+dataModel.getAppointmentFee());
         viewHolder.UnavailableDateTv.setText("Unavailable date : "+dataModel.getUnavaiableSDate()+"~"+dataModel.getUnavaiableEDate());
 
         return convertView;

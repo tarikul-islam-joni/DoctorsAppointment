@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
     <LinearLayout
@@ -7,14 +7,15 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
         <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/image_civ"
             android:layout_width="200dp"
             android:layout_height="200dp"
             android:layout_gravity="center"
             android:src="@drawable/male_doc"/>
         <TextView
+            android:id="@+id/name_tv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Manzur Kader Azad"
             android:gravity="center"/>
         <TextView
             android:layout_width="match_parent"
@@ -32,9 +33,9 @@
                 android:layout_height="wrap_content"
                 android:text="BMDC Registration Number : "/>
             <TextView
+                android:id="@+id/bmdc_reg_tv"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="A-55907"/>
+                android:layout_height="wrap_content"/>
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
@@ -45,9 +46,9 @@
                 android:layout_height="wrap_content"
                 android:text="Year Garduated : "/>
             <TextView
+                android:id="@+id/year_grad_tv"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="2015"/>
+                android:layout_height="wrap_content"/>
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
@@ -58,9 +59,9 @@
                 android:layout_height="wrap_content"
                 android:text="Medical College Studied : "/>
             <TextView
+                android:id="@+id/studied_tv"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Rajshahi Medical College"/>
+                android:layout_height="wrap_content"/>
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
@@ -71,9 +72,9 @@
                 android:layout_height="wrap_content"
                 android:text="Speciality : "/>
             <TextView
+                android:id="@+id/speciality_tv"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Cardiologist"/>
+                android:layout_height="wrap_content"/>
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
@@ -84,13 +85,14 @@
                 android:layout_height="wrap_content"
                 android:text="No. of Year Practicing : "/>
             <TextView
+                android:id="@+id/no_of_prac_tv"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="10"/>
+                android:layout_height="wrap_content"/>
         </LinearLayout>
         <ListView
+            android:id="@+id/list_view_1"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="match_parent"/>
     </LinearLayout>
 
-</ScrollView>
+</LinearLayout>

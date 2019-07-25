@@ -19,7 +19,12 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar">
+
+        </activity>
+        <activity android:name=".Example">
+
+        </activity>
         <activity android:name=".WelcomeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -32,6 +37,7 @@
         <activity android:name=".PatientProfileOneActivity"></activity>
         <activity android:name=".PatientProfileTwoActivity"></activity>
         <activity android:name=".PatientProfileView"/>
+        <activity android:name=".PatientAppointmentHistoryActivity"/>
 
         <activity android:name=".DoctorProfileEditorOneActivity">
 
@@ -39,6 +45,10 @@
         <activity android:name=".DoctorProfileEditorTwoActivity">
 
         </activity>
+
+        <activity android:name=".DoctorProfileVisitActivity"/>
+        <activity android:name=".DoctorProfileViewActivity"/>
+        <activity android:name=".PatientListActivity"/>
 
         <activity android:name=".MyGoogleMapClass.SearchHospitalOnMap">
         </activity>

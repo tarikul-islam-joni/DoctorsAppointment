@@ -7,14 +7,24 @@ public class AppointmentDataModel {
     String UnavaiableSDate;
     String AppointmentTime;
     String UnavaiableEDate;
+    String AppointmentFee;
 
-    public AppointmentDataModel(String UID,String HospitalName,String availableDay, String unavaiableSDate, String AppointmentTime, String unavaiableEDate) {
-        this.UID=UID;
-        this.HospitalName=HospitalName;
+    public AppointmentDataModel(String UID,String HospitalName,String availableDay,String AppointmentFee, String unavaiableSDate, String AppointmentTime, String unavaiableEDate) {
+        this.UID = UID;
+        this.HospitalName = HospitalName;
         this.AppointmentTime = AppointmentTime;
         AvailableDay = availableDay;
         UnavaiableSDate = unavaiableSDate;
         UnavaiableEDate = unavaiableEDate;
+        this.AppointmentFee = AppointmentFee;
+    }
+
+    public String getAppointmentFee() {
+        return AppointmentFee;
+    }
+
+    public void setAppointmentFee(String appointmentFee) {
+        AppointmentFee = appointmentFee;
     }
 
     public String getUID() {

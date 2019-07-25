@@ -415,7 +415,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                         }
                         else if (AccountCompletion && AccountValidity)
                         {
-                            Intent intent=new Intent(activity,MainActivity.class);
+                            Intent intent=new Intent(activity,DoctorProfileViewActivity.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
                             startActivity(intent);
                         }

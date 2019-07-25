@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/change_appointment_info"
+        android:orderInCategory="100"
+        android:title="Change Appointment Information"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/edit_btn"
+        android:orderInCategory="100"
+        android:title="Edit Profile"
+        app:showAsAction="never" />
+    <item android:id="@+id/sign_out_btn"
+        android:orderInCategory="100"
+        android:title="SignOut"
+        app:showAsAction="never"/>
+</menu>

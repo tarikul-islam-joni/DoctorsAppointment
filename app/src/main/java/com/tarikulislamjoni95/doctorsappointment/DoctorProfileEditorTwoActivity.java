@@ -60,13 +60,14 @@ public class DoctorProfileEditorTwoActivity  extends AppCompatActivity implement
     private TimePickerDialog timePickerDialog;
 
     private String[] DayStringArray;
-    private String CategoryString;
+    private String CategoryString,AppointmentFeeString;
 
     private ListView listView;
     private LinearLayout StopAppointmentSection;
     private LinearLayout StartingTimeSection,EndingTimeSection;
     private LinearLayout StartingDateSection,EndingDateSection;
     private AutoCompleteTextView HospitalNameEt;
+    private EditText AppointmentFeeEt;
     private TextView SelectDayTv,StartingTimeTv,EndingTimeTv,StartingDateTv,EndingDateTv;
     private Button SaveBtn,ConfirmBtn;
     private RadioButton StopAppointmentRbtn;
@@ -111,6 +112,7 @@ public class DoctorProfileEditorTwoActivity  extends AppCompatActivity implement
         StartingDateTv=findViewById(R.id.starting_date_tv);
         EndingDateTv=findViewById(R.id.ending_date_tv);
 
+        AppointmentFeeEt=findViewById(R.id.appointment_fee_et);
         HospitalNameEt=findViewById(R.id.hospital_name_et);
         SelectDayBtn=findViewById(R.id.select_day_btn);
         SelectDayBtn.setOnClickListener(this);
@@ -151,7 +153,7 @@ public class DoctorProfileEditorTwoActivity  extends AppCompatActivity implement
     private void InitializationClass()
     {
         myToastClass=new MyToastClass(activity);
-        adapter=new AppointmentDataAdapter(activity,arrayList);
+        adapter=new AppointmentDataAdapter("Edit",activity,arrayList);
     }
 
     @Override
@@ -245,6 +247,9 @@ public class DoctorProfileEditorTwoActivity  extends AppCompatActivity implement
         } else if(StartingTimeTv.getText().toString().matches(VARConst.Appointment_Starting_Time) || EndingTimeTv.getText().toString().matches(VARConst.Appointment_Ending_Time))
         {
             myToastClass.LToast("Select starting and ending time of appointment");
+        } else if (AppointmentFeeEt.getText().toString().isEmpty())
+        {
+            AppointmentFeeEt.setError("Appointment Fee");
         }
         else
         {
@@ -307,6 +312,7 @@ public class DoctorProfileEditorTwoActivity  extends AppCompatActivity implement
         DatabaseReference reference= FirebaseDatabase.getInstance().getReference().child(DBConst.AppointmentShedule).child(UID).child(HospitalNameEt.getText().toString());
         hashMap.put(DBConst.AvailableDay,SelectDayTv.getText().toString());
         hashMap.put(DBConst.AppointmentTime,StartingTimeTv.getText().toString()+"~"+EndingTimeTv.getText().toString());
+        hashMap.put(DBConst.AppointmentFee,AppointmentFeeEt.getText().toString());
         hashMap.put(DBConst.UnavaiableSDate,StartingDateTv.getText().toString());
         hashMap.put(DBConst.UnavaiableEDate,EndingDateTv.getText().toString());
         reference.setValue(hashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -348,9 +354,10 @@ public class DoctorProfileEditorTwoActivity  extends AppCompatActivity implement
                         String HospitalName=dataSnapshot1.getKey();
                         String AvaialableDay=dataSnapshot1.child(DBConst.AvailableDay).getValue().toString();
                         String AppointmentTime=dataSnapshot1.child(DBConst.AppointmentTime).getValue().toString();
+                        String AppointmentFee=dataSnapshot1.child(DBConst.AppointmentFee).getValue().toString();
                         String UnavaiableSDate=dataSnapshot1.child(DBConst.UnavaiableSDate).getValue().toString();
                         String UnavaiableEDate=dataSnapshot1.child(DBConst.UnavaiableEDate).getValue().toString();
-                        arrayList.add(new AppointmentDataModel(UID,HospitalName,AvaialableDay,UnavaiableSDate,AppointmentTime,UnavaiableEDate));
+                        arrayList.add(new AppointmentDataModel(UID,HospitalName,AvaialableDay,AppointmentFee,UnavaiableSDate,AppointmentTime,UnavaiableEDate));
                     }
                 }
                 else
@@ -380,7 +387,7 @@ public class DoctorProfileEditorTwoActivity  extends AppCompatActivity implement
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful())
                         {
-                            intent=new Intent(activity,MainActivity.class);
+                            intent=new Intent(activity,DoctorProfileViewActivity.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
                             startActivity(intent);
                         }

@@ -32,7 +32,7 @@ public class PatientProfileView extends AppCompatActivity implements View.OnClic
 
     private TextView PatientNameTv,PatientFatherNameTv,PatientMotherNameTv,PatientGenderTv,PatientDatOfBirthTv,PatientAddressTv,PatientBloodGroupTv;
     private TextView PatientBirthNoTv,PatientContactNo;
-    private Button PatientProfileEditBtn,PatientPastAppointmentBtn,PatientCurrentAppointment,PatientStoredHistoryBtn;
+    private Button PatientProfileEditBtn,PatientAppointmentHistory,PatientStoredHistoryBtn;
     CircleImageView PatientImageCIV;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -67,10 +67,8 @@ public class PatientProfileView extends AppCompatActivity implements View.OnClic
 
         PatientProfileEditBtn=findViewById(R.id.patient_profile_edit_btn);
         PatientProfileEditBtn.setOnClickListener(this);
-        PatientPastAppointmentBtn=findViewById(R.id.patient_past_appointment_btn);
-        PatientPastAppointmentBtn.setOnClickListener(this);
-        PatientCurrentAppointment=findViewById(R.id.patient_current_appointment_btn);
-        PatientCurrentAppointment.setOnClickListener(this);
+        PatientAppointmentHistory=findViewById(R.id.patient_appointment_history_btn);
+        PatientAppointmentHistory.setOnClickListener(this);
         PatientStoredHistoryBtn=findViewById(R.id.patient_stored_history_btn);
         PatientStoredHistoryBtn.setOnClickListener(this);
 
@@ -84,11 +82,8 @@ public class PatientProfileView extends AppCompatActivity implements View.OnClic
             case R.id.patient_profile_edit_btn:
                 PatientProfileEditMethod();
                 break;
-            case R.id.patient_current_appointment_btn:
-                PatientCurrentAppointMethod();
-                break;
-            case R.id.patient_past_appointment_btn:
-                PatientPastAppointMethod();
+            case R.id.patient_appointment_history_btn:
+                PatientAppointmentHistoryMethod();
                 break;
         }
     }
@@ -97,9 +92,10 @@ public class PatientProfileView extends AppCompatActivity implements View.OnClic
         intent=new Intent(activity,PatientProfileOneActivity.class);
         startActivity(intent);
     }
-    private void PatientCurrentAppointMethod() {
-    }
-    private void PatientPastAppointMethod() {
+    private void PatientAppointmentHistoryMethod()
+    {
+        intent=new Intent(activity,PatientAppointmentHistoryActivity.class);
+        startActivity(intent);
     }
     private void LoadData()
     {

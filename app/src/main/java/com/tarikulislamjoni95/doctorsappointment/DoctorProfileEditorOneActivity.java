@@ -56,6 +56,7 @@ public class DoctorProfileEditorOneActivity extends AppCompatActivity implements
     private Activity activity;
 
     private String[] CategoryStringArray;
+    private String AvailableAreaString="";
     private StringBuilder CategoryStringBuilder;
     private String NameString="",TitleString="",DegreeString="",StudiedClgString="",NoOfYearPracString="",BMDCRegNoString="",CategoryString,ImageUrl="null";
     private Bitmap ImageBitmap;
@@ -64,7 +65,7 @@ public class DoctorProfileEditorOneActivity extends AppCompatActivity implements
     private EditText DoctorCategorySelectionEt;
     private CircleImageView DoctorProfileIv;
     private Button DoctorImageUploadBtn,DoctorNextPageBtn,CategorySelectionBtn;
-    private EditText DoctorTitleEt,DoctorNameEt,DoctorStudiedClgEt,DoctorDegreeEt,DoctorBMDCRegEt,DoctorNoOfYearPracEt;
+    private EditText DoctorTitleEt,DoctorNameEt,DoctorStudiedClgEt,DoctorDegreeEt,DoctorBMDCRegEt,DoctorNoOfYearPracEt,AvailableAreaEt;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,6 +99,7 @@ public class DoctorProfileEditorOneActivity extends AppCompatActivity implements
         DoctorDegreeEt=findViewById(R.id.doctor_degree_et);
         DoctorBMDCRegEt=findViewById(R.id.doctor_bmdc_reg_et);
         DoctorNoOfYearPracEt=findViewById(R.id.doctor_no_of_year_prac_et);
+        AvailableAreaEt=findViewById(R.id.available_area_et);
 
         CategorySelectionBtn=findViewById(R.id.doctor_category_select_btn);
         CategorySelectionBtn.setOnClickListener(this);
@@ -135,6 +137,9 @@ public class DoctorProfileEditorOneActivity extends AppCompatActivity implements
         else if (DoctorCategorySelectionEt.getText().toString().isEmpty())
         {
             DoctorCategorySelectionEt.setError("Select category");
+        } else if (AvailableAreaEt.getText().toString().isEmpty())
+        {
+            AvailableAreaEt.setError("Available area");
         }
         else
         {
@@ -148,6 +153,7 @@ public class DoctorProfileEditorOneActivity extends AppCompatActivity implements
             StudiedClgString=DoctorStudiedClgEt.getText().toString();
             BMDCRegNoString=DoctorBMDCRegEt.getText().toString();
             NoOfYearPracString=DoctorNoOfYearPracEt.getText().toString();
+            AvailableAreaString=AvailableAreaEt.getText().toString();
             CategoryString=DoctorCategorySelectionEt.getText().toString();
             if (DoctorProfileIv.isEnabled())
             {
@@ -163,10 +169,11 @@ public class DoctorProfileEditorOneActivity extends AppCompatActivity implements
 
     private void UploadImageToFirebase(Bitmap bitmap)
     {
+        String ImageName=FirebaseAuth.getInstance().getCurrentUser().getUid().toString();
         ByteArrayOutputStream byteArrayOutputStream=new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG,50,byteArrayOutputStream);
         byte[] bytes=byteArrayOutputStream.toByteArray();
-        final StorageReference ref= FirebaseStorage.getInstance().getReference().child(DBConst.ProfileImages);
+        final StorageReference ref= FirebaseStorage.getInstance().getReference().child(DBConst.ProfileImages).child(ImageName+".jpg");
         UploadTask uploadTask=ref.putBytes(bytes);
         Task<Uri> task=uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
             @Override
@@ -203,18 +210,10 @@ public class DoctorProfileEditorOneActivity extends AppCompatActivity implements
         hashMap.put(DBConst.Degree,DegreeString);
         hashMap.put(DBConst.StudiedCollege,StudiedClgString);
         hashMap.put(DBConst.NoOfPracYear,NoOfYearPracString);
+        hashMap.put(DBConst.AvailableArea,AvailableAreaString);
         hashMap.put(DBConst.BMDCRegNo,BMDCRegNoString);
         hashMap.put(DBConst.Image,ImageUrl);
         hashMap.put(DBConst.Category,CategoryString);
-        /*
-        ref.child(DBConst.Name).setValue(NameString);
-        ref.child(DBConst.Title).setValue(TitleString);
-        ref.child(DBConst.Degree).setValue(DegreeString);
-        ref.child(DBConst.StudiedCollege).setValue(StudiedClgString);
-        ref.child(DBConst.NoOfPracYear).setValue(NoOfYearPracString);
-        ref.child(DBConst.BMDCRegNo).setValue(BMDCRegNoString);
-        ref.child(DBConst.Image).setValue(ImageUrl);
-        ref.child(DBConst.Category).setValue(CategoryString)*/
         ref.setValue(hashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task)
@@ -290,6 +289,7 @@ public class DoctorProfileEditorOneActivity extends AppCompatActivity implements
                     DoctorDegreeEt.setText(dataSnapshot.child(DBConst.Degree).getValue().toString());
                     DoctorStudiedClgEt.setText(dataSnapshot.child(DBConst.StudiedCollege).getValue().toString());
                     DoctorNoOfYearPracEt.setText(dataSnapshot.child(DBConst.NoOfPracYear).getValue().toString());
+                    AvailableAreaEt.setText(dataSnapshot.child(DBConst.AvailableArea).getValue().toString());
                     DoctorBMDCRegEt.setText(dataSnapshot.child(DBConst.BMDCRegNo).getValue().toString());
                     DoctorCategorySelectionEt.setText(dataSnapshot.child(DBConst.Category).getValue().toString());
                     if (!dataSnapshot.child(DBConst.Image).getValue().toString().matches("null"))
