@@ -32,13 +32,14 @@ public class DBConst
     public static final String Degree="Degree";
     public static final String StudiedCollege="StudiedCollege";
     public static final String NoOfPracYear="NoOfPracYear";
+    public static final String BMDCRegUrl="BMDCRegUrl";
     public static final String BMDCRegNo="BMDCRegNo";
     public static final String Category="Category";
     public static final String AvailableArea="AvailableArea";
     public static final String Watched="Watched";
 
     //SecureData DB
-    public static final String BirthNoMultiplicity="BirthNoMultiplicity";
+    public static final String AccountMultiplicity="AccountMultiplicity";
     public static final String MultipleCheck="MultipleCheck";
     public static final String UID="UID";
 

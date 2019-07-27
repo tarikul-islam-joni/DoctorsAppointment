@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/doctor_profile_iv"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:src="@drawable/male_doc"
+            android:layout_gravity="center"/>
+        <Button
+            android:id="@+id/doctor_profile_upload_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Upload"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <EditText
+                android:id="@+id/doctor_name_title_et"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="DR."/>
+            <EditText
+                android:id="@+id/doctor_name_et"
+                android:layout_weight="3"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:hint="Full Name"/>
+        </LinearLayout>
+        <EditText
+            android:id="@+id/doctor_studied_clg_et"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Medical College Studied"/>
+        <EditText
+            android:id="@+id/doctor_degree_et"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Degree"/>
+        <EditText
+            android:id="@+id/doctor_no_of_year_prac_et"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="No of year practicing"/>
+        <EditText
+            android:id="@+id/profile_contact_number_et"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Contact number"/>
+        <EditText
+            android:id="@+id/available_area_et"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Available Area"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <EditText
+                android:hint="Select category"
+                android:layout_weight="4"
+                android:id="@+id/doctor_category_et"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"/>
+            <Button
+                android:id="@+id/doctor_category_select_btn"
+                android:text="Select"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+        <Button
+            android:id="@+id/doctor_next_page_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Next"/>
+    </LinearLayout>
+</ScrollView>

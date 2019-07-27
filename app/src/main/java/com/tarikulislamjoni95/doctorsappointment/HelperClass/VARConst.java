@@ -57,6 +57,7 @@ public class VARConst {
     public static final String Appointment_Ending_Time="Appointment Ending Time";
     public static final String Unavailable_Ending_Date="Unavailable Ending Date";
     public static final String Unavailable_Starting_Date="Unavailable Starting Date";
+    public static final String SelectCategory="Select category";
 
     public static final String RECEIVER="RECEIVER";
     public static final String FETCH_TYPE="FETCH_TYPE";

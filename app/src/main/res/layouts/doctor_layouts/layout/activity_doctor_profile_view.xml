@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/image_civ"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:src="@drawable/male_doc"
+        android:layout_gravity="center"/>
+    <TextView
+        android:id="@+id/name_tv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Doctor Name"
+        android:textSize="30sp"
+        android:gravity="center"
+        android:textColor="#000000"/>
+    <TextView
+        android:id="@+id/studied_tv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Studied at "
+        android:textSize="20sp"/>
+    <TextView
+        android:id="@+id/bmdc_reg_tv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="BMDC Reg No"
+        android:textSize="20sp"/>
+    <TextView
+        android:id="@+id/no_of_prac_tv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="No of Year Practicing "
+        android:textSize="20sp"/>
+
+    <TextView
+        android:id="@+id/speciality_tv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Speciality"
+        android:textSize="20sp"/>
+
+    <TextView
+        android:id="@+id/degree_tv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Degree Completed "
+        android:textSize="20sp"/>
+    <TextView
+        android:id="@+id/available_area_tv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Available Area "
+        android:textSize="20sp"/>
+    <TextView
+        android:id="@+id/contact_no_tv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Contact Number :  "
+        android:textSize="20sp"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <Button
+            android:id="@+id/edit_appointment_info_btn"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Edit Appointment Info"/>
+        <Button
+            android:id="@+id/edit_profile_btn"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Edit Profile Info"/>
+    </LinearLayout>
+    <ListView
+        android:id="@+id/list_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+</LinearLayout>
