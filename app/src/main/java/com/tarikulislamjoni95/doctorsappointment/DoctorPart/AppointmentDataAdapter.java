@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.TextView;
@@ -32,8 +33,9 @@ public class AppointmentDataAdapter extends ArrayAdapter<AppointmentDataModel> i
 
     private String FromWhich;
 
+    private EditText et1;
     private AutoCompleteTextView ACT;
-    private TextView tv1,tv2,tv3,tv4,tv5;
+    private TextView tv1,tv2,tv3,tv4,tv5,tv6;
     private LinearLayout l1;
     private RadioButton rbtn;
 
@@ -51,11 +53,13 @@ public class AppointmentDataAdapter extends ArrayAdapter<AppointmentDataModel> i
         myToastClass=new MyToastClass(activity);
 
         ACT=activity.findViewById(R.id.hospital_name_et);
+        et1=activity.findViewById(R.id.appointment_fee_et);
         tv1=activity.findViewById(R.id.select_day_tv);
         tv2=activity.findViewById(R.id.av_staring_time_tv);
         tv3=activity.findViewById(R.id.av_ending_time_tv);
         tv4=activity.findViewById(R.id.starting_date_tv);
         tv5=activity.findViewById(R.id.ending_date_tv);
+        tv6=activity.findViewById(R.id.select_category_tv);
         rbtn=activity.findViewById(R.id.stop_appointment_rbtn);
         l1=activity.findViewById(R.id.stop_appointment_section);
     }
@@ -81,6 +85,7 @@ public class AppointmentDataAdapter extends ArrayAdapter<AppointmentDataModel> i
     private void EditAppointmentMethod(String HospitalName,String s1,String s2,String s3,String s4)
     {
         ACT.setText(HospitalName);
+        et1.setText(dataModel.getAppointmentFee());
         tv1.setText(s1);
         StringBuilder stringBuilder=new StringBuilder();
         for(int i=0; i<s2.length(); i++)
@@ -140,7 +145,7 @@ public class AppointmentDataAdapter extends ArrayAdapter<AppointmentDataModel> i
     }
     private void DeleteFromHospitalDirectory(String HospitalName,String UID)
     {
-        DatabaseReference reference=FirebaseDatabase.getInstance().getReference().child(DBConst.HospitalName).child(HospitalName);
+        DatabaseReference reference=FirebaseDatabase.getInstance().getReference().child(DBConst.HospitalList).child(HospitalName);
         reference.child(UID).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {

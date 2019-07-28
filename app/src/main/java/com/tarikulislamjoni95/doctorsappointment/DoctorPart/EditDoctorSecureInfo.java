@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -80,6 +81,7 @@ public class EditDoctorSecureInfo extends AppCompatActivity implements View.OnCl
         UploadAnotherImageSection=findViewById(R.id.upload_another_doc_section);
         UploadAnotherImageSection.setEnabled(false);
         ConfirmBtn=findViewById(R.id.confirm_btn);
+        ConfirmBtn.setOnClickListener(this);
     }
     private void InitializationClass()
     {

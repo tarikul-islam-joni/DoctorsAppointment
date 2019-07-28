@@ -6,6 +6,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.DnsResolver;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
@@ -248,8 +249,8 @@ public class EditPatientSecureInfoActivity extends AppCompatActivity implements 
         byte[] bytes2=bao.toByteArray();
 
         String BirthCertificateImageName=UID+"BirthCertificate"+".jpg";
-        final StorageReference ref= FirebaseStorage.getInstance().getReference().child(DBConst.SecureData);
-        final UploadTask task=ref.child(BirthCertificateImageName).putBytes(bytes1);
+        final StorageReference ref= FirebaseStorage.getInstance().getReference().child(DBConst.SecureData).child(BirthCertificateImageName);
+        final UploadTask task=ref.putBytes(bytes1);
         Task<Uri> uriTask=task.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
             @Override
             public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
@@ -279,11 +280,12 @@ public class EditPatientSecureInfoActivity extends AppCompatActivity implements 
             }
         });
         String AnotherDocumentImageName=UID+"AnotherDocument"+".jpg";
-        UploadTask task1=ref.child(AnotherDocumentImageName).putBytes(bytes2);
+        final StorageReference ref1= FirebaseStorage.getInstance().getReference().child(DBConst.SecureData).child(AnotherDocumentImageName);
+        UploadTask task1=ref1.putBytes(bytes2);
         Task<Uri> uriTask1=task1.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
             @Override
             public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-                return ref.getDownloadUrl();
+                return ref1.getDownloadUrl();
             }
         }).addOnCompleteListener(new OnCompleteListener<Uri>() {
             @Override
@@ -312,33 +314,29 @@ public class EditPatientSecureInfoActivity extends AppCompatActivity implements 
     private void SaveDataIntoFirebase(final boolean MultipleCheck)
     {
         final DatabaseReference AccountRef=FirebaseDatabase.getInstance().getReference().child(DBConst.Account).child(DBConst.Patient).child(FirebaseAuth.getInstance().getCurrentUser().getUid());
-        final HashMap<String,Object> hashMap=new HashMap<>();
-        hashMap.put(DBConst.BirthCertificateNo,BnEt.getText().toString());
-        hashMap.put(DBConst.BirthCertificateImageUrl,ImageUrl1);
-        hashMap.put(DBConst.AnotherDocumentImageUrl,ImageUrl2);
-        AccountRef.setValue(hashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+        AccountRef.child(DBConst.BirthCertificateNo).setValue(BnEt.getText().toString());
+        AccountRef.child(DBConst.BirthCertificateImageUrl).setValue(ImageUrl1);
+        AccountRef.child(DBConst.AnotherDocumentImageUrl).setValue(ImageUrl2).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task)
                     {
                         if (task.isComplete())
                         {
                             DatabaseReference BCMRef=FirebaseDatabase.getInstance().getReference().child(DBConst.AccountMultiplicity).child(DBConst.Patient).child(BnEt.getText().toString());
-                            hashMap.clear();
-                            hashMap.put(DBConst.MultipleCheck,MultipleCheck);
-                            hashMap.put(UID,"");
-                            BCMRef.setValue(hashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+                            BCMRef.child(DBConst.MultipleCheck).setValue(MultipleCheck);
+                            BCMRef.child(UID).setValue("")
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task)
                                         {
                                             if (task.isComplete())
                                             {
                                                 DatabaseReference AccountStatusRef=FirebaseDatabase.getInstance().getReference().child(DBConst.AccountStatus).child(FirebaseAuth.getInstance().getCurrentUser().getUid());
-                                                hashMap.clear();
-                                                hashMap.put(DBConst.AccountType,DBConst.Patient);
-                                                hashMap.put(DBConst.AccountValidity,true);
-                                                hashMap.put(DBConst.AccountCompletion,true);
-                                                hashMap.put(DBConst.AuthorityValidity,false);
-                                                AccountStatusRef.setValue(hashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                AccountStatusRef.child(DBConst.AccountType).setValue(DBConst.Patient);
+                                                AccountStatusRef.child(DBConst.AccountCompletion).setValue(true);
+                                                AccountStatusRef.child(DBConst.AccountValidity).setValue(true);
+                                                AccountStatusRef.child(DBConst.AuthorityValidity).setValue(false)
+                                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
                                                             @Override
                                                             public void onComplete(@NonNull Task<Void> task)
                                                             {

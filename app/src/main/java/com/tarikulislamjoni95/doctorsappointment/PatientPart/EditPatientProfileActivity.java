@@ -62,7 +62,7 @@ public class EditPatientProfileActivity extends AppCompatActivity implements Vie
     private MyImageGettingClass myImageGettingClass;
 
     //Primitive Variable
-    private String ProfileImageUrl,FullName,FatherName,MotherName,PhoneNumber;
+    private String ProfileImageUrl,FullName,FatherName,MotherName,PhoneNumber,BirthCertificateString="",BirthCertificateImageUrl="",AnotherImageUrl="";
     private String DateOfBith,Gender,BloodGroup,CurrentAddress;
     private int VALIDATION_GREEN;
     private String AddressLatitude;
@@ -227,7 +227,7 @@ public class EditPatientProfileActivity extends AppCompatActivity implements Vie
             FatherName=ProfileFatherNameEt.getText().toString();
             MotherName=ProfileMotherNameEt.getText().toString();
             PhoneNumber=ProfileContactNumberEt.getText().toString();
-            DateOfBith=ProfileBirthDateEt.getText().toString()+"/"+ProfileBirthMonthEt.getText().toString()+"/"+ProfileBirthYearEt.getText().toString();
+            DateOfBith=ProfileBirthDateEt.getText().toString()+"-"+ProfileBirthMonthEt.getText().toString()+"-"+ProfileBirthYearEt.getText().toString();
             if (Gender==null)
             {
                 Gender="Male";
@@ -301,6 +301,9 @@ public class EditPatientProfileActivity extends AppCompatActivity implements Vie
         hashMap.put(DBConst.Gender,Gender);
         hashMap.put(DBConst.BloodGroup,BloodGroup);
         hashMap.put(DBConst.Address,CurrentAddress);
+        hashMap.put(DBConst.BirthCertificateNo,BirthCertificateString);
+        hashMap.put(DBConst.BirthCertificateImageUrl,BirthCertificateImageUrl);
+        hashMap.put(DBConst.AnotherDocumentImageUrl,AnotherImageUrl);
         hashMap.put(DBConst.BirthDate,DateOfBith);
         hashMap.put(DBConst.AddressLatitude,AddressLatitude);
         hashMap.put(DBConst.AddressLongitude,AddressLongitude);
@@ -398,8 +401,12 @@ public class EditPatientProfileActivity extends AppCompatActivity implements Vie
             {
                 if (dataSnapshot.exists())
                 {
+                    BirthCertificateString=dataSnapshot.child(DBConst.BirthCertificateNo).getValue().toString();
+                    BirthCertificateImageUrl=dataSnapshot.child(DBConst.BirthCertificateImageUrl).getValue().toString();
+                    AnotherImageUrl=dataSnapshot.child(DBConst.AnotherDocumentImageUrl).getValue().toString();
                     if(!dataSnapshot.child(DBConst.Image).getValue().toString().matches("null"))
                     {
+                        ProfileImageCIV.setEnabled(true);
                         Picasso.get().load(dataSnapshot.child(DBConst.Image).getValue().toString()).into(ProfileImageCIV);
                     }
                     ProfileFullNameEt.setText(dataSnapshot.child(DBConst.Name).getValue().toString());

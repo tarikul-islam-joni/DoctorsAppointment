@@ -34,7 +34,7 @@
         <activity android:name=".PatientPart.EditPatientProfileActivity"/>
         <activity android:name=".PatientPart.EditPatientSecureInfoActivity"/>
         <activity android:name=".PatientPart.PatientProfileView"/>
-        <activity android:name=".PatientPart.PatientAppointmentHistoryActivity"/>
+        <activity android:name=".PatientPart.MyAppointmentListActivity"/>
 
 
         <activity
@@ -54,7 +54,7 @@
 
         <activity android:name=".PatientPart.DoctorProfileVisitActivity" />
         <activity android:name=".DoctorPart.DoctorProfileViewActivity" />
-        <activity android:name=".PatientPart.PatientListActivity" />
+        <activity android:name=".DoctorPart.PatientListActivity" />
         <activity android:name=".MyGoogleMapClass.SearchHospitalOnMap" />
         <activity android:name=".AdminPart.AdminPanelMainActivity" />
         <activity android:name=".AdminPart.MultiplePatientValidityListViewActivity" />

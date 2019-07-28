@@ -23,7 +23,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.DBConst;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.MyLoadingDailog;
-import com.tarikulislamjoni95.doctorsappointment.PatientPart.PatientListActivity;
 import com.tarikulislamjoni95.doctorsappointment.R;
 
 import java.util.ArrayList;

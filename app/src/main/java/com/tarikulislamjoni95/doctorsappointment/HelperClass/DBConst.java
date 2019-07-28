@@ -52,6 +52,9 @@ public class DBConst
     public static final String UnavaiableEDate="UnavaiableEDate";
     public static final String AppointmentFee="AppointmentFee";
 
+    //Hospital Db
+    public static final String HospitalList="HospitalList";
+
     //Storage
     public static final String ProfileImages="ProfileImages";
     public static final String SecureData="SecureData";
@@ -65,4 +68,6 @@ public class DBConst
     public static final String ConfirmAppointment="ConfirmAppointment";
     public static final String AppointmentCreateDate="AppointmentCreateDate";
     public static final String PatientList="PatientList";
+
+    public static final String CurrentTime="CurrentTime";
 }

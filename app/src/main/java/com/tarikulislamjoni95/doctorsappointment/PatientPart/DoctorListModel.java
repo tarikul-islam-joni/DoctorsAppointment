@@ -1,26 +1,31 @@
 package com.tarikulislamjoni95.doctorsappointment.PatientPart;
 
-public class ShowAllDoctorModel
+public class DoctorListModel
 {
     private String BMDCRegNo;
     private String Degree;
     private String NoOfPracYear;
     private String Title;
+    private String Name;
     private String Image;
     private String AvailableArea;
     private String StudiedCollege;
-    private String Name;
     private String Category;
 
-    public ShowAllDoctorModel() {
-    }
+    public DoctorListModel()
+    {
 
-    public String getCategory() {
-        return Category;
     }
-
-    public void setCategory(String category) {
+    public DoctorListModel(String BMDCRegNo, String degree, String noOfPracYear, String title, String name, String image, String availableArea, String studiedCollege, String category) {
+        this.BMDCRegNo = BMDCRegNo;
+        Degree = degree;
+        NoOfPracYear = noOfPracYear;
+        Title = title;
+        Image = image;
+        AvailableArea = availableArea;
+        StudiedCollege = studiedCollege;
         Category = category;
+        Name = name;
     }
 
     public String getBMDCRegNo() {
@@ -79,22 +84,19 @@ public class ShowAllDoctorModel
         StudiedCollege = studiedCollege;
     }
 
+    public String getCategory() {
+        return Category;
+    }
+
+    public void setCategory(String category) {
+        Category = category;
+    }
+
     public String getName() {
         return Name;
     }
 
     public void setName(String name) {
-        Name = name;
-    }
-
-    public ShowAllDoctorModel(String BMDCRegNo, String degree, String noOfPracYear, String title, String image, String availableArea, String studiedCollege, String name) {
-        this.BMDCRegNo = BMDCRegNo;
-        Degree = degree;
-        NoOfPracYear = noOfPracYear;
-        Title = title;
-        Image = image;
-        AvailableArea = availableArea;
-        StudiedCollege = studiedCollege;
         Name = name;
     }
 }

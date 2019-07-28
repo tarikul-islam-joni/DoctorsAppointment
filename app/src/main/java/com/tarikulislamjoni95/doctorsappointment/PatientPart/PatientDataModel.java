@@ -1,37 +1,27 @@
-package com.tarikulislamjoni95.doctorsappointment.DoctorPart;
+package com.tarikulislamjoni95.doctorsappointment.PatientPart;
 
-public class DataModel
+public class PatientDataModel
 {
     String From;
-    String Name;
     String UID;
+    String Name;
     String HospitalName;
     String AppointmentDate;
     String AppointmentTime;
+    String AppointmentValidity;
     String AppointmentFee;
-    String AppointmentValidityTime;
 
-    public DataModel()
-    {
 
-    }
-
-    public DataModel(String name, String hospitalName, String appointmentDate, String appointmentTime) {
-        Name = name;
-        HospitalName = hospitalName;
-        AppointmentDate = appointmentDate;
-        AppointmentTime = appointmentTime;
-    }
-
-    public DataModel(String From, String UID, String name, String hospitalName, String appointmentDate, String appointmentTime, String appointmentFee, String ValidityTime) {
+    //Constructor for show appointment list
+    public PatientDataModel(String From, String UID, String name, String hospitalName, String appointmentDate, String appointmentTime, String appointmentValidity, String appointmentFee) {
         this.From=From;
-        Name = name;
         this.UID = UID;
+        Name = name;
         HospitalName = hospitalName;
         AppointmentDate = appointmentDate;
         AppointmentTime = appointmentTime;
+        AppointmentValidity = appointmentValidity;
         AppointmentFee = appointmentFee;
-        AppointmentValidityTime=ValidityTime;
     }
 
     public String getFrom() {
@@ -42,20 +32,20 @@ public class DataModel
         From = from;
     }
 
-    public String getName() {
-        return Name;
-    }
-
-    public void setName(String name) {
-        Name = name;
-    }
-
     public String getUID() {
         return UID;
     }
 
     public void setUID(String UID) {
         this.UID = UID;
+    }
+
+    public String getName() {
+        return Name;
+    }
+
+    public void setName(String name) {
+        Name = name;
     }
 
     public String getHospitalName() {
@@ -82,19 +72,19 @@ public class DataModel
         AppointmentTime = appointmentTime;
     }
 
+    public String getAppointmentValidity() {
+        return AppointmentValidity;
+    }
+
+    public void setAppointmentValidity(String appointmentValidity) {
+        AppointmentValidity = appointmentValidity;
+    }
+
     public String getAppointmentFee() {
         return AppointmentFee;
     }
 
     public void setAppointmentFee(String appointmentFee) {
         AppointmentFee = appointmentFee;
-    }
-
-    public String getAppointmentValidityTime() {
-        return AppointmentValidityTime;
-    }
-
-    public void setAppointmentValidityTime(String appointmentValidityTime) {
-        AppointmentValidityTime = appointmentValidityTime;
     }
 }

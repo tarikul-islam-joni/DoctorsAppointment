@@ -5,13 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <TextView
+        android:visibility="gone"
+        android:id="@+id/no_appointment_status_tv"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="35sp"
-        android:text="Patient List"
-        android:gravity="center"
-        android:background="@color/colorPrimary"
-        android:textColor="#FFFFFF"/>
+        android:layout_height="match_parent" />
     <ListView
         android:id="@+id/list_view"
         android:layout_width="match_parent"

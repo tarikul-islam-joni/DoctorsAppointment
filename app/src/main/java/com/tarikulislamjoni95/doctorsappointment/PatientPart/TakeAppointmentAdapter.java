@@ -33,20 +33,22 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
-public class AppointmentListAdapter extends ArrayAdapter<AppointmentListModel> implements View.OnClickListener
+public class TakeAppointmentAdapter extends ArrayAdapter<AppointmentListModel> implements View.OnClickListener
 {
-    private String FromWhich;
+    private int[] Starting_Date=new int[3];
+    private int[] Ending_Date=new int[3];
+    private String[] AvailableDay;
+
     private AlertDialog dialog;
     private DatePickerDialog datePickerDialog;
     private Activity activity;
     private ArrayList<AppointmentListModel> arrayList;
     private AppointmentListModel dataModel;
-    public AppointmentListAdapter(Activity activity, ArrayList<AppointmentListModel> arrayList)
+    public TakeAppointmentAdapter(Activity activity, ArrayList<AppointmentListModel> arrayList)
     {
         super(activity, R.layout.model_take_appointment, arrayList);
         this.activity=activity;
         this.arrayList=arrayList;
-        this.FromWhich=FromWhich;
     }
 
     class ViewHolder
@@ -139,82 +141,49 @@ public class AppointmentListAdapter extends ArrayAdapter<AppointmentListModel> i
 
     private void ShowPossibility(String Day,int date,int month,int year) {
         String AvailableDayString=dataModel.getAvailableDay();
-        ArrayList<String> AvailableDay=new ArrayList<>();
-        StringBuilder stringBuilder=new StringBuilder();
-        for(int i=0; i<AvailableDayString.length(); i++)
-        {
-            if (AvailableDayString.charAt(i)==',')
-            {
-                AvailableDay.add(stringBuilder.toString());
-                stringBuilder=new StringBuilder();
-            }
-            else
-            {
-                stringBuilder.append(AvailableDayString.charAt(i));
-            }
-        }
-        AvailableDay.add(stringBuilder.toString());
+        AvailableDay=AvailableDayString.split(",",0);
         boolean isAvailableDay=false;
-        for(int i=0; i<AvailableDay.size(); i++)
+        for(int i=0; i<AvailableDay.length; i++)
         {
-            Log.d("myError","Current Day : "+Day+" Available Day"+AvailableDay.get(i));
-            if (AvailableDay.get(i).matches(Day))
+            if (AvailableDay[i].matches(Day))
             {
-                Log.d("myError","Current Day matched : "+Day+" Available Day"+AvailableDay.get(i));
                 isAvailableDay=true;
             }
         }
+
         String Start = dataModel.getAppointmentOffStart();
         String End = dataModel.getAppointmentOffEnd();
-        ArrayList<Integer> Starting_date = new ArrayList<>();
-        ArrayList<Integer> Ending_date = new ArrayList<>();
-        int temp = 0;
-        for (int i = 0; i < Start.length(); i++) {
-            if (Start.charAt(i) == '/') {
-                Starting_date.add(temp);
-                temp = 0;
-            } else {
-                char abcd = Start.charAt(i);
-                int aaa = Character.getNumericValue(abcd);
-                temp = temp * 10 + aaa;
-            }
+        String[] Starting_date=Start.split("-",0);
+        String[] Ending_date=End.split("-",0);
+        for (int i=0; i<Starting_date.length; i++)
+        {
+            Starting_Date[i]=(int)Integer.parseInt(Starting_date[i]);
+            Ending_Date[i]=(int)Integer.parseInt(Ending_date[i]);
         }
-        Starting_date.add(temp);
-        temp = 0;
-        for (int i = 0; i < End.length(); i++) {
-            if (End.charAt(i) == '/') {
-                Ending_date.add(temp);
-                temp = 0;
-            } else {
-                char abcd = End.charAt(i);
-                int aaa = Character.getNumericValue(abcd);
-                temp = temp * 10 + aaa;
-            }
-        }
-        Ending_date.add(temp);
+
         if (isAvailableDay)
         {
-            if (year>Starting_date.get(2)&&year<Ending_date.get(2))
+            if (year>Starting_Date[2] && Ending_Date[2]<year)
             {
                 ShowConfirmDialog(false,date,month,year);
             }
-            else if(month>Starting_date.get(1)&&month<Ending_date.get(1))
+            else if(month>Starting_Date[1] && month<Ending_Date[1])
             {
                 ShowConfirmDialog(false,date,month,year);
             }
-            else if (month<Starting_date.get(1)&&month<Ending_date.get(1))
+            else if (month<Starting_Date[1]&&month<Ending_Date[1])
             {
                 ShowConfirmDialog(true,date,month,year);
             }
-            else if (month>Starting_date.get(1)&&month>Ending_date.get(1))
+            else if (month>Starting_Date[1]&&month>Ending_Date[1])
             {
                 ShowConfirmDialog(true,date,month,year);
             }
-            else if (month==Starting_date.get(1) && date<Starting_date.get(0))
+            else if (month==Starting_Date[1] && date<Starting_Date[1])
             {
                 ShowConfirmDialog(true,date,month,year);
             }
-            else if (month==Ending_date.get(1) && date>Ending_date.get(0))
+            else if (month==Ending_Date[1] && date>Ending_Date[0])
             {
                 ShowConfirmDialog(true,date,month,year);
             }
@@ -234,7 +203,7 @@ public class AppointmentListAdapter extends ArrayAdapter<AppointmentListModel> i
         if (Check)
         {
             builder.setTitle("Confirm Appointment");
-            builder.setMessage("Confirm your appointment in "+date+"/"+month+"/"+year+" at "+dataModel.getAppointmentTime());
+            builder.setMessage("Confirm your appointment in "+date+"-"+month+"-"+year+" at "+dataModel.getAppointmentTime());
             builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
@@ -289,7 +258,7 @@ public class AppointmentListAdapter extends ArrayAdapter<AppointmentListModel> i
                 dialog.dismiss();
                 if (task.isSuccessful())
                 {
-                    Intent intent=new Intent(activity, PatientProfileView.class);
+                    Intent intent=new Intent(activity, PatientMainActivity.class);
                     activity.startActivity(intent);
                 }
                 else

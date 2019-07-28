@@ -262,12 +262,12 @@ public class EditDoctorAppointmentInfoActivity extends AppCompatActivity impleme
             public void onDateSet(DatePicker datePicker, int year, int monthofyear, int dayofmonth) {
                 if (Which.matches("Starting"))
                 {
-                    StartingDateTv.setText(dayofmonth+"/"+(monthofyear+1)+"/"+year);
-                    EndingDateTv.setText(dayofmonth+"/"+(monthofyear+1)+"/"+year);
+                    StartingDateTv.setText(dayofmonth+"-"+(monthofyear+1)+"-"+year);
+                    EndingDateTv.setText(dayofmonth+"-"+(monthofyear+1)+"-"+year);
                 }
                 if (Which.matches("Ending"))
                 {
-                    EndingDateTv.setText(dayofmonth+"/"+(monthofyear+1)+"/"+year);
+                    EndingDateTv.setText(dayofmonth+"-"+(monthofyear+1)+"-"+year);
                 }
             }
         },year,month,day);
@@ -373,8 +373,8 @@ public class EditDoctorAppointmentInfoActivity extends AppCompatActivity impleme
     }
     private void SaveIntoHospitalDirectory()
     {
-        DatabaseReference reference=FirebaseDatabase.getInstance().getReference().child(DBConst.HospitalName).child(HospitalNameEt.getText().toString());
-        reference.child(UID).setValue(CategoryString).addOnCompleteListener(new OnCompleteListener<Void>() {
+        DatabaseReference reference=FirebaseDatabase.getInstance().getReference().child(DBConst.HospitalList).child(HospitalNameEt.getText().toString());
+        reference.child(UID).setValue(CategoryStringBuilder.toString()).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task)
             {

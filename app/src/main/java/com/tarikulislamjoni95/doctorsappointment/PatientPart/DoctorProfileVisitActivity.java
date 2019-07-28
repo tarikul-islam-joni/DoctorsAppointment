@@ -26,7 +26,8 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class DoctorProfileVisitActivity extends AppCompatActivity
 {
-    private AppointmentListAdapter adapter;
+    private ArrayList<String> UserArrayList;
+    private TakeAppointmentAdapter adapter;
     private ArrayList<AppointmentListModel> arrayList;
 
     private Activity activity;
@@ -36,7 +37,7 @@ public class DoctorProfileVisitActivity extends AppCompatActivity
 
     private AlertDialog dialog;
 
-    private TextView NameTv,BMDCRegTv,StudiedTv,NoOfYearPracTv,SpecialityTv;
+    private TextView NameTv,BMDCRegTv,StudiedTv,NoOfYearPracTv,SpecialityTv,DegreeCompletedTv,AvailableAreaTv;
     private CircleImageView ImageCiv;
     private ListView AppointmentListView;
     @Override
@@ -46,8 +47,6 @@ public class DoctorProfileVisitActivity extends AppCompatActivity
         Initialization();
         InitializationUI();
         InitializationClass();
-
-
         AppointmentListView.setAdapter(adapter);
     }
 
@@ -55,11 +54,14 @@ public class DoctorProfileVisitActivity extends AppCompatActivity
     protected void onStart() {
         super.onStart();
         ShowDataIfAvailable();
+        ShowAppointmentList();
     }
 
     private void Initialization()
     {
-        UID=getIntent().getStringExtra(DBConst.UID);
+        UserArrayList=new ArrayList<>();
+        UserArrayList=getIntent().getStringArrayListExtra(DBConst.Doctor);
+        UID=UserArrayList.get(0);
         activity= DoctorProfileVisitActivity.this;
         arrayList=new ArrayList<>();
 
@@ -72,40 +74,27 @@ public class DoctorProfileVisitActivity extends AppCompatActivity
         NoOfYearPracTv=findViewById(R.id.no_of_prac_tv);
         SpecialityTv=findViewById(R.id.speciality_tv);
         ImageCiv=findViewById(R.id.image_civ);
-        AppointmentListView=findViewById(R.id.list_view_1);
+        AvailableAreaTv=findViewById(R.id.available_area_tv);
+        DegreeCompletedTv=findViewById(R.id.degree_completed_tv);
+        AppointmentListView=findViewById(R.id.list_view);
     }
     private void InitializationClass()
     {
-        adapter=new AppointmentListAdapter(activity,arrayList);
+        adapter=new TakeAppointmentAdapter(activity,arrayList);
     }
     private void ShowDataIfAvailable()
     {
-        DatabaseReference ref= FirebaseDatabase.getInstance().getReference().child(DBConst.Account).child(DBConst.Doctor).child(UID);
-        ref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot)
-            {
-                if (dataSnapshot.exists())
-                {
-                    NameTv.setText(dataSnapshot.child(DBConst.Name).getValue().toString());
-                    BMDCRegTv.setText(dataSnapshot.child(DBConst.BMDCRegNo).getValue().toString());
-                    StudiedTv.setText(dataSnapshot.child(DBConst.StudiedCollege).getValue().toString());
-                    SpecialityTv.setText(dataSnapshot.child(DBConst.Category).getValue().toString());
-                    if (!dataSnapshot.child(DBConst.Image).getValue().toString().matches("null"))
-                    {
-                        Picasso.get().load(dataSnapshot.child(DBConst.Image).getValue().toString()).into(ImageCiv);
-                    }
-                    ShowAppointmentList();
-
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError)
-            {
-
-            }
-        });
+        if (!UserArrayList.get(1).matches("null"))
+        {
+            Picasso.get().load(UserArrayList.get(1)).into(ImageCiv);
+        }
+        NameTv.setText(UserArrayList.get(2)+UserArrayList.get(3));
+        StudiedTv.setText(UserArrayList.get(4));
+        DegreeCompletedTv.setText(UserArrayList.get(5));
+        BMDCRegTv.setText(UserArrayList.get(6));
+        NoOfYearPracTv.setText(UserArrayList.get(7));
+        SpecialityTv.setText(UserArrayList.get(8));
+        AvailableAreaTv.setText(UserArrayList.get(9));
     }
 
     private void ShowAppointmentList()

@@ -17,6 +17,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import android.view.MenuItem;
 
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -25,23 +26,32 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 import com.tarikulislamjoni95.doctorsappointment.AccountPart.SignInActivity;
+import com.tarikulislamjoni95.doctorsappointment.AdminPart.AdminPanelMainActivity;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.DBConst;
+import com.tarikulislamjoni95.doctorsappointment.PatientPart.EditPatientProfileActivity;
 import com.tarikulislamjoni95.doctorsappointment.R;
 
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.viewpager.widget.ViewPager;
 
 import android.view.Menu;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.sql.RowId;
 import java.util.ArrayList;
 
 public class DoctorMainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
+
+    private DoctorMainActivityViewPagerAdapter adapter;
+    private TabLayout tabLayout;
+    private ViewPager viewPager;
 
     private String UID;
     private ArrayList<String> UserInformation;
@@ -49,6 +59,7 @@ public class DoctorMainActivity extends AppCompatActivity
     private Activity activity;
     private Intent intent;
 
+    private Button SignOutBtn;
     private ImageView ProfileImageCiv;
     private TextView ProfileNameTv,ContactNumberTv;
     @Override
@@ -70,7 +81,14 @@ public class DoctorMainActivity extends AppCompatActivity
     }
     private void InitializationUI()
     {
+        SignOutBtn=findViewById(R.id.signout_btn);
+        SignOutBtn.setOnClickListener(this);
+        tabLayout=findViewById(R.id.tab_layout);
+        viewPager=findViewById(R.id.view_pager);
 
+        adapter=new DoctorMainActivityViewPagerAdapter(getSupportFragmentManager());
+        viewPager.setAdapter(adapter);
+        tabLayout.setupWithViewPager(viewPager);
     }
     private void InitializationClass()
     {
@@ -148,6 +166,8 @@ public class DoctorMainActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_settings) {
+            intent=new Intent(activity, AdminPanelMainActivity.class);
+            startActivity(intent);
             return true;
         }
 
@@ -158,18 +178,15 @@ public class DoctorMainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_home) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_tools) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
+        if (id== R.id.edit_profile_btn)
+        {
+            intent=new Intent(activity, EditDoctorProfileActivity.class);
+            startActivity(intent);
+        }
+        else if (id==R.id.edit_appointment_info)
+        {
+            intent=new Intent(activity,EditDoctorAppointmentInfoActivity.class);
+            startActivity(intent);
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);

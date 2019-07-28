@@ -144,16 +144,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Edit Profile"/>
-        <Button
-            android:id="@+id/patient_appointment_history_btn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Appointment History"/>
-        <Button
-            android:id="@+id/patient_stored_history_btn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Your Stored Medical History"/>
     </LinearLayout>
 
 </ScrollView>

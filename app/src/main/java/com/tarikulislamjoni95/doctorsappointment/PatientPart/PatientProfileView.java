@@ -7,19 +7,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.DBConst;
-import com.tarikulislamjoni95.doctorsappointment.HelperClass.MyLoadingDailog;
 import com.tarikulislamjoni95.doctorsappointment.R;
 
 import java.util.ArrayList;
@@ -35,7 +27,7 @@ public class PatientProfileView extends AppCompatActivity implements View.OnClic
 
     private TextView PatientNameTv,PatientFatherNameTv,PatientMotherNameTv,PatientGenderTv,PatientDatOfBirthTv,PatientAddressTv,PatientBloodGroupTv;
     private TextView PatientBirthNoTv,PatientContactNoTv;
-    private Button PatientProfileEditBtn,PatientAppointmentHistory,PatientStoredHistoryBtn;
+    private Button PatientProfileEditBtn;
     CircleImageView PatientImageCIV;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -70,10 +62,6 @@ public class PatientProfileView extends AppCompatActivity implements View.OnClic
 
         PatientProfileEditBtn=findViewById(R.id.patient_profile_edit_btn);
         PatientProfileEditBtn.setOnClickListener(this);
-        PatientAppointmentHistory=findViewById(R.id.patient_appointment_history_btn);
-        PatientAppointmentHistory.setOnClickListener(this);
-        PatientStoredHistoryBtn=findViewById(R.id.patient_stored_history_btn);
-        PatientStoredHistoryBtn.setOnClickListener(this);
     }
 
     @Override
@@ -84,9 +72,6 @@ public class PatientProfileView extends AppCompatActivity implements View.OnClic
             case R.id.patient_profile_edit_btn:
                 PatientProfileEditMethod();
                 break;
-            case R.id.patient_appointment_history_btn:
-                PatientAppointmentHistoryMethod();
-                break;
         }
     }
     private void PatientProfileEditMethod()
@@ -96,7 +81,7 @@ public class PatientProfileView extends AppCompatActivity implements View.OnClic
     }
     private void PatientAppointmentHistoryMethod()
     {
-        intent=new Intent(activity, PatientAppointmentHistoryActivity.class);
+        intent=new Intent(activity, MyAppointmentListActivity.class);
         startActivity(intent);
     }
     private void LoadData()

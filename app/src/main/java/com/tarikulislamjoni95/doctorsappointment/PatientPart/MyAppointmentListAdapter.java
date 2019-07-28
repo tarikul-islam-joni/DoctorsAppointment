@@ -15,9 +15,11 @@ import androidx.annotation.NonNull;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.tarikulislamjoni95.doctorsappointment.DoctorPart.DataModel;
+import com.google.firebase.database.ValueEventListener;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.DBConst;
 import com.tarikulislamjoni95.doctorsappointment.R;
 
@@ -25,14 +27,14 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 
-public class PatientAppointmentHistoryAdapter extends ArrayAdapter<DataModel> implements View.OnClickListener
+public class MyAppointmentListAdapter extends ArrayAdapter<PatientDataModel> implements View.OnClickListener
 {
-    private DataModel dataModel;
+    private PatientDataModel dataModel;
     private Activity activity;
-    private ArrayList<DataModel> arrayList;
-    public PatientAppointmentHistoryAdapter(Activity activity, ArrayList<DataModel> arrayList)
+    private ArrayList<PatientDataModel> arrayList;
+    public MyAppointmentListAdapter(Activity activity, ArrayList<PatientDataModel> arrayList)
     {
-        super(activity, R.layout.model_patient_appointment_history,arrayList);
+        super(activity, R.layout.model_my_appointment_list,arrayList);
         this.activity=activity;
         this.arrayList=arrayList;
     }
@@ -44,7 +46,7 @@ public class PatientAppointmentHistoryAdapter extends ArrayAdapter<DataModel> im
         int date=calendar.get(Calendar.DAY_OF_MONTH);
         int month=calendar.get(Calendar.MONTH)+1;
         int year=calendar.get(Calendar.YEAR);
-        String CurrentDate=date+"/"+month+"/"+year;
+        String CurrentDate=date+"-"+month+"-"+year;
         int position=(Integer) view.getTag();
         dataModel=getItem(position);
         switch (view.getId())
@@ -83,27 +85,40 @@ public class PatientAppointmentHistoryAdapter extends ArrayAdapter<DataModel> im
 
     private void SaveIntoDoctorDB()
     {
-        HashMap<String,String> hashMap=new HashMap<>();
-        DatabaseReference ref=FirebaseDatabase.getInstance().getReference().child(DBConst.PatientList).child(dataModel.getUID()).child(dataModel.getAppointmentDate()).child(dataModel.getHospitalName()).child(FirebaseAuth.getInstance().getCurrentUser().getUid());
-        hashMap.put(DBConst.Name,dataModel.getName());
-        hashMap.put(DBConst.HospitalName,dataModel.getHospitalName());
-        hashMap.put(DBConst.AppointmentTime,dataModel.getAppointmentTime());
-        ref.setValue(hashMap)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task)
-                    {
-                        if (task.isSuccessful())
-                        {
-                            RemoveFromTemporary();
-                            Log.d("myError","Successfull");
-                        }
-                        else
-                        {
-                            Log.d("myError","UnSuccessfull");
-                        }
-                    }
-                });
+        DatabaseReference reference=FirebaseDatabase.getInstance().getReference().child(DBConst.Account).child(DBConst.Patient).child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot)
+            {
+                HashMap<String,String> hashMap=new HashMap<>();
+                DatabaseReference ref=FirebaseDatabase.getInstance().getReference().child(DBConst.PatientList).child(dataModel.getUID()).child(dataModel.getAppointmentDate()).child(dataModel.getHospitalName()).child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                hashMap.put(DBConst.Name,dataSnapshot.child(DBConst.Name).getValue().toString());
+                hashMap.put(DBConst.ContactNo,dataSnapshot.child(DBConst.ContactNo).getValue().toString());
+                hashMap.put(DBConst.HospitalName,dataModel.getHospitalName());
+                hashMap.put(DBConst.AppointmentTime,dataModel.getAppointmentTime());
+                ref.setValue(hashMap)
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task)
+                            {
+                                if (task.isSuccessful())
+                                {
+                                    RemoveFromTemporary();
+                                    Log.d("myError","Successfull");
+                                }
+                                else
+                                {
+                                    Log.d("myError","UnSuccessfull");
+                                }
+                            }
+                        });
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
     }
 
@@ -128,7 +143,7 @@ public class PatientAppointmentHistoryAdapter extends ArrayAdapter<DataModel> im
     class ViewHolder
     {
         TextView NameTv,AppointmentDateTv,AppointmentTimeTv,AppointmentFeeTv,HospitaNameTv,AppointmentValidityTv;
-        Button PayBtn;
+        Button StatusBtn;
     }
     ViewHolder viewHolder;
     @Override
@@ -136,37 +151,49 @@ public class PatientAppointmentHistoryAdapter extends ArrayAdapter<DataModel> im
         dataModel=arrayList.get(position);
         viewHolder=new ViewHolder();
         LayoutInflater inflater=activity.getLayoutInflater();
-        convertView=inflater.inflate(R.layout.model_patient_appointment_history,parent,false);
+        convertView=inflater.inflate(R.layout.model_my_appointment_list,parent,false);
         viewHolder.NameTv=convertView.findViewById(R.id.name_tv);
         viewHolder.HospitaNameTv=convertView.findViewById(R.id.hospital_name_tv);
         viewHolder.AppointmentDateTv=convertView.findViewById(R.id.appointment_date_tv);
         viewHolder.AppointmentTimeTv=convertView.findViewById(R.id.appointment_time_tv);
         viewHolder.AppointmentFeeTv=convertView.findViewById(R.id.appointment_fee_tv);
         viewHolder.AppointmentValidityTv=convertView.findViewById(R.id.appointment_remaining_status);
-        viewHolder.PayBtn=convertView.findViewById(R.id.pay_btn);
-        viewHolder.PayBtn.setOnClickListener(this);
+        viewHolder.StatusBtn=convertView.findViewById(R.id.pay_btn);
+        viewHolder.StatusBtn.setOnClickListener(this);
 
-        if (dataModel.getFrom().matches("1"))
+        switch (dataModel.getFrom())
         {
-            viewHolder.PayBtn.setTag(position);
-            viewHolder.AppointmentDateTv.setText("Appointment Date : "+dataModel.getAppointmentDate());
-            viewHolder.AppointmentValidityTv.setText("Remaining : "+dataModel.getAppointmentValidityTime());
-        }
-        else
-        {
-            viewHolder.AppointmentValidityTv.setText("Appointment Date : "+dataModel.getAppointmentValidityTime());
-            viewHolder.AppointmentDateTv.setText("Appointment Created Date : "+dataModel.getAppointmentDate());
-            viewHolder.PayBtn.setBackgroundColor(activity.getResources().getColor(R.color.colorGreen));
-            viewHolder.PayBtn.setText("Confirmed");
-            viewHolder.PayBtn.setEnabled(false);
+            case "0":
+                //Temporary Appointment Fragment
+                viewHolder.StatusBtn.setEnabled(true);
+                viewHolder.StatusBtn.setText("Pay Now");
+                viewHolder.StatusBtn.setBackgroundColor(activity.getResources().getColor(R.color.colorWhite));
+                viewHolder.StatusBtn.setTag(position);
+                viewHolder.AppointmentDateTv.setText("Appointment Date : "+dataModel.getAppointmentDate());
+                viewHolder.AppointmentValidityTv.setText("Remaining : "+dataModel.getAppointmentValidity());
+                break;
+            case "1":
+                //Current Appointment Fragment
+                viewHolder.StatusBtn.setEnabled(false);
+                viewHolder.StatusBtn.setText("Paid");
+                viewHolder.StatusBtn.setBackgroundColor(activity.getResources().getColor(R.color.colorPrimary));
+                viewHolder.AppointmentDateTv.setText("Appointment Date : "+dataModel.getAppointmentDate());
+                viewHolder.AppointmentValidityTv.setText("Appointment Created Date : "+dataModel.getAppointmentValidity());
+                break;
+            case "2":
+                //Past Appointment Fragment
+                viewHolder.StatusBtn.setEnabled(false);
+                viewHolder.StatusBtn.setText("Confirmed");
+                viewHolder.StatusBtn.setBackgroundColor(activity.getResources().getColor(R.color.colorRed));
+                viewHolder.AppointmentDateTv.setText("Appointment Date : "+dataModel.getAppointmentDate());
+                viewHolder.AppointmentValidityTv.setText("Appointment Created Date : "+dataModel.getAppointmentValidity());
+                break;
         }
 
         viewHolder.NameTv.setText("Doctor Name : "+dataModel.getName());
         viewHolder.HospitaNameTv.setText("Hospital Name : "+dataModel.getHospitalName());
         viewHolder.AppointmentTimeTv.setText("Appointment Time : "+dataModel.getAppointmentTime());
         viewHolder.AppointmentFeeTv.setText("Fee : "+dataModel.getAppointmentFee());
-
-
         return convertView;
     }
 }
