@@ -9,28 +9,41 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/doctor_profile_iv"
+        <androidx.cardview.widget.CardView
+            android:layout_gravity="center"
             android:layout_width="200dp"
-            android:layout_height="200dp"
-            android:src="@drawable/male_doc"
-            android:layout_gravity="center"/>
-        <Button
-            android:id="@+id/doctor_profile_upload_btn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Upload"/>
+            android:layout_height="200dp">
+
+            <ImageView
+                android:id="@+id/doctor_profile_iv"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:layout_gravity="center"
+                android:src="@drawable/male_doc" />
+
+            <Button
+                android:background="@color/colorWhite"
+                android:layout_gravity="bottom|right"
+                android:id="@+id/doctor_profile_upload_btn"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:text="Choose"
+                android:drawableRight="@drawable/upload_image_icon"
+                android:textAllCaps="false" />
+        </androidx.cardview.widget.CardView>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
             <EditText
+                android:imeOptions="actionNext"
                 android:id="@+id/doctor_name_title_et"
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="DR."/>
             <EditText
+                android:imeOptions="actionNext"
                 android:id="@+id/doctor_name_et"
                 android:layout_weight="3"
                 android:layout_width="0dp"
@@ -38,26 +51,31 @@
                 android:hint="Full Name"/>
         </LinearLayout>
         <EditText
+            android:imeOptions="actionNext"
             android:id="@+id/doctor_studied_clg_et"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Medical College Studied"/>
+            android:hint="Graduation completed college name"/>
         <EditText
+            android:imeOptions="actionNext"
             android:id="@+id/doctor_degree_et"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Degree"/>
         <EditText
+            android:imeOptions="actionNext"
             android:id="@+id/doctor_no_of_year_prac_et"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="No of year practicing"/>
         <EditText
+            android:imeOptions="actionNext"
             android:id="@+id/profile_contact_number_et"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Contact number"/>
         <EditText
+            android:imeOptions="actionDone"
             android:id="@+id/available_area_et"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -67,7 +85,8 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
             <EditText
-                android:hint="Select category"
+                android:imeOptions="actionDone"
+                android:hint="Select specialization"
                 android:layout_weight="4"
                 android:id="@+id/doctor_category_et"
                 android:layout_width="0dp"

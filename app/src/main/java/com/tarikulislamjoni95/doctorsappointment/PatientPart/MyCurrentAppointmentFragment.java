@@ -1,11 +1,13 @@
 package com.tarikulislamjoni95.doctorsappointment.PatientPart;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -64,6 +66,7 @@ public class MyCurrentAppointmentFragment extends Fragment
         myToastClass=new MyToastClass(activity);
     }
 
+    ///******************************Database Part*************************///
     private void GetDataFromFirebase()
     {
         Calendar calendar=Calendar.getInstance();
@@ -120,7 +123,6 @@ public class MyCurrentAppointmentFragment extends Fragment
                 {
                     listView.setVisibility(View.GONE);
                     StatusTv.setVisibility(View.VISIBLE);
-                    myToastClass.LToast("You have no appointment");
                 }
             }
 

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -31,7 +32,7 @@ import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.VARConst;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.MyToastClass;
-import com.tarikulislamjoni95.doctorsappointment.Interface.MyCommunicator;
+import com.tarikulislamjoni95.doctorsappointment.Interface.AccountCreationInterface;
 import com.tarikulislamjoni95.doctorsappointment.R;
 
 import java.util.concurrent.TimeUnit;
@@ -40,9 +41,10 @@ import static android.app.Activity.RESULT_OK;
 
 public class SignInOrSignUpHelperClass
 {
-    private FirebaseUser User=null;
     private MyToastClass myToast;
-    private MyCommunicator myCommunicator;
+    private AccountCreationInterface accountCreationInterface;
+
+    private FirebaseUser User=null;
     private AuthCredential credential;
     private FirebaseAuth mAuth;
     private PhoneAuthProvider.OnVerificationStateChangedCallbacks PhoneCallBack;
@@ -56,7 +58,7 @@ public class SignInOrSignUpHelperClass
     {
         this.activity=activity;
         myToast=new MyToastClass(activity);
-        myCommunicator=(MyCommunicator)activity;
+        accountCreationInterface =(AccountCreationInterface) activity;
     }
     ///*************************Email SignIn Or SignUp Section Starting*************************///
     public void EmailSignInOrUp(String WhichActivity,String EmailString,String PasswordString)
@@ -92,11 +94,11 @@ public class SignInOrSignUpHelperClass
                 if (task.isSuccessful())
                 {
                     mAuth.getCurrentUser().sendEmailVerification();
-                    myCommunicator.Communicator(VARConst.EMAIL_SIGN_UP,true);
+                    accountCreationInterface.AccountCreationResult(VARConst.EMAIL_SIGN_UP,true);
                 }
                 else
                 {
-                    myCommunicator.Communicator(VARConst.EMAIL_SIGN_UP,false);
+                    accountCreationInterface.AccountCreationResult(VARConst.EMAIL_SIGN_UP,false);
                 }
             }
         });
@@ -110,11 +112,11 @@ public class SignInOrSignUpHelperClass
             {
                 if (task.isSuccessful())
                 {
-                    myCommunicator.Communicator(VARConst.EMAIL_SIGN_IN,true);
+                    accountCreationInterface.AccountCreationResult(VARConst.EMAIL_SIGN_IN,true);
                 }
                 else
                 {
-                    myCommunicator.Communicator(VARConst.EMAIL_SIGN_IN,false);
+                    accountCreationInterface.AccountCreationResult(VARConst.EMAIL_SIGN_IN,false);
                 }
             }
         });
@@ -127,11 +129,11 @@ public class SignInOrSignUpHelperClass
             {
                 if (task.isSuccessful())
                 {
-                    myCommunicator.Communicator(VARConst.RESEND_EMAIL_VERIFICATION_STATUS,true);
+                    accountCreationInterface.AccountCreationResult(VARConst.RESEND_EMAIL_VERIFICATION_STATUS,true);
                 }
                 else
                 {
-                    myCommunicator.Communicator(VARConst.RESEND_EMAIL_VERIFICATION_STATUS,false);
+                    accountCreationInterface.AccountCreationResult(VARConst.RESEND_EMAIL_VERIFICATION_STATUS,false);
                 }
             }
         });
@@ -140,11 +142,11 @@ public class SignInOrSignUpHelperClass
     {
         if (User.isEmailVerified())
         {
-            myCommunicator.Communicator(VARConst.EMAIL_VERIFICATION_STATUS,true);
+            accountCreationInterface.AccountCreationResult(VARConst.EMAIL_VERIFICATION_STATUS,true);
         }
         else
         {
-            myCommunicator.Communicator(VARConst.EMAIL_VERIFICATION_STATUS,false);
+            accountCreationInterface.AccountCreationResult(VARConst.EMAIL_VERIFICATION_STATUS,false);
         }
     }
     ///*************************Email SignIn Or SignUp Section Ending*************************///
@@ -153,12 +155,14 @@ public class SignInOrSignUpHelperClass
     //Phone SignIn Method
     public void PhoneSignIn(String PhoneString)
     {
-        this.PhoneString=PhoneString;
+        this.PhoneString="+88"+PhoneString;
+        Log.d("myErrror",PhoneString+"Called 1");
         InitializationPhoneCallBack();
         PhoneSignInMethod();
     }
     private void PhoneSignInMethod()
     {
+        Log.d("myErrror",PhoneString+"Called 2");
         PhoneAuthProvider.getInstance().verifyPhoneNumber(PhoneString,60, TimeUnit.SECONDS,activity,PhoneCallBack);
     }
     private void InitializationPhoneCallBack()
@@ -167,30 +171,34 @@ public class SignInOrSignUpHelperClass
             @Override
             public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential)
             {
+                Log.d("myErrror",PhoneString+"Called 3");
                 credential=(AuthCredential) phoneAuthCredential;
-                myCommunicator.Communicator(VARConst.PHONE_SIGN_IN,true);
+                accountCreationInterface.AccountCreationResult(VARConst.PHONE_SIGN_IN,true);
                 FirebaseAutheticationWithCredential(VARConst.PHONE_SIGN_IN_STATUS,credential);
             }
             @Override
             public void onCodeSent(String ValidationID, PhoneAuthProvider.ForceResendingToken forceResendingToken)
             {
+                Log.d("myErrror",PhoneString+"Called 4");
                 super.onCodeSent(ValidationID, forceResendingToken);
                 SharedPreferences sharedPreferences=activity.getSharedPreferences(VARConst.VALIDATION_ID, Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor=sharedPreferences.edit();
                 editor.putString(VARConst.VALIDATION_ID,ValidationID);
                 editor.commit();
-                myCommunicator.Communicator(VARConst.PHONE_SIGN_IN,true);
+                accountCreationInterface.AccountCreationResult(VARConst.PHONE_SIGN_IN,true);
             }
             @Override
             public void onVerificationFailed(FirebaseException e)
             {
-                myCommunicator.Communicator(VARConst.PHONE_SIGN_IN,false);
+                Log.d("myErrror",PhoneString+"Called 5");
+                accountCreationInterface.AccountCreationResult(VARConst.PHONE_SIGN_IN,false);
             }
         };
     }
     public void PhoneVerificationComplete(String PhoneVerificationCodeString)
     {
         this.PhoneVerificationCodeString=PhoneVerificationCodeString;
+        Log.d("myErrror",PhoneString+"Called 6");Log.d("myErrror",PhoneVerificationCodeString+"Called 6");
         PhoneVerificationCompleteMethod();
     }
     private void  PhoneVerificationCompleteMethod()
@@ -199,17 +207,20 @@ public class SignInOrSignUpHelperClass
         String VerificationSavedCode=sharedPreferences.getString(VARConst.VALIDATION_ID,"");
         if (PhoneVerificationCodeString.length()>5  && VerificationSavedCode.length()>5)
         {
+            Log.d("myErrror",PhoneString+"Called 6");Log.d("myErrror",PhoneVerificationCodeString+"Called 7");
             PhoneAuthCredential phoneAuthCredential = PhoneAuthProvider.getCredential(VerificationSavedCode, PhoneVerificationCodeString);
             credential=(AuthCredential) phoneAuthCredential;
             FirebaseAutheticationWithCredential(VARConst.PHONE_SIGN_IN_STATUS,credential);
         }
         else
         {
-            myCommunicator.Communicator(VARConst.PHONE_SIGN_IN_STATUS,true);
+            Log.d("myErrror",PhoneString+"Called 6");Log.d("myErrror",PhoneVerificationCodeString+"Called 8");
+            accountCreationInterface.AccountCreationResult(VARConst.PHONE_SIGN_IN_STATUS,true);
         }
     }
     public void ResendPhoneVerificationCode(String PhoneString)
     {
+        Log.d("myErrror",PhoneString+"Called 6");Log.d("myErrror",PhoneString+"Called 9");
         PhoneSignIn(PhoneString);
     }
     ///*************************Phone SignIn Or SignUp Section Ending*************************///
@@ -247,7 +258,7 @@ public class SignInOrSignUpHelperClass
             @Override
             public void onError(FacebookException error)
             {
-                myCommunicator.Communicator(VARConst.FACEBOOK_SIGN_IN_EXCEEPTION,false);
+                accountCreationInterface.AccountCreationResult(VARConst.FACEBOOK_SIGN_IN_EXCEEPTION,false);
             }
         });
     }
@@ -261,7 +272,7 @@ public class SignInOrSignUpHelperClass
                 FirebaseAutheticationWithCredential(VARConst.GOOGLE_SIGN_IN_STATUS,credential);
             } catch (ApiException e)
             {
-                myCommunicator.Communicator(VARConst.GOOGLE_SIGN_IN_EXCEPTION,true);
+                accountCreationInterface.AccountCreationResult(VARConst.GOOGLE_SIGN_IN_EXCEPTION,true);
             }
             return;
         }
@@ -283,14 +294,31 @@ public class SignInOrSignUpHelperClass
             {
                 if (task.isSuccessful())
                 {
-                    myCommunicator.Communicator(FromWhichMethod,true);
+                    accountCreationInterface.AccountCreationResult(FromWhichMethod,true);
                 }
                 else
                 {
-                    myCommunicator.Communicator(FromWhichMethod,false);
+                    accountCreationInterface.AccountCreationResult(FromWhichMethod,false);
                 }
             }
         });
     }
     ///*************************Firebase Authentication Section Starting*************************///
+
+    ///**************************************SignOut And Deletion Start*********************************************///
+    public void SignOut()
+    {
+        if (FirebaseAuth.getInstance().getCurrentUser()!=null)
+        {
+            FirebaseAuth.getInstance().signOut();
+        }
+    }
+    public void DeleteAccount()
+    {
+        if (FirebaseAuth.getInstance().getCurrentUser()!=null)
+        {
+            FirebaseAuth.getInstance().getCurrentUser().delete();
+        }
+    }
+    ///**************************************SignOut And Delete End*********************************************///
 }

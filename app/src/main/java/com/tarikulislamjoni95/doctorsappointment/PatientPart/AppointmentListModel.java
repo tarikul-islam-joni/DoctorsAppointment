@@ -14,7 +14,6 @@ public class AppointmentListModel
 
     public AppointmentListModel() {
     }
-
     public AppointmentListModel(String UID,String Name, String hospitalName, String availableDay, String appointmentTime,String appointmentFee, String AppointmentOffStart,String AppointmentOffEnd) {
         this.Name=Name;
         this.UID = UID;

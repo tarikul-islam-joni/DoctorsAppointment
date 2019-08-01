@@ -20,10 +20,28 @@
             android:layout_height="wrap_content"
             android:textSize="15sp"
             android:text="Without BMDC registration number verification , you can not be able to online appointment feature.
-So make sure the valid information and get those feature.If you doesn't have the number,do not input anything."
+So make sure the valid information and get those feature.If you doesn't have the number,do not input anything.
+Just enter the nid number and keep blank bmdc registration and click the confirm button"
             android:textColor="#000000"/>
         <EditText
-            android:id="@+id/doctor_bmdc_reg_et"
+            android:imeOptions="actionDone"
+            android:id="@+id/nid_number_et"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="NID number for security"/>
+        <ImageView
+            android:id="@+id/nid_iv"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_gravity="center"/>
+        <Button
+            android:id="@+id/upload_nid_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Upload NID Image"/>
+        <EditText
+            android:imeOptions="actionDone"
+            android:id="@+id/bmdc_reg_et"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="BMDC Registration number"/>
@@ -33,46 +51,15 @@ So make sure the valid information and get those feature.If you doesn't have the
             android:layout_height="wrap_content"
             android:orientation="vertical">
             <ImageView
-                android:id="@+id/image_view_1"
+                android:id="@+id/bmdc_reg_iv"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
                 android:layout_gravity="center"/>
             <Button
-                android:id="@+id/upload_image_1_btn"
+                android:id="@+id/upload_bmdc_btn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Upload"/>
-        </LinearLayout>
-        <LinearLayout
-            android:visibility="gone"
-            android:id="@+id/upload_another_doc_section"
-            android:layout_gravity="center"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="20sp"
-                android:textColor="@color/colorRed"
-                android:text="Sorry some one may be entered this registration number earlier.If you are the actual person,please upload another document for further verification."/>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_gravity="center">
-                <ImageView
-                    android:id="@+id/image_view_2"
-                    android:layout_width="match_parent"
-                    android:layout_height="200dp"
-                    android:layout_gravity="center"/>
-                <Button
-                    android:id="@+id/upload_image_2_btn"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Upload Another Document"/>
-            </LinearLayout>
+                android:text="Upload BMDC Reg Image"/>
         </LinearLayout>
         <Button
             android:id="@+id/confirm_btn"

@@ -27,7 +27,10 @@ import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 import com.tarikulislamjoni95.doctorsappointment.AccountPart.SignInActivity;
 import com.tarikulislamjoni95.doctorsappointment.AdminPart.AdminPanelMainActivity;
+import com.tarikulislamjoni95.doctorsappointment.DatabasePart.ImportantTaskOfDB;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.DBConst;
+import com.tarikulislamjoni95.doctorsappointment.HelperClass.MyToastClass;
+import com.tarikulislamjoni95.doctorsappointment.Interface.ImportantTaskOfDBInterface;
 import com.tarikulislamjoni95.doctorsappointment.PatientPart.EditPatientProfileActivity;
 import com.tarikulislamjoni95.doctorsappointment.R;
 
@@ -47,8 +50,11 @@ import java.sql.RowId;
 import java.util.ArrayList;
 
 public class DoctorMainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
+        implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener, ImportantTaskOfDBInterface {
 
+    private ImportantTaskOfDB importantTaskOfDB;
+
+    private MyToastClass myToastClass;
     private DoctorMainActivityViewPagerAdapter adapter;
     private TabLayout tabLayout;
     private ViewPager viewPager;
@@ -71,6 +77,12 @@ public class DoctorMainActivity extends AppCompatActivity
         InitializationClass();
         DrawerAndNavigationStuff();
         LoadUserProfileData();
+        DatabaseInitialization();
+    }
+
+    private void DatabaseInitialization()
+    {
+        importantTaskOfDB=new ImportantTaskOfDB(activity);
     }
 
     private void Initialization()
@@ -92,7 +104,7 @@ public class DoctorMainActivity extends AppCompatActivity
     }
     private void InitializationClass()
     {
-
+        myToastClass=new MyToastClass(activity);
     }
     private void DrawerAndNavigationStuff()
     {
@@ -166,7 +178,9 @@ public class DoctorMainActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_settings) {
+
             intent=new Intent(activity, AdminPanelMainActivity.class);
+            myToastClass.LToast("Experiment only . Should Remove this part later");
             startActivity(intent);
             return true;
         }
@@ -200,7 +214,7 @@ public class DoctorMainActivity extends AppCompatActivity
         switch (view.getId())
         {
             case R.id.signout_btn:
-                FirebaseAuth.getInstance().signOut();
+                importantTaskOfDB.SignOut();
                 intent=new Intent(activity, SignInActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
@@ -211,5 +225,15 @@ public class DoctorMainActivity extends AppCompatActivity
                 startActivity(intent);
                 break;
         }
+    }
+
+    @Override
+    public void ImportantTaskResult(boolean result) {
+
+    }
+
+    @Override
+    public void ImportantTaskResultAndData(boolean result, String data) {
+
     }
 }

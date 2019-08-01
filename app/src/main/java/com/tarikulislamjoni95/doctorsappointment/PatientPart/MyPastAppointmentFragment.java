@@ -69,6 +69,7 @@ public class MyPastAppointmentFragment extends Fragment
         myToastClass=new MyToastClass(activity);
     }
 
+    ///******************************Database Part************************///
     private void GetDataFromFirebase()
     {
         Calendar calendar=Calendar.getInstance();

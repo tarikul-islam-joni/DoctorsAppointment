@@ -11,6 +11,10 @@ public class PatientDataModel
     String AppointmentValidity;
     String AppointmentFee;
 
+    String AvailableDay;
+    String AppointmentOffStart;
+    String AppointmentOffEnd;
+
 
     //Constructor for show appointment list
     public PatientDataModel(String From, String UID, String name, String hospitalName, String appointmentDate, String appointmentTime, String appointmentValidity, String appointmentFee) {

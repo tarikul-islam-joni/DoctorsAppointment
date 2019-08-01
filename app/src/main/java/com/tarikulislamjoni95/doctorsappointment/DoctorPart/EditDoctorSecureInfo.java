@@ -1,6 +1,7 @@
 package com.tarikulislamjoni95.doctorsappointment.DoctorPart;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -16,6 +17,7 @@ import android.widget.LinearLayout;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -29,33 +31,58 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.tarikulislamjoni95.doctorsappointment.DatabasePart.AccountDB;
+import com.tarikulislamjoni95.doctorsappointment.DatabasePart.AccountDataModel;
+import com.tarikulislamjoni95.doctorsappointment.DatabasePart.AccountMultiplicityDB;
+import com.tarikulislamjoni95.doctorsappointment.DatabasePart.AccountStatusDB;
+import com.tarikulislamjoni95.doctorsappointment.DatabasePart.AccountStatusDataModel;
+import com.tarikulislamjoni95.doctorsappointment.DatabasePart.ImportantTaskOfDB;
+import com.tarikulislamjoni95.doctorsappointment.DatabasePart.StorageDB;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.DBConst;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.MyImageGettingClass;
+import com.tarikulislamjoni95.doctorsappointment.HelperClass.MyTextWatcher;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.MyToastClass;
+import com.tarikulislamjoni95.doctorsappointment.HelperClass.VARConst;
+import com.tarikulislamjoni95.doctorsappointment.Interface.AccountDBInterface;
+import com.tarikulislamjoni95.doctorsappointment.Interface.AccountMultiplicityInterface;
+import com.tarikulislamjoni95.doctorsappointment.Interface.AccountStatusDBInterface;
+import com.tarikulislamjoni95.doctorsappointment.Interface.ImportantTaskOfDBInterface;
+import com.tarikulislamjoni95.doctorsappointment.Interface.StorageDBInterface;
 import com.tarikulislamjoni95.doctorsappointment.R;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 
-public class EditDoctorSecureInfo extends AppCompatActivity implements View.OnClickListener
+public class EditDoctorSecureInfo extends AppCompatActivity implements View.OnClickListener , ImportantTaskOfDBInterface,
+        AccountMultiplicityInterface, StorageDBInterface, AccountDBInterface , AccountStatusDBInterface
 {
-    private int counter=0;
+    //Database variable
+    private ImportantTaskOfDB importantTaskOfDB;
+    private AccountDB accountDB;
+    private AccountStatusDB accountStatusDB;
+    private StorageDB storageDB;
+    private AccountMultiplicityDB accountMultiplicityDB;
+
+
+    private AccountDataModel dataModel;
+    private ArrayList<String> ImageUrlArrayList;
     private String UID;
     private Activity activity;
     private Intent intent;
 
     private String WhichImageView="";
-    private String Image1Url="null";
-    private String Image2Url="null";
-    private String BMDCRegString="";
+    private String NIDNoString="Unknown";
+    private String BMDCRegString="Unknown";
+    private String NIDImageUrl="null";
+    private String BMDCRegImageUrl="null";
 
     private MyImageGettingClass myImageGettingClass;
     private MyToastClass myToastClass;
 
-    private EditText BMDCRegEt;
-    private ImageView ImageView1,ImageView2;
-    private Button UploadImageBtn1,UploadImageBtn2,ConfirmBtn;
-    private LinearLayout UploadAnotherImageSection;
+    private EditText NIDEt,BMDCRegEt;
+    private ImageView NIDIv,BMDCIv;
+    private Button UploadNIDBtn,UploadBMDCBtn,ConfirmBtn;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,23 +90,33 @@ public class EditDoctorSecureInfo extends AppCompatActivity implements View.OnCl
         Initialization();
         InitializationUI();
         InitializationClass();
+        DatabaseInitialization();
     }
+
     private void Initialization()
     {
         activity= EditDoctorSecureInfo.this;
-        UID= FirebaseAuth.getInstance().getCurrentUser().getUid();
     }
     private void InitializationUI()
     {
-        BMDCRegEt=findViewById(R.id.doctor_bmdc_reg_et);
-        ImageView1=findViewById(R.id.image_view_1);
-        ImageView1.setEnabled(false);
-        ImageView2=findViewById(R.id.image_view_2);
-        ImageView2.setEnabled(false);
-        UploadImageBtn1=findViewById(R.id.upload_image_1_btn);
-        UploadImageBtn2=findViewById(R.id.upload_image_2_btn);
-        UploadAnotherImageSection=findViewById(R.id.upload_another_doc_section);
-        UploadAnotherImageSection.setEnabled(false);
+        NIDEt=findViewById(R.id.nid_number_et);
+        NIDEt.setOnEditorActionListener(new MyTextWatcher(activity).actionListener);
+        NIDEt.addTextChangedListener(new MyTextWatcher(activity, VARConst.VERIFICATION_CODE_VALIDITY,R.id.nid_number_et));
+
+        BMDCRegEt=findViewById(R.id.bmdc_reg_et);
+        BMDCRegEt.setOnEditorActionListener(new MyTextWatcher(activity).actionListener);
+
+        NIDIv=findViewById(R.id.nid_iv);
+        NIDIv.setEnabled(false);
+
+        BMDCIv=findViewById(R.id.bmdc_reg_iv);
+        BMDCIv.setEnabled(false);
+
+
+        UploadNIDBtn=findViewById(R.id.upload_nid_btn);
+        UploadNIDBtn.setOnClickListener(this);
+        UploadBMDCBtn=findViewById(R.id.upload_bmdc_btn);
+        UploadBMDCBtn.setOnClickListener(this);
         ConfirmBtn=findViewById(R.id.confirm_btn);
         ConfirmBtn.setOnClickListener(this);
     }
@@ -97,238 +134,52 @@ public class EditDoctorSecureInfo extends AppCompatActivity implements View.OnCl
             case R.id.confirm_btn:
                 CheckingMethod();
                 break;
-            case R.id.upload_image_1_btn:
-                UploadImageBtn1Method();
+            case R.id.upload_nid_btn:
+                UploadNIDImageBtnMethod();
                 break;
-            case R.id.upload_image_2_btn:
-                UploadImageBtn2Method();
+            case R.id.upload_bmdc_btn:
+                UploadBMDCImageBtnMethod();
+                break;
         }
     }
-    private void UploadImageBtn1Method()
+    private void UploadNIDImageBtnMethod()
     {
         WhichImageView="ImageView1";
-        myImageGettingClass.GetImageFromCameraOrGallery(R.id.image_view_1);
+        myImageGettingClass.GetImageFromCameraOrGallery(R.id.nid_iv);
     }
-    private void UploadImageBtn2Method()
+    private void UploadBMDCImageBtnMethod()
     {
         WhichImageView="ImageView2";
-        myImageGettingClass.GetImageFromCameraOrGallery(R.id.image_view_2);
+        myImageGettingClass.GetImageFromCameraOrGallery(R.id.bmdc_reg_iv);
     }
     private void CheckingMethod()
     {
-        BMDCRegString=BMDCRegEt.getText().toString();
-        if (BMDCRegString.length()<4)
+        if ((NIDEt.getCurrentTextColor()== (ContextCompat.getColor(activity,R.color.colorGreen)) && NIDIv.isEnabled()))
         {
-            SetCompletionProcess("Empty");
-        }
-        else
-        {
-            DatabaseReference ref= FirebaseDatabase.getInstance().getReference().child(DBConst.AccountMultiplicity).child(DBConst.Doctor).child(BMDCRegString);
-            ref.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.exists())
-                    {
-                        AddExtraDocMethod();
-                    }
-                    else
-                    {
-                        if (ImageView1.isEnabled())
-                        {
-                            Bitmap bitmap=((BitmapDrawable)ImageView1.getDrawable()).getBitmap();
-                            UploadSingleImageMethod(bitmap);
-                        }
-                        else
-                        {
-                            myToastClass.LToast("Please send us a image of your registration certificate that we can verify you");
-                        }
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError)
-                {
-                    myToastClass.LToast("Something error occurred.Please try again...");
-                }
-            });
-        }
-    }
-    private void UploadSingleImageMethod(Bitmap bitmap)
-    {
-        ByteArrayOutputStream bao=new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG,100,bao);
-        byte[] bytes=bao.toByteArray();
-        final StorageReference ref= FirebaseStorage.getInstance().getReference().child(DBConst.SecureData).child(UID+BMDCRegString+".jpg");
-        UploadTask uploadTask=ref.putBytes(bytes);
-        Task<Uri> task=uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
-            @Override
-            public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-                return ref.getDownloadUrl();
-            }
-        }).addOnCompleteListener(new OnCompleteListener<Uri>() {
-            @Override
-            public void onComplete(@NonNull Task<Uri> task) {
-                if (task.isComplete())
-                {
-                    Uri uri=task.getResult();
-                    Image2Url="null";
-                    Image1Url=uri.toString();
-                    SaveIntoDatabase(BMDCRegString,Image1Url,Image2Url);
-                }
-            }
-        });
-    }
-    private void AddExtraDocMethod()
-    {
-        UploadAnotherImageSection.setVisibility(View.VISIBLE);
-        if (ImageView1.isEnabled() && ImageView2.isEnabled())
-        {
-            Bitmap bitmap1=((BitmapDrawable)ImageView1.getDrawable()).getBitmap();
-            Bitmap bitmap2=((BitmapDrawable)ImageView2.getDrawable()).getBitmap();
-            UploadBothImage(bitmap1,bitmap2);
-        }
-        else
-        {
-            myToastClass.LToast("Upload bmdc registration and also another document that we can verify that it is you...");
-        }
-    }
-
-    private void UploadBothImage(Bitmap bitmap1,Bitmap bitmap2)
-    {
-        ByteArrayOutputStream bao=null;
-        bao=new ByteArrayOutputStream();
-        bitmap1.compress(Bitmap.CompressFormat.JPEG,100,bao);
-        byte[] bytes1=bao.toByteArray();
-        bao=new ByteArrayOutputStream();
-        bitmap2.compress(Bitmap.CompressFormat.JPEG,100,bao);
-        byte[] bytes2=bao.toByteArray();
-        final StorageReference ref= FirebaseStorage.getInstance().getReference().child(DBConst.SecureData);
-        UploadTask uploadTask=ref.child(UID+BMDCRegString+".jpg").putBytes(bytes1);
-        Task<Uri> task=uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
-            @Override
-            public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-                return ref.getDownloadUrl();
-            }
-        }).addOnCompleteListener(new OnCompleteListener<Uri>() {
-            @Override
-            public void onComplete(@NonNull Task<Uri> task) {
-                if (task.isComplete())
-                {
-                    counter++;
-                    Uri uri=task.getResult();
-                    Image1Url=uri.toString();
-                    if (counter==2)
-                    {
-                        SaveIntoDatabase(BMDCRegString,Image1Url,Image2Url);
-                    }
-                }
-            }
-        });
-        uploadTask=ref.child(UID+"AnotherDoc"+".jpg").putBytes(bytes2);
-        task=uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
-            @Override
-            public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-                return ref.getDownloadUrl();
-            }
-        }).addOnCompleteListener(new OnCompleteListener<Uri>() {
-            @Override
-            public void onComplete(@NonNull Task<Uri> task) {
-                if (task.isComplete())
-                {
-                    counter++;
-                    Uri uri=task.getResult();
-                    Image2Url=uri.toString();
-                    if (counter==2)
-                    {
-                        SaveIntoDatabase(BMDCRegString,Image1Url,Image2Url);
-                    }
-                }
-            }
-        });
-    }
-
-    private void SaveIntoDatabase(String BMDCRegString, final String ImageUrl1,final String ImageUrl2)
-    {
-        DatabaseReference ref=FirebaseDatabase.getInstance().getReference().child(DBConst.Account).child(DBConst.Doctor).child(UID);
-        HashMap<String,String> hashMap=new HashMap<>();
-        hashMap.put(DBConst.BMDCRegUrl,ImageUrl1);
-        hashMap.put(DBConst.AnotherDocumentImageUrl,ImageUrl2);
-        hashMap.put(DBConst.BMDCRegNo,BMDCRegString);
-        ref.setValue(hashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task)
+            NIDNoString=NIDEt.getText().toString();
+            if (BMDCRegEt.getText().toString().isEmpty())
             {
-                if (task.isComplete())
+                UploadSingleImage();
+            }
+            else
+            {
+                if (BMDCRegEt.getText().toString().length()>3 && BMDCIv.isEnabled())
                 {
-                    if (ImageUrl2.matches("null"))
-                    {
-                        SaveMultiplicityStatus(false);
-                    }
-                    else
-                    {
-                        SaveMultiplicityStatus(true);
-                    }
+                    BMDCRegString=BMDCRegEt.getText().toString();
+                    CheckBMDCNumber(BMDCRegString);
                 }
                 else
                 {
-                    myToastClass.LToast("Data not saved successfully");
+                    myToastClass.LToast("Enter your BMDC Reg Number properly and also upload the image of your BMDC registration copy");
                 }
             }
-        });
+        }
+        else
+        {
+            myToastClass.LToast("Enter your nid number and also upload the image of your nid copy");
+        }
     }
-    private void SaveMultiplicityStatus(boolean MultipleCheck)
-    {
-        DatabaseReference ref=FirebaseDatabase.getInstance().getReference().child(DBConst.AccountMultiplicity).child(DBConst.Doctor).child(BMDCRegString);
-        HashMap<String,Object> hashMap=new HashMap<>();
-        hashMap.put(DBConst.MultipleCheck,MultipleCheck);
-        hashMap.put(UID,"");
-        ref.setValue(hashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if (task.isComplete())
-                {
-                    SetCompletionProcess("NotEmpty");
-                }
-                else
-                {
-                    myToastClass.LToast("Data not saved successfully");
-                }
-            }
-        });
 
-    }
-    private void SetCompletionProcess(final String WhichType)
-    {
-        DatabaseReference reference=FirebaseDatabase.getInstance().getReference().child(DBConst.AccountStatus).child(UID);
-        HashMap<String,Object> hashMap=new HashMap<>();
-        hashMap.put(DBConst.AccountType,DBConst.Doctor);
-        hashMap.put(DBConst.AccountCompletion,true);
-        hashMap.put(DBConst.AccountValidity,true);
-        hashMap.put(DBConst.AuthorityValidity,false);
-        reference.setValue(hashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if (task.isSuccessful())
-                {
-                    if (WhichType.matches("NotEmpty"))
-                    {
-                        intent=new Intent(activity,EditDoctorAppointmentInfoActivity.class);
-                        startActivity(intent);
-                    }
-                    else if (WhichType.matches("Empty"))
-                    {
-                        intent=new Intent(activity,DoctorMainActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
-                        startActivity(intent);
-                    }
-                }
-                else
-                {
-                    myToastClass.LToast("Data saving unsuccessful");
-                }
-            }
-        });
-    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -337,12 +188,199 @@ public class EditDoctorSecureInfo extends AppCompatActivity implements View.OnCl
         {
             if (WhichImageView.matches("ImageView1"))
             {
-                ImageView1.setEnabled(true);
+                NIDIv.setEnabled(true);
             }
             else if (WhichImageView.matches("ImageView2"))
             {
-                ImageView2.setEnabled(true);
+                BMDCIv.setEnabled(true);
             }
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////Database Part////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    private void DatabaseInitialization()
+    {
+        accountDB=new AccountDB(activity);
+
+        accountStatusDB=new AccountStatusDB(activity);
+
+        storageDB=new StorageDB(activity);
+
+        accountMultiplicityDB=new AccountMultiplicityDB(activity);
+
+        importantTaskOfDB=new ImportantTaskOfDB(activity);
+        importantTaskOfDB.GetUID();
+    }
+    ///****************************Database calling method********************************///
+    private void GetAccountDataFromDatabase(String UID)
+    {
+        accountDB.GetDoctorAccountData(UID);
+    }
+
+    private void CheckBMDCNumber(String BMDCRegNo)
+    {
+        accountMultiplicityDB.GetAccountMultiplicity(DBConst.Doctor,BMDCRegNo);
+    }
+    private void UploadSingleImage()
+    {
+        ImageUrlArrayList=new ArrayList<>();
+        byte[] Image_Byte=myImageGettingClass.GetFullImageBytes(R.id.nid_iv);
+        String Image_Name="NID_"+UID+".jpg";
+        storageDB.SaveFileIntoStorage(DBConst.SecureData,Image_Name,Image_Byte);
+    }
+
+    private void UploadBothImage()
+    {
+        ImageUrlArrayList=new ArrayList<>();
+        byte[] Image_Byte1=myImageGettingClass.GetFullImageBytes(R.id.nid_iv);
+        String Image_Name1="NID_"+UID+".jpg";
+        storageDB.SaveFileIntoStorage(DBConst.SecureData,Image_Name1,Image_Byte1);
+        byte[] Image_Byte2=myImageGettingClass.GetFullImageBytes(R.id.bmdc_reg_iv);
+        String Image_Name2="BMDC_"+UID+".jpg";
+        storageDB.SaveFileIntoStorage(DBConst.SecureData,Image_Name2,Image_Byte2);
+    }
+    private void setImageUrl(String Url)
+    {
+        ImageUrlArrayList.add(Url);
+        if (ImageUrlArrayList.size()==1)
+        {
+            NIDImageUrl=ImageUrlArrayList.get(0);
+            BMDCRegString="unknown";
+            BMDCRegImageUrl="null";
+        }
+        else if (ImageUrlArrayList.size()==2)
+        {
+            NIDImageUrl=ImageUrlArrayList.get(0);
+            BMDCRegImageUrl=ImageUrlArrayList.get(1);
+        }
+        SaveAccountData();
+    }
+    private void SaveAccountData()
+    {
+        ArrayList<AccountDataModel> arrayList=new ArrayList<>();
+        arrayList.add(new AccountDataModel(
+                dataModel.getProfileImageUrl(),
+                dataModel.getTitle(),
+                dataModel.getName(),
+                dataModel.getStudiedCollege(),
+                dataModel.getDegree(),
+                dataModel.getCategory(),
+                dataModel.getNoOfPracYear(),
+                dataModel.getAvailableArea(),
+                dataModel.getContactNo(),
+                BMDCRegString,
+                NIDNoString,
+                BMDCRegImageUrl,
+                NIDImageUrl));
+
+        accountDB.SaveDoctorData(arrayList);
+    }
+    private void SaveAccountStatus(boolean result)
+    {
+        if (result)
+        {
+            accountStatusDB.SaveIntoAccountStatusDBFromUser(DBConst.Doctor,true,true,false);
+        }
+    }
+    private void SetCompletionProcess()
+    {
+        intent=new Intent(activity,EditDoctorAppointmentInfoActivity.class);
+        startActivity(intent);
+    }
+    ///*****************************Data Receiving method************************///
+    public String getUID() {
+        return UID;
+    }
+
+    public void setUID(String UID) {
+        this.UID = UID;
+    }
+
+    ///****************************Database Interface Implementation************************///
+    //ImportantTaskDb Result
+    @Override
+    public void ImportantTaskResult(boolean result)
+    {
+        if (result)
+        {
+            myToastClass.LToast("BMDC registration is already registered\nAnd account deleted for this wrong information ! ! !");
+        }
+    }
+    @Override
+    public void ImportantTaskResultAndData(boolean result, String data)
+    {
+        if (result)
+        {
+            setUID(data);
+            GetAccountDataFromDatabase(data);
+        }
+        else
+        {
+            importantTaskOfDB.SignOut();
+        }
+    }
+
+    //AccountMultiplicityDb Result
+    @Override
+    public void GetAccountMultiplicityResult(boolean Result)
+    {
+        if (Result)
+        {
+            importantTaskOfDB.DeleteUserAccountFromUser();
+        }
+        else
+        {
+            UploadBothImage();
+        }
+    }
+    @Override
+    public void SaveAccountMultiplicityResult(boolean Result)
+    {
+        SaveAccountStatus(Result);
+    }
+    //StorageDb Result
+    @Override
+    public void GetResultAndUrl(boolean result, String Url)
+    {
+        if (result)
+        {
+            setImageUrl(Url);
+        }
+        else
+        {
+            myToastClass.LToast("Uploading failed\nPlease try again...");
+        }
+    }
+
+    //AccountDb Result
+    @Override
+    public void GetAccount(boolean result, ArrayList<AccountDataModel> arrayList)
+    {
+        dataModel=arrayList.get(0);
+    }
+    @Override
+    public void AccountSavingResult(boolean result)
+    {
+        if (result)
+        {
+            accountMultiplicityDB.SaveAccountMultiplicity(DBConst.Doctor,BMDCRegString,false);
+        }
+    }
+
+    //Account Status DB Result
+    @Override
+    public void GetAccountStatus(boolean result, ArrayList<AccountStatusDataModel> arrayList)
+    {
+
+    }
+    @Override
+    public void AccountStatusSavingResult(boolean result)
+    {
+        if (result)
+        {
+            SetCompletionProcess();
         }
     }
 }

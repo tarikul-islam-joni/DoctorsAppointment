@@ -7,15 +7,16 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/profile_image_civ"
+        <ImageView
+            android:id="@+id/image_iv"
             android:layout_gravity="center_horizontal"
             android:layout_width="200dp"
             android:layout_height="200dp"
-            android:src="@color/colorRed"/>
+            android:src="@drawable/patient"/>
         <Button
+            android:layout_gravity="center"
             android:id="@+id/profile_image_upload_btn"
-            android:layout_width="match_parent"
+            android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:imeOptions="actionNext"
             android:text="Upload"/>

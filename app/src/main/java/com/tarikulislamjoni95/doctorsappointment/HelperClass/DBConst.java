@@ -31,11 +31,13 @@ public class DBConst
     public static final String Title="Title";
     public static final String Degree="Degree";
     public static final String StudiedCollege="StudiedCollege";
-    public static final String NoOfPracYear="NoOfPracYear";
-    public static final String BMDCRegUrl="BMDCRegUrl";
-    public static final String BMDCRegNo="BMDCRegNo";
     public static final String Category="Category";
     public static final String AvailableArea="AvailableArea";
+    public static final String NoOfPracYear="NoOfPracYear";
+    public static final String BMDCRegNo="BMDCRegNo";
+    public static final String NIDNo="NIDNo";
+    public static final String NIDImageUrl="NIDImageUrl";
+    public static final String BMDCRegImageUrl="BMDCRegImageUrl";
     public static final String Watched="Watched";
 
     //SecureData DB
@@ -70,4 +72,6 @@ public class DBConst
     public static final String PatientList="PatientList";
 
     public static final String CurrentTime="CurrentTime";
+
+    public static final String Admin="Admin";
 }

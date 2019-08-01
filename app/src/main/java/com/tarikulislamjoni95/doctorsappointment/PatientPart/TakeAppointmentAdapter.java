@@ -16,16 +16,22 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ServerValue;
+import com.google.firebase.database.ValueEventListener;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.DBConst;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.VARConst;
 import com.tarikulislamjoni95.doctorsappointment.R;
+
+import org.w3c.dom.Text;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -51,6 +57,41 @@ public class TakeAppointmentAdapter extends ArrayAdapter<AppointmentListModel> i
         this.arrayList=arrayList;
     }
 
+    private void GetAccountStatus(final String UID)
+    {
+        DatabaseReference reference=FirebaseDatabase.getInstance().getReference().child(DBConst.AccountStatus).child(UID);
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot)
+            {
+                if (dataSnapshot.exists())
+                {
+                    boolean AuthorityValidity=(boolean) dataSnapshot.child(DBConst.AuthorityValidity).getValue();
+                    if (!AuthorityValidity)
+                    {
+                        TextView status=activity.findViewById(R.id.appointment_availability_status_tv);
+                        status.setText("UnAuthorized");
+                        viewHolder.TakeAppointmentBtn.setClickable(false);
+                        viewHolder.TakeAppointmentBtn.setEnabled(false);
+                    }
+                    else
+                    {
+                        TextView status=activity.findViewById(R.id.appointment_availability_status_tv);
+                        status.setText("Authorized");
+                        status.setTextColor(activity.getResources().getColor(R.color.colorGreen));
+                        viewHolder.TakeAppointmentBtn.setClickable(true);
+                        viewHolder.TakeAppointmentBtn.setEnabled(true);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
     class ViewHolder
     {
         TextView HospitalNameTv;
@@ -68,6 +109,7 @@ public class TakeAppointmentAdapter extends ArrayAdapter<AppointmentListModel> i
 
         viewHolder=new ViewHolder();
         dataModel=arrayList.get(position);
+
         LayoutInflater inflater=activity.getLayoutInflater();
         convertView=inflater.inflate(R.layout.model_take_appointment,parent,false);
 
@@ -94,6 +136,8 @@ public class TakeAppointmentAdapter extends ArrayAdapter<AppointmentListModel> i
             viewHolder.AppointmenetOffTv.setText(Start+"~"+End);
         }
         viewHolder.AppointmentFeeTv.setText("Appointment Fee : "+dataModel.getAppointmentFee());
+
+        GetAccountStatus(dataModel.getUID());
 
         return convertView;
     }

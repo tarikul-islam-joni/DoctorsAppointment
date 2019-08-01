@@ -7,8 +7,6 @@ import androidx.fragment.app.FragmentPagerAdapter;
 
 public class PatientMainActivityViewPagerAdapter extends FragmentPagerAdapter
 {
-
-    Fragment fragment;
     public PatientMainActivityViewPagerAdapter(FragmentManager fm)
     {
         super(fm);
@@ -19,14 +17,14 @@ public class PatientMainActivityViewPagerAdapter extends FragmentPagerAdapter
         switch (position)
         {
             case 0:
-                fragment=new DoctorListFragment();
-                return fragment;
+                DoctorListFragment doctorListFragment=new DoctorListFragment();
+                return doctorListFragment;
             case 1:
-                fragment=new DoctorListFragment();
-                return fragment;
+                HospitalListFragment hospitalListFragment=new HospitalListFragment();
+                return hospitalListFragment;
             case 2:
-                fragment=new DoctorListFragment();
-                return fragment;
+                HospitalListFragment hospitalListFragment1=new HospitalListFragment();
+                return hospitalListFragment1;
             default:
                 return new DoctorListFragment();
         }
@@ -45,7 +43,7 @@ public class PatientMainActivityViewPagerAdapter extends FragmentPagerAdapter
             case 0:
                 return "Doctor List";
             case 1:
-                return "Category List";
+                return "Hospital List";
             case 2:
                 return "Hospital List";
             default:

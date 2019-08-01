@@ -35,6 +35,7 @@
         <activity android:name=".PatientPart.EditPatientSecureInfoActivity"/>
         <activity android:name=".PatientPart.PatientProfileView"/>
         <activity android:name=".PatientPart.MyAppointmentListActivity"/>
+        <activity android:name=".PatientPart.HospitalActivity"/>
 
 
         <activity

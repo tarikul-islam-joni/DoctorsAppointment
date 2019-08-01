@@ -17,6 +17,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
+import com.tarikulislamjoni95.doctorsappointment.DatabasePart.AccountDataModel;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.DBConst;
 import com.tarikulislamjoni95.doctorsappointment.R;
 
@@ -30,6 +31,8 @@ public class DoctorProfileVisitActivity extends AppCompatActivity
     private TakeAppointmentAdapter adapter;
     private ArrayList<AppointmentListModel> arrayList;
 
+    private ArrayList<AccountDataModel> ProfileDataArrayList;
+
     private Activity activity;
     private Intent intent;
 
@@ -37,7 +40,8 @@ public class DoctorProfileVisitActivity extends AppCompatActivity
 
     private AlertDialog dialog;
 
-    private TextView NameTv,BMDCRegTv,StudiedTv,NoOfYearPracTv,SpecialityTv,DegreeCompletedTv,AvailableAreaTv;
+    public TextView AppointmentAvailabilityStatusTv;
+    private TextView NameTv,StudiedTv,NoOfYearPracTv,SpecialityTv,DegreeCompletedTv,AvailableAreaTv;
     private CircleImageView ImageCiv;
     private ListView AppointmentListView;
     @Override
@@ -50,6 +54,7 @@ public class DoctorProfileVisitActivity extends AppCompatActivity
         AppointmentListView.setAdapter(adapter);
     }
 
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -60,7 +65,7 @@ public class DoctorProfileVisitActivity extends AppCompatActivity
     private void Initialization()
     {
         UserArrayList=new ArrayList<>();
-        UserArrayList=getIntent().getStringArrayListExtra(DBConst.Doctor);
+        UserArrayList= getIntent().getStringArrayListExtra(DBConst.Doctor);
         UID=UserArrayList.get(0);
         activity= DoctorProfileVisitActivity.this;
         arrayList=new ArrayList<>();
@@ -69,7 +74,7 @@ public class DoctorProfileVisitActivity extends AppCompatActivity
     private void InitializationUI()
     {
         NameTv=findViewById(R.id.name_tv);
-        BMDCRegTv=findViewById(R.id.bmdc_reg_tv);
+        AppointmentAvailabilityStatusTv=findViewById(R.id.appointment_availability_status_tv);
         StudiedTv=findViewById(R.id.studied_tv);
         NoOfYearPracTv=findViewById(R.id.no_of_prac_tv);
         SpecialityTv=findViewById(R.id.speciality_tv);
@@ -91,10 +96,9 @@ public class DoctorProfileVisitActivity extends AppCompatActivity
         NameTv.setText(UserArrayList.get(2)+UserArrayList.get(3));
         StudiedTv.setText(UserArrayList.get(4));
         DegreeCompletedTv.setText(UserArrayList.get(5));
-        BMDCRegTv.setText(UserArrayList.get(6));
+        SpecialityTv.setText(UserArrayList.get(6));
         NoOfYearPracTv.setText(UserArrayList.get(7));
-        SpecialityTv.setText(UserArrayList.get(8));
-        AvailableAreaTv.setText(UserArrayList.get(9));
+        AvailableAreaTv.setText(UserArrayList.get(8));
     }
 
     private void ShowAppointmentList()

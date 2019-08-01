@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
+import android.os.Parcelable;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -22,7 +23,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 import com.tarikulislamjoni95.doctorsappointment.AccountPart.SignInActivity;
+import com.tarikulislamjoni95.doctorsappointment.DatabasePart.AccountDB;
+import com.tarikulislamjoni95.doctorsappointment.DatabasePart.AccountDataModel;
+import com.tarikulislamjoni95.doctorsappointment.DatabasePart.ImportantTaskOfDB;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.DBConst;
+import com.tarikulislamjoni95.doctorsappointment.HelperClass.MyToastClass;
+import com.tarikulislamjoni95.doctorsappointment.Interface.AccountDBInterface;
+import com.tarikulislamjoni95.doctorsappointment.Interface.ImportantTaskOfDBInterface;
 import com.tarikulislamjoni95.doctorsappointment.R;
 
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -40,11 +47,17 @@ import java.util.ArrayList;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class PatientMainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
+        implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener, AccountDBInterface,
+        ImportantTaskOfDBInterface{
 
+    //Database Class Variable
+    private AccountDB accountDB;
+    private ImportantTaskOfDB importantTaskOfDB;
+
+    //Class Variable
+    private MyToastClass myToastClass;
     private PatientMainActivityViewPagerAdapter viewPagerAdapter;
 
-    private String UID;
     private ArrayList<String> UserInformation;
 
     private Activity activity;
@@ -63,12 +76,11 @@ public class PatientMainActivity extends AppCompatActivity
         Initialization();
         InitializationUI();
         InitializationClass();
-        ShowUserData();
+        DatabaseInitialization();
     }
 
     private void Initialization()
     {
-        UID= FirebaseAuth.getInstance().getCurrentUser().getUid();
         activity=PatientMainActivity.this;
         UserInformation=new ArrayList<>();
     }
@@ -84,6 +96,8 @@ public class PatientMainActivity extends AppCompatActivity
         viewPagerAdapter=new PatientMainActivityViewPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(viewPagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
+
+        myToastClass=new MyToastClass(activity);
     }
 
     private void DrawerAndNavigationStuff()
@@ -97,6 +111,7 @@ public class PatientMainActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
+
         View view=navigationView.getHeaderView(0);
         ProfileImageCiv=view.findViewById(R.id.image_civ);
         ProfileImageCiv.setEnabled(false);
@@ -105,52 +120,39 @@ public class PatientMainActivity extends AppCompatActivity
         ProfileContactNoTv=view.findViewById(R.id.contact_no_tv);
     }
 
-    private void ShowUserData()
+    private void GetAccountDataFromFirebase(boolean result,AccountDataModel dataModel)
     {
-        DatabaseReference reference= FirebaseDatabase.getInstance().getReference().child(DBConst.Account).child(DBConst.Patient).child(UID);
-        reference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot)
+        if (result)
+        {
+            ProfileImageCiv.setEnabled(true);
+            //Show Profile in navigation bar
+            if (!dataModel.getProfileImageUrl().matches("null"))
             {
-                if (dataSnapshot.exists())
-                {
-                    ProfileImageCiv.setEnabled(true);
-                    //Show Profile in navigation bar
-                    if (!dataSnapshot.child(DBConst.Image).getValue().toString().matches("null"))
-                    {
-                        Picasso.get().load(dataSnapshot.child(DBConst.Image).getValue().toString()).into(ProfileImageCiv);
-                    }
-                    ProfileNameTv.setText(dataSnapshot.child(DBConst.Name).getValue().toString());
-                    ProfileContactNoTv.setText(dataSnapshot.child(DBConst.ContactNo).getValue().toString());
-
-                    //Get Data for profile view
-                    UserInformation.add(dataSnapshot.child(DBConst.Image).getValue().toString());
-                    UserInformation.add(dataSnapshot.child(DBConst.Name).getValue().toString());
-                    UserInformation.add(dataSnapshot.child(DBConst.FatherName).getValue().toString());
-                    UserInformation.add(dataSnapshot.child(DBConst.MotherName).getValue().toString());
-                    UserInformation.add(dataSnapshot.child(DBConst.ContactNo).getValue().toString());
-                    UserInformation.add(dataSnapshot.child(DBConst.Address).getValue().toString());
-                    UserInformation.add(dataSnapshot.child(DBConst.Gender).getValue().toString());
-                    UserInformation.add(dataSnapshot.child(DBConst.BloodGroup).getValue().toString());
-                    UserInformation.add(dataSnapshot.child(DBConst.BirthDate).getValue().toString());
-                    UserInformation.add(dataSnapshot.child(DBConst.BirthCertificateNo).getValue().toString());
-                }
-                else
-                {
-                    intent=new Intent(activity,EditPatientProfileActivity.class);
-                    startActivity(intent);
-                }
+                Picasso.get().load(dataModel.getProfileImageUrl()).into(ProfileImageCiv);
             }
+            ProfileNameTv.setText(dataModel.getName());
+            ProfileContactNoTv.setText(dataModel.getContactNo());
+        }
+        else
+        {
+            ProfileImageCiv.setEnabled(false);
+            intent=new Intent(activity,EditPatientProfileActivity.class);
+            startActivity(intent);
+        }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError)
-            {
-                //Disable the ProfileImageCiv
-                ProfileImageCiv.setEnabled(false);
-            }
-        });
+        //Get Data for profile view
+        UserInformation.add(dataModel.getProfileImageUrl());
+        UserInformation.add(dataModel.getName());
+        UserInformation.add(dataModel.getFatherName());
+        UserInformation.add(dataModel.getMotherName());
+        UserInformation.add(dataModel.getContactNo());
+        UserInformation.add(dataModel.getGender());
+        UserInformation.add(dataModel.getBloodGroup());
+        UserInformation.add(dataModel.getBirthDate());
+        UserInformation.add(dataModel.getAddress());
+        UserInformation.add(dataModel.getBirthCertificateNo());
+
     }
-
 
     @Override
     public void onBackPressed() {
@@ -192,7 +194,7 @@ public class PatientMainActivity extends AppCompatActivity
         }
         else if (id==R.id.store_medical_history_item)
         {
-
+            myToastClass.LToast("Under Construction");
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -209,8 +211,8 @@ public class PatientMainActivity extends AppCompatActivity
                 GotoProfileView();
                 break;
             case R.id.signout_btn:
-                FirebaseAuth.getInstance().signOut();
-                intent=new Intent(activity, SignInActivity.class);
+                importantTaskOfDB.SignOut();
+                intent=new Intent(activity,SignInActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
                 break;
@@ -220,7 +222,52 @@ public class PatientMainActivity extends AppCompatActivity
     private void GotoProfileView()
     {
         intent=new Intent(activity,PatientProfileView.class);
-        intent.putExtra(DBConst.Patient,UserInformation);
+        intent.putStringArrayListExtra(DBConst.Patient,UserInformation);
         startActivity(intent);
+    }
+
+
+    ///******************************Database Part******************************///
+    private void DatabaseInitialization()
+    {
+        accountDB=new AccountDB(activity);
+        accountDB.GetPatientAccountData();
+
+        importantTaskOfDB=new ImportantTaskOfDB(activity);
+    }
+    @Override
+    public void GetAccount(boolean result,ArrayList<AccountDataModel> arrayList)
+    {
+        GetAccountDataFromFirebase
+                (result,new AccountDataModel
+                                (
+                                        arrayList.get(0).getProfileImageUrl(),
+                                        arrayList.get(0).getName(),
+                                        arrayList.get(0).getFatherName(),
+                                        arrayList.get(0).getMotherName(),
+                                        arrayList.get(0).getContactNo(),
+                                        arrayList.get(0).getGender(),
+                                        arrayList.get(0).getBloodGroup(),
+                                        arrayList.get(0).getBirthDate(),
+                                        arrayList.get(0).getAddress(),
+                                        arrayList.get(0).getBirthCertificateNo(),
+                                        arrayList.get(0).getBirthCertificateImageUrl(),
+                                        arrayList.get(0).getAnotherDocumentImageUrl()
+                                )
+                );
+    }
+    @Override
+    public void AccountSavingResult(boolean result) {
+        //Not Using
+    }
+
+    @Override
+    public void ImportantTaskResult(boolean result) {
+
+    }
+
+    @Override
+    public void ImportantTaskResultAndData(boolean result, String data) {
+
     }
 }

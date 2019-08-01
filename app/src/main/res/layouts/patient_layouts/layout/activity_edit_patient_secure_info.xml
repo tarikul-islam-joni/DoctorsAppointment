@@ -28,17 +28,17 @@
             android:layout_height="wrap_content"
             android:imeOptions="actionDone"
             android:hint="Birth Certificate Number"/>
+        <ImageView
+            android:id="@+id/image_view_1"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_gravity="center"
+            android:src="@color/colorRed"/>
         <Button
             android:id="@+id/bn_photo_upload_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Birth certificate photo"/>
-        <ImageView
-            android:id="@+id/bn_photo_iv"
-            android:layout_width="200dp"
-            android:layout_height="200dp"
-            android:layout_gravity="center"
-            android:src="@color/colorRed"/>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -48,17 +48,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="This birth certificate number encountered a problem\nPlease upload another document like NID/Passport/Educational Document that we can verify that it is you."/>
+            <ImageView
+                android:id="@+id/image_view_2"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:src="@color/colorRed"
+                android:layout_gravity="center"/>
             <Button
                 android:id="@+id/upload_another_doc_btn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Upload another valid document"/>
-            <ImageView
-                android:id="@+id/another_doc_iv"
-                android:layout_width="200dp"
-                android:layout_height="200dp"
-                android:src="@color/colorRed"
-                android:layout_gravity="center"/>
         </LinearLayout>
         <Button
             android:id="@+id/confirm_btn"

@@ -13,57 +13,56 @@ import com.google.android.gms.location.LocationAvailability;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
-import com.tarikulislamjoni95.doctorsappointment.Interface.MyCommunicator;
+import com.tarikulislamjoni95.doctorsappointment.Interface.GetLocationInterface;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class MyLocationClass
-{
-    private MyCommunicator communicator;
+public class MyLocationClass {
+    private GetLocationInterface locationInterface;
     private MyResultReceiver resultReceiver;
     private Intent intent;
     private LocationCallback locationCallback;
     private Activity activity;
-    public MyLocationClass(Activity activity)
-    {
-        this.activity=activity;
-        intent=new Intent(activity,MyLocationService.class);
-        resultReceiver=new MyResultReceiver(null);
-        communicator=(MyCommunicator)activity;
+
+    public MyLocationClass(Activity activity) {
+        this.activity = activity;
+        intent = new Intent(activity, MyLocationService.class);
+        resultReceiver = new MyResultReceiver(null);
+        locationInterface = (GetLocationInterface) activity;
     }
+
     @SuppressLint("MissingPermission")
-    public void GetCoOrdinateFromMaps()
-    {
-        final FusedLocationProviderClient fusedLocationProviderClient=new FusedLocationProviderClient(activity);
-        LocationRequest locationRequest=new LocationRequest();
+    public void GetCoOrdinateFromMaps() {
+        final FusedLocationProviderClient fusedLocationProviderClient = new FusedLocationProviderClient(activity);
+        LocationRequest locationRequest = new LocationRequest();
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         locationRequest.setInterval(1000);
         locationRequest.setFastestInterval(1000);
-        locationCallback=new LocationCallback()
-        {
+        locationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(LocationResult locationResult) {
                 super.onLocationResult(locationResult);
-                intent.putExtra(VARConst.RECEIVER,resultReceiver);
+                intent.putExtra(VARConst.RECEIVER, resultReceiver);
                 intent.putExtra(VARConst.FETCH_TYPE, VARConst.TYPE_02_ADDRESS_COORDINATE);
-                intent.putExtra(VARConst.ADDRESS_LOCATION,locationResult.getLastLocation());
+                intent.putExtra(VARConst.ADDRESS_LOCATION, locationResult.getLastLocation());
                 activity.startService(intent);
                 fusedLocationProviderClient.removeLocationUpdates(locationCallback);
             }
 
             @Override
             public void onLocationAvailability(LocationAvailability locationAvailability) {
-                Map<Integer,String> map=new HashMap<>();
-                if (!locationAvailability.isLocationAvailable())
-                {
-                    map.put(0,"Turn on your location");
-                    communicator.GetDataFromCommunicator("LocationError",map);
+                Map<Integer, String> map = new HashMap<>();
+                if (!locationAvailability.isLocationAvailable()) {
+                    map.put(0, "Turn on your location");
+                    locationInterface.GetLocation("LocationError", map);
                 }
                 super.onLocationAvailability(locationAvailability);
             }
         };
-        fusedLocationProviderClient.requestLocationUpdates(locationRequest,locationCallback,null);
+
+
+        fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null);
     }
     public void GetCoOrdinateFromAddress(String AddressString)
     {
@@ -90,7 +89,7 @@ public class MyLocationClass
                 map.put(0,address.getAddressLine(0));
                 map.put(1,String.valueOf(address.getLatitude()));
                 map.put(2,String.valueOf(address.getLongitude()));
-                communicator.GetDataFromCommunicator(VARConst.ADDRESS_NAME,map);
+                locationInterface.GetLocation(VARConst.ADDRESS_NAME,map);
             }
             else if (resultCode== VARConst.TYPE_02_ADDRESS_COORDINATE)
             {
@@ -99,14 +98,14 @@ public class MyLocationClass
                 map.put(0,address.getAddressLine(0));
                 map.put(1,String.valueOf(address.getLatitude()));
                 map.put(2,String.valueOf(address.getLongitude()));
-                communicator.GetDataFromCommunicator(VARConst.ADDRESS_LOCATION,map);
+                locationInterface.GetLocation(VARConst.ADDRESS_LOCATION,map);
             }
             else if (resultCode== VARConst.TYPE_03_ERROR)
             {
                 String error=resultData.getString("");
                 Map<Integer,String> map=new HashMap<>();
                 map.put(0,error);
-                communicator.GetDataFromCommunicator("LocationError",map);
+                locationInterface.GetLocation("LocationError",map);
             }
         }
     }

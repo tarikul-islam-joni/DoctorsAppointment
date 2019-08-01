@@ -13,11 +13,14 @@
             android:layout_gravity="center"
             android:src="@drawable/male_doc"/>
         <TextView
+            android:textColor="@color/colorRed"
+            android:textSize="25sp"
             android:id="@+id/name_tv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"/>
         <TextView
+            android:textSize="20sp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="About Details"
@@ -29,10 +32,14 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
             <TextView
+                android:textColor="#000000"
+                android:textSize="18sp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Medical College Studied : "/>
             <TextView
+                android:textColor="#000000"
+                android:textSize="18sp"
                 android:id="@+id/studied_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
@@ -42,10 +49,14 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
             <TextView
+                android:textColor="#000000"
+                android:textSize="18sp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Year Garduated : "/>
             <TextView
+                android:textColor="#000000"
+                android:textSize="18sp"
                 android:id="@+id/year_grad_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
@@ -55,10 +66,14 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
             <TextView
+                android:textColor="#000000"
+                android:textSize="18sp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Degree Completed : "/>
             <TextView
+                android:textColor="#000000"
+                android:textSize="18sp"
                 android:id="@+id/degree_completed_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
@@ -68,19 +83,8 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="BMDC Registration Number : "/>
-            <TextView
-                android:id="@+id/bmdc_reg_tv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <TextView
+                android:textColor="#000000"
+                android:textSize="18sp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Speciality : "/>
@@ -94,10 +98,14 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
             <TextView
+                android:textColor="#000000"
+                android:textSize="18sp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="No. of Year Practicing : "/>
             <TextView
+                android:textColor="#000000"
+                android:textSize="18sp"
                 android:id="@+id/no_of_prac_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
@@ -107,11 +115,33 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
             <TextView
+                android:textColor="#000000"
+                android:textSize="18sp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Available Area : "/>
             <TextView
+                android:textColor="#000000"
+                android:textSize="18sp"
                 android:id="@+id/available_area_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Appointment availability status: "
+                android:textColor="#000000"
+                android:textSize="18sp" />
+            <TextView
+                android:textColor="@color/colorRed"
+                android:textSize="20sp"
+                android:id="@+id/appointment_availability_status_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
         </LinearLayout>

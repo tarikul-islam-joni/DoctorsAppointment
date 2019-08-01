@@ -1,6 +1,5 @@
 package com.tarikulislamjoni95.doctorsappointment.AccountPart;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
@@ -15,34 +14,35 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import com.facebook.login.widget.LoginButton;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.tarikulislamjoni95.doctorsappointment.DatabasePart.AccountStatusDB;
+import com.tarikulislamjoni95.doctorsappointment.DatabasePart.AccountStatusDataModel;
 import com.tarikulislamjoni95.doctorsappointment.DoctorPart.EditDoctorProfileActivity;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.VARConst;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.DBConst;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.MyLoadingDailog;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.MyTextWatcher;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.MyToastClass;
-import com.tarikulislamjoni95.doctorsappointment.Interface.MyCommunicator;
+import com.tarikulislamjoni95.doctorsappointment.Interface.AccountStatusDBInterface;
+import com.tarikulislamjoni95.doctorsappointment.Interface.AccountCreationInterface;
 import com.tarikulislamjoni95.doctorsappointment.PatientPart.EditPatientProfileActivity;
 import com.tarikulislamjoni95.doctorsappointment.R;
 
-import java.util.Map;
+import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class SignUpActivity extends AppCompatActivity implements View.OnClickListener, MyCommunicator {
+public class SignUpActivity extends AppCompatActivity implements View.OnClickListener ,
+        AccountCreationInterface,AccountStatusDBInterface {
 
     //Class Variable
     private MyToastClass myToast;
-    private SignInOrSignUpHelperClass SignUpHelperClass;
     private MyLoadingDailog myLoadingDailog;
+
+    private SignInOrSignUpHelperClass SignUpHelperClass;
+    private AccountStatusDB accountStatusDB;
 
     //Database Variable
     FirebaseAuth myAuth;
@@ -51,6 +51,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     //Important component
     private Activity activity;
     private Intent intent;
+
 
     //Primitive Variable
     private int VALIDITY_COLOR;
@@ -74,96 +75,134 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         InitializationUI();
         InitializationClass();
     }
+    //Initialization of some important variable
     private void Initialization()
     {
         activity=SignUpActivity.this;
         myAuth=FirebaseAuth.getInstance();
         myRef= FirebaseDatabase.getInstance().getReference();
+        VALIDITY_COLOR= ContextCompat.getColor(activity,R.color.colorGreen);
     }
+    //Initialization of UI variable
     private void InitializationUI()
     {
-        SignUpTypeCiv=findViewById(R.id.signup_type_civ);
+        SignUpTypeCiv=findViewById(R.id.image_civ);
 
-        SignUpEmailSection=findViewById(R.id.email_sign_up_section);
-        SignUpPhoneSection=findViewById(R.id.phone_sign_up_section);
+        SignUpEmailSection=findViewById(R.id.email_section);
+        SignUpPhoneSection=findViewById(R.id.phone_section);
 
-        SignUpEmailEt=findViewById(R.id.signup_email_et);
-        SignUpEmailEt.addTextChangedListener(new MyTextWatcher(activity, VARConst.EMAIL_VALIDITY,R.id.signup_email_et));
-        SignUpPasswordEt=findViewById(R.id.signup_password_et);
-        SignUpPasswordEt.addTextChangedListener(new MyTextWatcher(activity, VARConst.PASSWORD_VALIDITY,R.id.signup_password_et));
-        SignUpRetypePasswordEt=findViewById(R.id.signup_retype_password_et);
-        SignUpRetypePasswordEt.addTextChangedListener(new MyTextWatcher(activity, VARConst.PASSWORD_VALIDITY,R.id.signup_retype_password_et));
-        SignupPhoneEt=findViewById(R.id.signup_phone_et);
-        SignupPhoneEt.addTextChangedListener(new MyTextWatcher(activity, VARConst.PHONE_VALIDITY,R.id.signup_phone_et));
-        SignUpPhoneVerificationCodeEt=findViewById(R.id.signup_phone_verification_code_et);
-        SignUpPhoneVerificationCodeEt.addTextChangedListener(new MyTextWatcher(activity, VARConst.VERIFICATION_CODE_VALIDITY,R.id.signup_phone_verification_code_et));
+        SignUpEmailEt=findViewById(R.id.email_et);
+        SignUpEmailEt.setOnEditorActionListener(new MyTextWatcher(activity).actionListener);
+        SignUpEmailEt.addTextChangedListener(new MyTextWatcher(activity, VARConst.EMAIL_VALIDITY,R.id.email_et));
 
-        SignUpPatientBtn=findViewById(R.id.signup_patient_btn);
+        SignUpPasswordEt=findViewById(R.id.password_et);
+        SignUpPasswordEt.setOnEditorActionListener(new MyTextWatcher(activity).actionListener);
+        SignUpPasswordEt.addTextChangedListener(new MyTextWatcher(activity, VARConst.PASSWORD_VALIDITY,R.id.password_et));
+
+        SignUpRetypePasswordEt=findViewById(R.id.retype_password_et);
+        SignUpRetypePasswordEt.setOnEditorActionListener(new MyTextWatcher(activity).actionListener);
+        SignUpRetypePasswordEt.addTextChangedListener(new MyTextWatcher(activity, VARConst.PASSWORD_VALIDITY,R.id.retype_password_et));
+
+        SignupPhoneEt=findViewById(R.id.phone_et);
+        SignupPhoneEt.setOnEditorActionListener(new MyTextWatcher(activity).actionListener);
+        SignupPhoneEt.addTextChangedListener(new MyTextWatcher(activity, VARConst.PHONE_VALIDITY,R.id.phone_et));
+
+        SignUpPhoneVerificationCodeEt=findViewById(R.id.verification_code_et);
+        SignUpPhoneVerificationCodeEt.setOnEditorActionListener(new MyTextWatcher(activity).actionListener);
+        SignUpPhoneVerificationCodeEt.addTextChangedListener(new MyTextWatcher(activity, VARConst.VERIFICATION_CODE_VALIDITY,R.id.verification_code_et));
+
+        SignUpPatientBtn=findViewById(R.id.patient_btn);
         SignUpPatientBtn.setBackgroundColor(ContextCompat.getColor(activity,R.color.colorGreen));
         SignUpPatientBtn.setOnClickListener(this);
-        SignUpDoctorBtn=findViewById(R.id.signup_doctor_btn);
+
+        SignUpDoctorBtn=findViewById(R.id.doctor_btn);
         SignUpDoctorBtn.setOnClickListener(this);
-        SignUpEmailSignUpBtn=findViewById(R.id.signup_email_signup_btn);
+
+        SignUpEmailSignUpBtn=findViewById(R.id.email_confirm_btn);
         SignUpEmailSignUpBtn.setOnClickListener(this);
-        SignUpPhoneSignUpBtn=findViewById(R.id.signup_send_verification_code_btn);
+
+        SignUpPhoneSignUpBtn=findViewById(R.id.send_verification_code_btn);
         SignUpPhoneSignUpBtn.setOnClickListener(this);
-        SignUpPhoneSignUpComfirmBtn=findViewById(R.id.signup_phone_confirm_btn);
+
+        SignUpPhoneSignUpComfirmBtn=findViewById(R.id.phone_confirm_btn);
         SignUpPhoneSignUpComfirmBtn.setOnClickListener(this);
-        SignUpChooseEmailOrPhoneBtn=findViewById(R.id.signup_choose_email_or_phone_section_btn);
+
+        SignUpChooseEmailOrPhoneBtn=findViewById(R.id.choose_email_or_phone_section_btn);
         SignUpChooseEmailOrPhoneBtn.setOnClickListener(this);
-        SignUpGoogleSignUpBtn=findViewById(R.id.signup_google_signup_btn);
+
+        SignUpGoogleSignUpBtn=findViewById(R.id.google_sign_in_or_up_btn);
         SignUpGoogleSignUpBtn.setOnClickListener(this);
-        SignUpFacebookSignUpBtn=findViewById(R.id.signup_facebook_signup_btn);
+
+        SignUpFacebookSignUpBtn=findViewById(R.id.facebook_sign_in_or_up_btn);
         SignUpFacebookSignUpBtn.setOnClickListener(this);
-        SignUpAlreadyHasAnAccountSignInBtn=findViewById(R.id.signup_already_have_an_account_signup_btn);
+
+        SignUpAlreadyHasAnAccountSignInBtn=findViewById(R.id.goto_sign_in_or_up_btn);
         SignUpAlreadyHasAnAccountSignInBtn.setOnClickListener(this);
     }
+    //Initialization of class variable
     private void InitializationClass()
     {
-        VALIDITY_COLOR= ContextCompat.getColor(activity,R.color.colorGreen);
         myToast=new MyToastClass(activity);
         SignUpHelperClass=new SignInOrSignUpHelperClass(activity);
         myLoadingDailog=new MyLoadingDailog(activity,R.drawable.spinner);
+        accountStatusDB=new AccountStatusDB(activity);
     }
     @Override
     public void onClick(View view)
     {
         switch (view.getId())
         {
-            case R.id.signup_patient_btn:
+            case R.id.patient_btn:
                 AccoutTypeString=DBConst.Patient;
                 SignUpTypeCiv.setImageResource(R.drawable.patient);
                 SignUpPatientBtn.setBackgroundColor(ContextCompat.getColor(activity,R.color.colorGreen));
                 SignUpDoctorBtn.setBackgroundColor(ContextCompat.getColor(activity,R.color.colorWhite));
                 break;
-            case R.id.signup_doctor_btn:
+            case R.id.doctor_btn:
                 AccoutTypeString=DBConst.Doctor;
                 SignUpTypeCiv.setImageResource(R.drawable.male_doc);
                 SignUpDoctorBtn.setBackgroundColor(ContextCompat.getColor(activity,R.color.colorGreen));
                 SignUpPatientBtn.setBackgroundColor(ContextCompat.getColor(activity,R.color.colorWhite));
                 break;
-            case R.id.signup_email_signup_btn:
+            case R.id.email_confirm_btn:
                 EmailSignUp();
                 break;
-            case R.id.signup_send_verification_code_btn:
+            case R.id.send_verification_code_btn:
                 PhoneSignUp();
                 break;
-            case R.id.signup_phone_confirm_btn:
+            case R.id.phone_confirm_btn:
                 PhoneSignUpCompleting();
                 break;
-            case R.id.signup_google_signup_btn:
+            case R.id.google_sign_in_or_up_btn:
                 GoogleSignUp();
                 break;
-            case R.id.signup_facebook_signup_btn:
+            case R.id.facebook_sign_in_or_up_btn:
                 FacebookSignUp();
-            case R.id.signup_choose_email_or_phone_section_btn:
+            case R.id.choose_email_or_phone_section_btn:
                 ChooseEmailOrPhoneMethod();
                 break;
-            case R.id.signup_already_have_an_account_signup_btn:
+            case R.id.goto_sign_in_or_up_btn:
                 GotoSignInActivity();
                 break;
         }
     }
+
+    private void ShowLoadingDialog()
+    {
+        if (!myLoadingDailog.isShowing())
+        {
+            myLoadingDailog.show();
+        }
+    }
+    private void CancelLoadingDialog()
+    {
+        if (myLoadingDailog.isShowing())
+        {
+            myLoadingDailog.dismiss();
+        }
+    }
+
+    //*** Email SignUp method starting from here and other proccess completing in implementation section ***//
     private void EmailSignUp()
     {
         if (SignUpEmailEt.getCurrentTextColor()!=VALIDITY_COLOR)
@@ -184,15 +223,16 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         }
         else
         {
-            if (!myLoadingDailog.isShowing())
-            {
-                myLoadingDailog.show();
-            }
+            ShowLoadingDialog();
             EmailString=SignUpEmailEt.getText().toString();
             PasswordString=SignUpPasswordEt.getText().toString();
+
+            //Account Creating Part Started and Check the result in implementation section
             SignUpHelperClass.EmailSignInOrUp(VARConst.SIGN_UP_ACTIVITY,EmailString,PasswordString);
         }
     }
+
+    //*** Phone SignUp method starting from here and other proccess completing in implementation section ***//
     private void PhoneSignUp()
     {
         if (SignupPhoneEt.getCurrentTextColor()!=VALIDITY_COLOR)
@@ -201,12 +241,11 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         }
         else
         {
-            if (!myLoadingDailog.isShowing())
-            {
-                myLoadingDailog.show();
-            }
-            PhoneString="+88"+SignupPhoneEt.getText().toString();
+            ShowLoadingDialog();
+            PhoneString=SignupPhoneEt.getText().toString();
+            //Account Creating Part Started and Check the result in implementation section
             SignUpHelperClass.PhoneSignIn(PhoneString);
+
             SignUpPhoneVerificationCodeEt.setEnabled(true);
             SignUpPhoneSignUpComfirmBtn.setEnabled(true);
             SignupPhoneEt.setEnabled(false);
@@ -217,6 +256,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
             }
         }
     }
+    //*** Phone signup resend code option delay method for several seconds ***//
     private boolean ResendDelay()
     {
         RESEND_COUNTER--;
@@ -247,6 +287,8 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
             return false;
         }
     }
+
+    //*** Phone SignUp code verification method starting from here and other proccess completing in implementation section ***//
     private void PhoneSignUpCompleting()
     {
         if (SignUpPhoneVerificationCodeEt.getText().toString().matches(""))
@@ -259,27 +301,34 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         }
         else
         {
-            if (!myLoadingDailog.isShowing())
-            {
-                myLoadingDailog.show();
-            }
+            ShowLoadingDialog();
             String VerificationCodeString=SignUpPhoneVerificationCodeEt.getText().toString();
+
+            //Account Creating Part Started and Check the result in implementation section
             SignUpHelperClass.PhoneVerificationComplete(VerificationCodeString);
         }
     }
+    //*** Google SignUp method starting from here and other proccess completing in implementation section ***//
     private void GoogleSignUp()
     {
+        //Account Creating Part Started and Check the result in implementation section
         SignUpHelperClass.GoogleSignIn();
     }
+    //*** Facebook SignUp method starting from here and other proccess completing in implementation section ***//
     private void FacebookSignUp()
     {
-        SignUpHelperClass.FacebookSignIn(R.id.signup_facebook_signup_btn);
+        //Account Creating Part Started and Check the result in implementation section
+        SignUpHelperClass.FacebookSignIn(R.id.facebook_sign_in_or_up_btn);
     }
+
+    //*** Goto Sign in activity directly ***//
     private void GotoSignInActivity()
     {
         intent=new Intent(activity,SignInActivity.class);
         startActivity(intent);
     }
+
+    //*** Email or Phone Sign Up Choosing section ***//
     private void ChooseEmailOrPhoneMethod()
     {
         if (ChooseEmailOrPhone)
@@ -298,55 +347,78 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
+    ///**** This method is called from AccountStatusSavingResult method ****///
+    private void GotoNextActivity()
+    {
+        if (AccoutTypeString.matches(DBConst.Patient))
+        {
+            Intent intent=new Intent(activity, EditPatientProfileActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        }
+        else if (AccoutTypeString.matches(DBConst.Doctor))
+        {
+            Intent intent=new Intent(activity, EditDoctorProfileActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        }
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         SignUpHelperClass.onActivityResult(requestCode,resultCode,data);
     }
+
+
+
+
+    //Account Creating Part interface implementation section
+    ///************************Account Creation Interface***********************///
     @Override
-    public void Communicator(String FromWhichMethod, boolean result)
+    public void AccountCreationResult(String FromWhichMethod, boolean result)
     {
-        if (myLoadingDailog.isShowing())
-        {
-            myLoadingDailog.dismiss();
-        }
         switch (FromWhichMethod)
         {
             case VARConst.EMAIL_SIGN_UP:
                 if (result)
                 {
                     myToast.LToast("Account successfully created\nPlease verify for next sign in...");
-                    GotoNextStep();
+                    SaveAccountInformationIntoDatabase();
                 }
                 else
                 {
+                    CancelLoadingDialog();
                     myToast.LToast("Account creation failed.");
                 }
                 break;
             case VARConst.PHONE_SIGN_IN:
                 if (result)
                 {
+                    CancelLoadingDialog();
                     myToast.LToast("Verification code sent to "+PhoneString);
                 }
                 else
                 {
+                    CancelLoadingDialog();
                     myToast.LToast("Verification code couldn't sent to "+PhoneString);
                 }
                 break;
             case VARConst.PHONE_SIGN_IN_STATUS:
                 if (result)
                 {
-                    GotoNextStep();
+                    SaveAccountInformationIntoDatabase();
                 }
                 else
                 {
+                    CancelLoadingDialog();
                     myToast.LToast("Verification code not matched !");
                 }
                 break;
             case VARConst.GOOGLE_SIGN_IN_STATUS:
                 if (result)
                 {
-                    GotoNextStep();
+                    SaveAccountInformationIntoDatabase();
                 }
                 else
                 {
@@ -359,7 +431,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
             case VARConst.FACEBOOK_SIGN_IN_STATUS:
                 if (result)
                 {
-                    GotoNextStep();
+                    SaveAccountInformationIntoDatabase();
                 }
                 else
                 {
@@ -373,77 +445,39 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
-    private void GotoNextStep()
+    //**** Save Account information into database ****//
+    //*** This method is called from AccountCreationResult method ***///
+    private void SaveAccountInformationIntoDatabase()
     {
-        if (!myLoadingDailog.isShowing())
-        {
-            myLoadingDailog.show();
-        }
-        final String UID=FirebaseAuth.getInstance().getCurrentUser().getUid();
-        DatabaseReference myRef=FirebaseDatabase.getInstance().getReference().child(DBConst.AccountStatus).child(UID);
-        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists())
-                {
-                    if (myLoadingDailog.isShowing())
-                    {
-                        myLoadingDailog.dismiss();
-                    }
-                    myToast.LToast("Account already created.\nGoto sign in page");
-                    FirebaseAuth.getInstance().signOut();
-                }
-                else
-                {
-                    DatabaseReference ref=FirebaseDatabase.getInstance().getReference().child(DBConst.AccountStatus).child(UID);
-                    ref.child(DBConst.AccountType).setValue(AccoutTypeString);
-                    ref.child(DBConst.AccountCompletion).setValue(false);
-                    ref.child(DBConst.AuthorityValidity).setValue(false);
-                    ref.child(DBConst.AccountValidity).setValue(false)
-                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task)
-                                {
-                                    if (task.isComplete())
-                                    {
-                                        if (myLoadingDailog.isShowing())
-                                        {
-                                            myLoadingDailog.dismiss();
-                                        }
-                                        if (AccoutTypeString.matches(DBConst.Patient))
-                                        {
-                                            Intent intent=new Intent(activity, EditPatientProfileActivity.class);
-                                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-                                            startActivity(intent);
-                                        }
-                                        else if (AccoutTypeString.matches(DBConst.Doctor))
-                                        {
-                                            Intent intent=new Intent(activity, EditDoctorProfileActivity.class);
-                                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-                                            startActivity(intent);
-                                        }
-                                    }
-                                    else
-                                    {
-                                        FirebaseAuth.getInstance().getCurrentUser().delete();
-                                    }
-                                }
-                            });
-                }
-            }
+        accountStatusDB.GetUIDAccountStatusData();
+    }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError)
-            {
-                if (myLoadingDailog.isShowing())
-                {
-                    myLoadingDailog.dismiss();
-                }
-                FirebaseAuth.getInstance().signOut();
-            }
-        });
+    ///*******************Account Status DB Interface*********************///
+    @Override
+    public void GetAccountStatus(boolean result, ArrayList<AccountStatusDataModel> arrayList)
+    {
+        if (result)
+        {
+            CancelLoadingDialog();
+            myToast.LToast("Account is already created!Please sign in...");
+        }
+        else
+        {
+            accountStatusDB.SaveIntoAccountStatusDBFromUser(AccoutTypeString,false,false,false);
+        }
     }
 
     @Override
-    public void GetDataFromCommunicator(String FromWhichMethod, Map<Integer, String> map) { }
+    public void AccountStatusSavingResult(boolean result)
+    {
+        CancelLoadingDialog();
+        if (result)
+        {
+            GotoNextActivity();
+        }
+        else
+        {
+            SignUpHelperClass.DeleteAccount();
+        }
+    }
 }

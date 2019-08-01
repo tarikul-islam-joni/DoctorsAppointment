@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -12,7 +13,10 @@ import android.widget.ImageView;
 
 import androidx.annotation.Nullable;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -75,5 +79,24 @@ public class MyImageGettingClass
             }
             IV.setImageURI(resultUri);
         }
+    }
+
+    public byte[] GetCompressImageBytes(int IV_Id)
+    {
+        IV=activity.findViewById(IV_Id);
+        Bitmap bmp=((BitmapDrawable)IV.getDrawable()).getBitmap();
+        ByteArrayOutputStream bao = new ByteArrayOutputStream();
+        bmp.compress(Bitmap.CompressFormat.JPEG, 40,bao); // bmp is bitmap from user image file
+        byte[] byteArray = bao.toByteArray();
+        return byteArray;
+    }
+    public byte[] GetFullImageBytes(int IV_Id)
+    {
+        IV =activity.findViewById(IV_Id);
+        Bitmap bmp=((BitmapDrawable)IV.getDrawable()).getBitmap();
+        ByteArrayOutputStream bao = new ByteArrayOutputStream();
+        bmp.compress(Bitmap.CompressFormat.JPEG, 100,bao); // bmp is bitmap from user image file
+        byte[] byteArray = bao.toByteArray();
+        return byteArray;
     }
 }

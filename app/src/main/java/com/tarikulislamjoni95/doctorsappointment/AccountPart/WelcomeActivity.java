@@ -1,6 +1,4 @@
 package com.tarikulislamjoni95.doctorsappointment.AccountPart;
-
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
@@ -8,34 +6,28 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.tarikulislamjoni95.doctorsappointment.DatabasePart.AccountStatusDataModel;
+import com.tarikulislamjoni95.doctorsappointment.DatabasePart.AccountStatusDB;
 import com.tarikulislamjoni95.doctorsappointment.DoctorPart.DoctorMainActivity;
 import com.tarikulislamjoni95.doctorsappointment.DoctorPart.EditDoctorProfileActivity;
+import com.tarikulislamjoni95.doctorsappointment.DoctorPart.EditDoctorSecureInfo;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.DBConst;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.MyLoadingDailog;
-import com.tarikulislamjoni95.doctorsappointment.HelperClass.MyToastClass;
+import com.tarikulislamjoni95.doctorsappointment.Interface.AccountStatusDBInterface;
 import com.tarikulislamjoni95.doctorsappointment.PatientPart.EditPatientProfileActivity;
 import com.tarikulislamjoni95.doctorsappointment.PatientPart.EditPatientSecureInfoActivity;
 import com.tarikulislamjoni95.doctorsappointment.PatientPart.PatientMainActivity;
 import com.tarikulislamjoni95.doctorsappointment.R;
 
-//Welcome Activity Done
-public class WelcomeActivity extends AppCompatActivity{
+import java.util.ArrayList;
+
+public class WelcomeActivity extends AppCompatActivity implements AccountStatusDBInterface {
 
     private Intent intent;
     private Activity activity;
 
     private MyLoadingDailog myLoadingDailog;
-    private MyToastClass myToastClass;
-    private FirebaseAuth mAuth;
-    private FirebaseUser mUser;
-    private FirebaseDatabase mDatabase;
+    private AccountStatusDB accountStatusDB;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,117 +38,72 @@ public class WelcomeActivity extends AppCompatActivity{
         InitializationClass();
         CheckLoggedInOrNot();
     }
-
     private void Initialization()
     {
         activity=WelcomeActivity.this;
-        mAuth=FirebaseAuth.getInstance();
-        mUser=mAuth.getCurrentUser();
-        mDatabase=FirebaseDatabase.getInstance();
     }
-
     private void InitializationUI()
     {
 
     }
-
     private void InitializationClass()
     {
-        myToastClass=new MyToastClass(WelcomeActivity.this);
         myLoadingDailog=new MyLoadingDailog(WelcomeActivity.this,R.drawable.spinner);
+        accountStatusDB =new AccountStatusDB(activity);
     }
-
     private void CheckLoggedInOrNot()
     {
         if (!myLoadingDailog.isShowing())
         {
             myLoadingDailog.show();
         }
-
-        if (mUser!=null)
-        {
-            CheckAccountValidityAndCompletion();
-        }
-        else
-        {
-            intent=new Intent(activity,SignInActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-            DelayStartingActivityMethod(intent);
-        }
+        accountStatusDB.GetUIDAccountStatusData();
     }
-
-
-    private void CheckAccountValidityAndCompletion()
+    private void CheckAccountValidityAndCompletion(boolean AccountCompletion,String AccountType,boolean AccountValidity)
     {
-        DatabaseReference ref=mDatabase.getReference();
-        ref.child(DBConst.AccountStatus).child(mUser.getUid()).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot)
+        if (AccountType.matches(DBConst.Patient))
+        {
+            if (!AccountCompletion)
             {
-                if (myLoadingDailog.isShowing())
-                {
-                    myLoadingDailog.dismiss();
-                }
-                if (dataSnapshot.exists())
-                {
-                    String AccountType=dataSnapshot.child(DBConst.AccountType).getValue().toString();
-                    boolean AccountCompletion=(boolean)dataSnapshot.child(DBConst.AccountCompletion).getValue();
-                    boolean AccountValidity=(boolean) dataSnapshot.child(DBConst.AccountValidity).getValue();
-                    if (AccountType.matches(DBConst.Patient))
-                    {
-                        if (!AccountCompletion)
-                        {
-                            intent=new Intent(activity, EditPatientProfileActivity.class);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-                            startActivity(intent);
-                        }
-                        else if (!AccountValidity)
-                        {
-                            intent=new Intent(activity, EditPatientSecureInfoActivity.class);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-                            startActivity(intent);
-                        }
-                        else
-                        {
-                            intent=new Intent(activity, PatientMainActivity.class);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-                            startActivity(intent);
-                        }
-                    }
-                    else if (AccountType.matches(DBConst.Doctor))
-                    {
-                       if (AccountValidity&&AccountCompletion)
-                       {
-                           intent=new Intent(activity, DoctorMainActivity.class);
-                           intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-                           startActivity(intent);
-                       }
-                       else if (!AccountCompletion)
-                       {
-                           Intent intent=new Intent(WelcomeActivity.this, EditDoctorProfileActivity.class);
-                           intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-                           startActivity(intent);
-                       }
-                       else if (!AccountValidity)
-                       {
-                           myToastClass.LToast("Give us some time that we can verify your credential\nPlease sign In later");
-                       }
-                    }
-                }
+                intent=new Intent(activity, EditPatientProfileActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
             }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError)
+            else if (!AccountValidity)
             {
-                if (myLoadingDailog.isShowing())
-                {
-                    myLoadingDailog.dismiss();
-                }
-                finish();
+                intent=new Intent(activity, EditPatientSecureInfoActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
             }
-        });
+            else
+            {
+                intent=new Intent(activity, PatientMainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            }
+        }
+        else if (AccountType.matches(DBConst.Doctor))
+        {
+            if (!AccountCompletion)
+            {
+                intent=new Intent(WelcomeActivity.this, EditDoctorProfileActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            }
+            else if (!AccountValidity)
+            {
+                intent=new Intent(activity, EditDoctorSecureInfo.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            }
+            else
+            {
+                intent=new Intent(activity,DoctorMainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            }
+        }
     }
-
     private void DelayStartingActivityMethod(final Intent intent)
     {
         Handler handler=new Handler();
@@ -171,12 +118,35 @@ public class WelcomeActivity extends AppCompatActivity{
             }
         },2000);
     }
-
     @Override
     protected void onDestroy() {
         if (myLoadingDailog.isShowing() ) {
             myLoadingDailog.dismiss();
         }
         super.onDestroy();
+    }
+
+
+    ///************************Database Part**********************************///
+    @Override
+    public void GetAccountStatus(boolean result, ArrayList<AccountStatusDataModel> arrayList)
+    {
+        if (result)
+        {
+            CheckAccountValidityAndCompletion(
+                    arrayList.get(0).isAccountCompletion(),
+                    arrayList.get(0).getAccountType(),
+                    arrayList.get(0).isAccountValidity());
+        }
+        else
+        {
+            intent=new Intent(activity,SignInActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+            DelayStartingActivityMethod(intent);
+        }
+    }
+    @Override
+    public void AccountStatusSavingResult(boolean result) {
+
     }
 }
