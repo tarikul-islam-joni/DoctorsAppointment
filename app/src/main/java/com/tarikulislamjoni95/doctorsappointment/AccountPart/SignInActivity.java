@@ -17,11 +17,9 @@ import androidx.core.content.ContextCompat;
 
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.common.SignInButton;
-import com.google.firebase.auth.FirebaseAuth;
-import com.tarikulislamjoni95.doctorsappointment.DatabasePart.AccountStatusDB;
-import com.tarikulislamjoni95.doctorsappointment.DatabasePart.AccountStatusDataModel;
-import com.tarikulislamjoni95.doctorsappointment.DatabasePart.ImportantTaskOfDB;
-import com.tarikulislamjoni95.doctorsappointment.DatabasePart.ReportDB;
+import com.tarikulislamjoni95.doctorsappointment.AdminPart.AdminMainActivity;
+import com.tarikulislamjoni95.doctorsappointment.DatabasePart.AccountStatusDM;
+import com.tarikulislamjoni95.doctorsappointment.DatabasePart.MyDatabaseClass;
 import com.tarikulislamjoni95.doctorsappointment.DoctorPart.DoctorMainActivity;
 import com.tarikulislamjoni95.doctorsappointment.DoctorPart.EditDoctorProfileActivity;
 import com.tarikulislamjoni95.doctorsappointment.DoctorPart.EditDoctorSecureInfo;
@@ -32,7 +30,6 @@ import com.tarikulislamjoni95.doctorsappointment.HelperClass.MyTextWatcher;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.MyToastClass;
 import com.tarikulislamjoni95.doctorsappointment.Interface.AccountCreationInterface;
 import com.tarikulislamjoni95.doctorsappointment.Interface.AccountStatusDBInterface;
-import com.tarikulislamjoni95.doctorsappointment.Interface.ImportantTaskOfDBInterface;
 import com.tarikulislamjoni95.doctorsappointment.PatientPart.EditPatientProfileActivity;
 import com.tarikulislamjoni95.doctorsappointment.PatientPart.EditPatientSecureInfoActivity;
 import com.tarikulislamjoni95.doctorsappointment.PatientPart.PatientMainActivity;
@@ -40,13 +37,10 @@ import com.tarikulislamjoni95.doctorsappointment.R;
 
 import java.util.ArrayList;
 
-public class SignInActivity extends AppCompatActivity implements View.OnClickListener, AccountCreationInterface, AccountStatusDBInterface, ImportantTaskOfDBInterface
+public class SignInActivity extends AppCompatActivity implements View.OnClickListener, AccountCreationInterface, AccountStatusDBInterface
 {
     //Class Variable
-    private SignInOrSignUpHelperClass SignInHelperClass;
-    private AccountStatusDB accountStatusDB;
-    private ImportantTaskOfDB importantTaskOfDB;
-    private ReportDB reportDB;
+    private MyDatabaseClass myDatabaseClass;
     private MyLoadingDailog myLoadingDailog;
     private MyToastClass myToast;
 
@@ -58,12 +52,11 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
     private int RESEND_EMAIL_COUNTER=1;
     private int DELAY_TIMER=60;
     private int SET_DELAY_TIMER=60000;
-    private String UID;
 
     //Component Variable
     private Activity activity;
     private Intent intent;
-    private AlertDialog dialog;
+    private AlertDialog ResendDialog;
 
     //UI Variable
     private LinearLayout EmailSignInSection,PhoneSignInSection;
@@ -132,10 +125,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
     {
         myToast=new MyToastClass(activity);
         myLoadingDailog=new MyLoadingDailog(activity,R.drawable.spinner);
-        SignInHelperClass=new SignInOrSignUpHelperClass(activity);
-        accountStatusDB=new AccountStatusDB(activity);
-        importantTaskOfDB=new ImportantTaskOfDB(activity);
-        reportDB=new ReportDB();
+        myDatabaseClass=new MyDatabaseClass(activity);
     }
     @Override
     public void onClick(View view)
@@ -181,6 +171,32 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
+    ///**** Email or Phone Sign In Section Choosing method *****//
+    private void ChooseEmailOrPhoneSectionMethod()
+    {
+        if (ChooseEmailOrPhoneSignIn)
+        {
+            SignInChooseEmailOrPhoneSectionBtn.setText("Email Sign In");
+            EmailSignInSection.setVisibility(View.GONE);
+            PhoneSignInSection.setVisibility(View.VISIBLE);
+            ChooseEmailOrPhoneSignIn=false;
+        }
+        else
+        {
+            SignInChooseEmailOrPhoneSectionBtn.setText("Phone Sign In");
+            PhoneSignInSection.setVisibility(View.GONE);
+            EmailSignInSection.setVisibility(View.VISIBLE);
+            ChooseEmailOrPhoneSignIn=true;
+        }
+    }
+
+    ///**** Goto directly SignUp Activity method *****//
+    private void NeedAccountSignUpMethod()
+    {
+        intent=new Intent(activity,SignUpActivity.class);
+        startActivity(intent);
+    }
+
     ///**** Email Sign In Process get started and next process are in implementation section ****///
     private void EmailSignInMethod()
     {
@@ -193,14 +209,14 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         }
         else
         {
-            ShowLoadingDialog();
             EmailString=SignInEmailEt.getText().toString();
             PasswordString=SignInPasswordEt.getText().toString();
 
             ///**** Email Sign In Process get started *****//
-            SignInHelperClass.EmailSignInOrUp(VARConst.SIGN_IN_ACTIVITY,EmailString,PasswordString);
+            CallDBForEmailSignIn(EmailString,PasswordString);
         }
     }
+
 
     ///**** Phone Sign In Process get started and next process are in implementation section ****///
     private void SendPhoneVerificationMethod()
@@ -211,11 +227,10 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         }
         else
         {
-            ShowLoadingDialog();
             PhoneString=SignInPhoneEt.getText().toString();
 
             ///**** Phone Sign In Process get started *****//
-            SignInHelperClass.PhoneSignIn(PhoneString);
+            CallDBForPhoneSignIn(PhoneString);
 
             SignInPhoneVerificationCodeEt.setEnabled(true);
             SignInPhoneConfirmBtn.setEnabled(true);
@@ -255,157 +270,47 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
     ///**** Phone Sign In Completing Process get started and next process are in implementation section ****///
     private void PhoneSignInConfirmMethod()
     {
-        myLoadingDailog.show();
         if (SignInPhoneVerificationCodeEt.getCurrentTextColor()==VALIDATION_GREEN)
         {
             ///**** Phone Sign In Completing Process get started *****//
-            SignInHelperClass.PhoneVerificationComplete(SignInPhoneVerificationCodeEt.getText().toString());
+            CallDBForPhoneSignInVerification(SignInPhoneVerificationCodeEt.getText().toString());
         }
     }
+
     ///**** Google Sign In Process get started and next process are in implementation section ****///
     private void GoogleSignInMethod()
     {
         ///**** Google Sign In Process get started *****//
-        SignInHelperClass.GoogleSignIn();
+        CallDBForGoogleSignIn();
     }
+
+
     ///**** Facebook Sign In Process get started and next process are in implementation section ****///
     private void FacebookSignInMethod()
     {
-        SignInHelperClass.FacebookSignIn(R.id.sign_in_facebook_signin_btn);
-    }
-
-    ///**** Email or Phone Sign In Section Choosing method *****//
-    private void ChooseEmailOrPhoneSectionMethod()
-    {
-        if (ChooseEmailOrPhoneSignIn)
-        {
-            SignInChooseEmailOrPhoneSectionBtn.setText("Email Sign In");
-            EmailSignInSection.setVisibility(View.GONE);
-            PhoneSignInSection.setVisibility(View.VISIBLE);
-            ChooseEmailOrPhoneSignIn=false;
-        }
-        else
-        {
-            SignInChooseEmailOrPhoneSectionBtn.setText("Phone Sign In");
-            PhoneSignInSection.setVisibility(View.GONE);
-            EmailSignInSection.setVisibility(View.VISIBLE);
-            ChooseEmailOrPhoneSignIn=true;
-        }
-    }
-
-    ///**** Goto directly SignUp Activity method *****//
-    private void NeedAccountSignUpMethod()
-    {
-        intent=new Intent(activity,SignUpActivity.class);
-        startActivity(intent);
+        ///**** Facebook Sign In Process get started *****//
+        CallDBForFacebookSignIn(SignInFacebookSignInBtn.getId());
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        SignInHelperClass.onActivityResult(requestCode,resultCode,data);
+        CallDBForSendingOnActivityResult(requestCode,resultCode,data);
     }
 
-    ///**** Resending Email verification code Process get started *****//
-    private void ResendEmailVerificationMethod()
-    {
-        if (RESEND_EMAIL_COUNTER>0)
-        {
-            final AlertDialog.Builder builder=new AlertDialog.Builder(activity);
-            builder.setTitle("Email Verification Status");
-            builder.setMessage(EmailString+" is not verified\nPlease verify first then sign in....");
-            builder.setNeutralButton("Resend Verification", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i)
-                {
-                    myLoadingDailog.show();
-                    SignInHelperClass.ResendEmailVerification(FirebaseAuth.getInstance().getCurrentUser());
-                    dialog.cancel();
-                }
-            });
-            dialog=builder.create();
-            dialog.show();
-        }
-        else
-        {
-            myToast.LToast("Check email and verify");
-        }
-    }
-
-    ///Check the databse where he should be go and result of this method goes to implementation interface
-    private void BeforeGoingNextActivityCheckDatabseStep()
-    {
-        accountStatusDB.GetUIDAccountStatusData();
-    }
-
-    //This method is called from interface implementation
-    private void NextActivityStarting(String AccountType,boolean AccountCompletion,boolean AccountValidity)
+    private void GetSignInStatus(String FromWhichMethod, boolean result)
     {
         CancelLoadingDialog();
-        if (AccountType.matches(DBConst.Patient))
-        {
-            //Goto Patient Part
-            if (!AccountCompletion)
-            {
-                Intent intent=new Intent(activity, EditPatientProfileActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-            }
-            else if (!AccountValidity)
-            {
-                Intent intent=new Intent(activity, EditPatientSecureInfoActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-            }
-            else if (AccountCompletion && AccountValidity)
-            {
-                Intent intent=new Intent(activity, PatientMainActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-            }
-        }
-        else if (AccountType.matches(DBConst.Doctor))
-        {
-            //Goto Patient Part
-            if (!AccountCompletion)
-            {
-                Intent intent=new Intent(activity, EditDoctorProfileActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-            }
-            else if (!AccountValidity)
-            {
-                Intent intent=new Intent(activity, EditDoctorSecureInfo.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-            }
-            else if (AccountCompletion && AccountValidity)
-            {
-                Intent intent=new Intent(activity, DoctorMainActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-            }
-        }
-    }
-
-
-
-
-    ///*********************Account Sign In Interface implementation *********************///
-    @Override
-    public void AccountCreationResult(String FromWhichMethod, boolean result)
-    {
         switch (FromWhichMethod)
         {
             case VARConst.EMAIL_SIGN_IN:
                 if (result)
                 {
-                    ///Check verification status and result return in implementation section
-                    SignInHelperClass.CheckEmailVerificationStatus(FirebaseAuth.getInstance().getCurrentUser());
+                    ///Check verification status
+                    CallDBForCheckEmailVerification();
                 }
                 else
                 {
-                    CancelLoadingDialog();
                     myToast.LToast("wrong password or email");
                 }
                 break;
@@ -413,13 +318,12 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                 if (result)
                 {
                     //Email Verification status true so send him check further database check.
-                    CancelLoadingDialog();
-                    BeforeGoingNextActivityCheckDatabseStep();
+                    CallDBForCheckAccountStatus();
                 }
                 else
                 {
                     ////Email Verification status false so send him an option to resend email verification
-                    ResendEmailVerificationMethod();
+                    ShowResendEmailVerificationMethod();
                 }
                 break;
             case VARConst.RESEND_EMAIL_VERIFICATION_STATUS:
@@ -435,7 +339,6 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                 }
                 break;
             case VARConst.PHONE_SIGN_IN:
-                CancelLoadingDialog();
                 if (result)
                 {
                     //Phone verification sent to the number and waiting for the verification step
@@ -450,11 +353,10 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                 if (result)
                 {
                     //If phone verification status get true send hin to further database check
-                    BeforeGoingNextActivityCheckDatabseStep();
+                    CallDBForCheckAccountStatus();
                 }
                 else
                 {
-                    CancelLoadingDialog();
                     myToast.LToast("Verification code doesn't match\nFailed to sign in...");
                 }
                 break;
@@ -462,7 +364,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                 if (result)
                 {
                     //Google Sign In and send him check further database check.
-                    BeforeGoingNextActivityCheckDatabseStep();
+                    CallDBForCheckAccountStatus();
                 }
                 else
                 {
@@ -476,7 +378,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                 if (result)
                 {
                     //Facebook Sign In and send him check further database check.
-                    BeforeGoingNextActivityCheckDatabseStep();
+                    CallDBForCheckAccountStatus();
                 }
                 else
                 {
@@ -489,40 +391,175 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
-    ///******************************Database Part Interface Implementation*******************************///
-    @Override
-    public void GetAccountStatus(boolean result, ArrayList<AccountStatusDataModel> arrayList)
+
+    ///**** Resending Email verification code Process get started *****//
+    private void ShowResendEmailVerificationMethod()
     {
-        if (result)
+        if (RESEND_EMAIL_COUNTER>0)
         {
-            UID=arrayList.get(0).getUID();
-            NextActivityStarting(arrayList.get(0).getAccountType(),arrayList.get(0).isAccountCompletion(),arrayList.get(0).isAccountValidity());
+            final AlertDialog.Builder builder=new AlertDialog.Builder(activity);
+            builder.setTitle("Email Verification Status");
+            builder.setMessage(EmailString+" is not verified\nPlease verify first then sign in....");
+            builder.setNeutralButton("Resend Verification", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i)
+                {
+                    myLoadingDailog.show();
+                    ResendDialog.cancel();
+
+                    //Call Database For Resending Email Verification
+                    CallDBForResendEmailVerification();
+                }
+            });
+            ResendDialog=builder.create();
+            ResendDialog.show();
         }
         else
         {
-            importantTaskOfDB.DeleteUserAccountFromUser();
+            myToast.LToast("Check email and verify");
         }
+    }
+
+
+
+    ///Check the databse where he should be go and result of this method goes to implementation interface
+
+
+    private void GetAccountStatus(boolean AccountExistanceStatus,String AccountType,boolean AccountCompletion,boolean AccountValidity)
+    {
+        if (AccountExistanceStatus)
+        {
+            NextActivityStarting(AccountType,AccountCompletion,AccountValidity);
+        }
+        else
+        {
+            myToast.LToast("Account is not created ! Sign Up first !!! Goto Sign Up Page...");
+            ///Delete Account For Proper Sign In
+            CallDBForAccountDeletion();
+        }
+    }
+    private void NextActivityStarting(String AccountType,boolean AccountCompletion,boolean AccountValidity)
+    {
+        CancelLoadingDialog();
+
+        if (AccountType.matches(DBConst.Patient))
+        {
+            //Goto Patient Part
+            if (!AccountCompletion)
+            {
+                StartActivity(new Intent(activity, EditPatientProfileActivity.class));
+            }
+            else if (!AccountValidity)
+            {
+                StartActivity(new Intent(activity, EditPatientSecureInfoActivity.class));
+            }
+            else if (AccountCompletion && AccountValidity)
+            {
+                StartActivity(new Intent(activity, PatientMainActivity.class));
+            }
+        }
+        else if (AccountType.matches(DBConst.Doctor))
+        {
+            //Goto Patient Part
+            if (!AccountCompletion)
+            {
+                StartActivity(new Intent(activity, EditDoctorProfileActivity.class));
+            }
+            else if (!AccountValidity)
+            {
+                StartActivity(new Intent(activity, EditDoctorSecureInfo.class));
+            }
+            else if (AccountCompletion && AccountValidity)
+            {
+                StartActivity(new Intent(activity, DoctorMainActivity.class));
+            }
+        }
+        else
+        {
+            StartActivity(new Intent(activity, AdminMainActivity.class));
+        }
+    }
+
+    private void StartActivity(Intent myIntent)
+    {
+        myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(myIntent);
+    }
+
+
+
+
+
+
+    ///***********************************************************************///
+    ///***************************Database Part*******************************///
+    ///***********************************************************************///
+
+
+
+
+    ///***************************Database Call********************************///
+    private void CallDBForEmailSignIn(String emailString, String passwordString)
+    {
+        ShowLoadingDialog();
+        myDatabaseClass.SignIn.EmailSignInOrUp(VARConst.SIGN_IN_ACTIVITY,emailString,passwordString);
+    }
+    private void CallDBForPhoneSignIn(String phoneString)
+    {
+        ShowLoadingDialog();
+        myDatabaseClass.SignIn.PhoneSignIn(phoneString);
+    }
+    private void CallDBForPhoneSignInVerification(String verificationCode)
+    {
+        ShowLoadingDialog();
+        myDatabaseClass.SignIn.PhoneVerificationComplete(verificationCode);
+    }
+    private void CallDBForGoogleSignIn()
+    {
+        myDatabaseClass.SignIn.GoogleSignIn();
+    }
+    private void CallDBForFacebookSignIn(int FacebookButtonId)
+    {
+        myDatabaseClass.SignIn.FacebookSignIn(FacebookButtonId);
+    }
+    private void CallDBForSendingOnActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        myDatabaseClass.SignIn.onActivityResult(requestCode,resultCode,data);
+    }
+    private void CallDBForCheckEmailVerification()
+    {
+        ShowLoadingDialog();
+        myDatabaseClass.SignIn.CheckEmailVerificationStatus();
+    }
+    private void CallDBForResendEmailVerification()
+    {
+        ShowLoadingDialog();
+        myDatabaseClass.SignIn.ResendEmailVerification();
+    }
+    private void CallDBForCheckAccountStatus()
+    {
+        ShowLoadingDialog();
+        myDatabaseClass.accountStatusDB.GetUIDAccountStatusData();
+    }
+    private void CallDBForAccountDeletion()
+    {
+        myDatabaseClass.SignIn.DeleteAccount();
+    }
+
+    ///*********************Account Sign In Interface implementation *********************///
+    @Override
+    public void AccountCreationResult(String FromWhichMethod, boolean result)
+    {
+        GetSignInStatus(FromWhichMethod,result);
+    }
+
+    ///******************************AccountStatus Part Interface Implementation*******************************///
+    @Override
+    public void GetAccountStatus(boolean result, ArrayList<AccountStatusDM> arrayList)
+    {
+        GetAccountStatus(result,arrayList.get(0).getAccountType(),arrayList.get(0).isAccountCompletion(),arrayList.get(0).isAccountValidity());
     }
 
     @Override
     public void AccountStatusSavingResult(boolean result) { }
-
-    @Override
-    public void ImportantTaskResult(boolean result)
-    {
-        CancelLoadingDialog();
-        if (result)
-        {
-            myToast.LToast("Account is not created ! Sign Up first !!! Goto Sign Up Page...");
-        }
-        else
-        {
-            reportDB.SaveCrushReportIntoDatabase(UID+" is not deleted");
-        }
-    }
-
-    @Override
-    public void ImportantTaskResultAndData(boolean result, String data) {
-
-    }
 }

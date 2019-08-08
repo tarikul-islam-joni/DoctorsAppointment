@@ -21,7 +21,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
-import com.tarikulislamjoni95.doctorsappointment.DatabasePart.AccountDataModel;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.DBConst;
 import com.tarikulislamjoni95.doctorsappointment.R;
 
@@ -31,7 +30,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class HospitalActivity extends AppCompatActivity
 {
-    private ArrayList<AccountDataModel> arrayList;
+    private ArrayList<PatientAccountDataModel> arrayList;
     private HospitalDoctorListAdapter adapter;
 
     private String HospitalNameString;
@@ -78,7 +77,7 @@ public class HospitalActivity extends AppCompatActivity
                                 if (dataSnapshot.exists())
                                 {
                                     Log.d("myError",dataSnapshot.getValue().toString()+" UID "+dataSnapshot.getKey());
-                                    arrayList.add(new AccountDataModel(
+                                    arrayList.add(new PatientAccountDataModel(
                                             dataSnapshot.getKey(),
                                             dataSnapshot.child(DBConst.Image).getValue().toString(),
                                             dataSnapshot.child(DBConst.Title).getValue().toString(),
@@ -135,8 +134,8 @@ public class HospitalActivity extends AppCompatActivity
     public static class HospitalDoctorListAdapter extends RecyclerView.Adapter<ViewHolder>
     {
         private Activity activity;
-        private ArrayList<AccountDataModel> arrayList;
-        public HospitalDoctorListAdapter(Activity activity,ArrayList<AccountDataModel> arrayList)
+        private ArrayList<PatientAccountDataModel> arrayList;
+        public HospitalDoctorListAdapter(Activity activity,ArrayList<PatientAccountDataModel> arrayList)
         {
             this.activity=activity;
             this.arrayList=arrayList;
@@ -152,7 +151,7 @@ public class HospitalActivity extends AppCompatActivity
         @Override
         public void onBindViewHolder(@NonNull ViewHolder holder, int position)
         {
-            final AccountDataModel dataModel=arrayList.get(position);
+            final PatientAccountDataModel dataModel=arrayList.get(position);
             if (!dataModel.getProfileImageUrl().matches("null"))
             {
                 Picasso.get().load(dataModel.getProfileImageUrl()).into(holder.ImageCiv);
@@ -165,20 +164,39 @@ public class HospitalActivity extends AppCompatActivity
                 @Override
                 public void onClick(View view)
                 {
+                    GetAccountStatusAndGotoDoctorProfileVisit(arrayList.get(0));
+                }
+            });
+        }
+
+        private void GetAccountStatusAndGotoDoctorProfileVisit(final PatientAccountDataModel patientAccountDataModel)
+        {
+            DatabaseReference reference=FirebaseDatabase.getInstance().getReference().child(DBConst.AccountStatus).child(patientAccountDataModel.getUID());
+            reference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot)
+                {
+                    boolean AuthorityValidity=(boolean)dataSnapshot.child(DBConst.AuthorityValidity).getValue();
                     ArrayList<String> arrayList1=new ArrayList<>();
-                    arrayList1.add(dataModel.getUID());
-                    arrayList1.add(dataModel.getProfileImageUrl());
-                    arrayList1.add(dataModel.getTitle());
-                    arrayList1.add(dataModel.getName());
-                    arrayList1.add(dataModel.getStudiedCollege());
-                    arrayList1.add(dataModel.getDegree());
-                    arrayList1.add(dataModel.getCategory());
-                    arrayList1.add(dataModel.getNoOfPracYear());
-                    arrayList1.add(dataModel.getAvailableArea());
+                    arrayList1.add(String.valueOf(AuthorityValidity));
+                    arrayList1.add(patientAccountDataModel.getUID());
+                    arrayList1.add(patientAccountDataModel.getProfileImageUrl());
+                    arrayList1.add(patientAccountDataModel.getTitle());
+                    arrayList1.add(patientAccountDataModel.getName());
+                    arrayList1.add(patientAccountDataModel.getStudiedCollege());
+                    arrayList1.add(patientAccountDataModel.getDegree());
+                    arrayList1.add(patientAccountDataModel.getCategory());
+                    arrayList1.add(patientAccountDataModel.getNoOfPracYear());
+                    arrayList1.add(patientAccountDataModel.getAvailableArea());
 
                     Intent intent=new Intent(activity,DoctorProfileVisitActivity.class);
                     intent.putStringArrayListExtra(DBConst.Doctor,arrayList1);
                     activity.startActivity(intent);
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
                 }
             });
         }

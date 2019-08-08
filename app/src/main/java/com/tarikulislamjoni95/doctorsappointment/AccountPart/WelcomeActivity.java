@@ -6,8 +6,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 
-import com.tarikulislamjoni95.doctorsappointment.DatabasePart.AccountStatusDataModel;
-import com.tarikulislamjoni95.doctorsappointment.DatabasePart.AccountStatusDB;
+import com.tarikulislamjoni95.doctorsappointment.AdminPart.AdminMainActivity;
+import com.tarikulislamjoni95.doctorsappointment.DatabasePart.AccountStatusDM;
+import com.tarikulislamjoni95.doctorsappointment.DatabasePart.MyDatabaseClass;
 import com.tarikulislamjoni95.doctorsappointment.DoctorPart.DoctorMainActivity;
 import com.tarikulislamjoni95.doctorsappointment.DoctorPart.EditDoctorProfileActivity;
 import com.tarikulislamjoni95.doctorsappointment.DoctorPart.EditDoctorSecureInfo;
@@ -26,8 +27,8 @@ public class WelcomeActivity extends AppCompatActivity implements AccountStatusD
     private Intent intent;
     private Activity activity;
 
+    private MyDatabaseClass DB;
     private MyLoadingDailog myLoadingDailog;
-    private AccountStatusDB accountStatusDB;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,7 +50,8 @@ public class WelcomeActivity extends AppCompatActivity implements AccountStatusD
     private void InitializationClass()
     {
         myLoadingDailog=new MyLoadingDailog(WelcomeActivity.this,R.drawable.spinner);
-        accountStatusDB =new AccountStatusDB(activity);
+        //Database Initialization
+        DB=new MyDatabaseClass(activity);
     }
     private void CheckLoggedInOrNot()
     {
@@ -57,9 +59,21 @@ public class WelcomeActivity extends AppCompatActivity implements AccountStatusD
         {
             myLoadingDailog.show();
         }
-        accountStatusDB.GetUIDAccountStatusData();
+        //Call Database For Account Status
+        CallDBForAccountStatus();
     }
-    private void CheckAccountValidityAndCompletion(boolean AccountCompletion,String AccountType,boolean AccountValidity)
+    private void GetAccountValidityStatus(boolean GetResult,String AccountType,boolean AccountCompletion,boolean AccountValidity)
+    {
+        if (GetResult==true)
+        {
+            CheckAccountValidityAndCompletion(AccountType,AccountCompletion,AccountValidity);
+        }
+        else
+        {
+            GotoSignInActivity();
+        }
+    }
+    private void CheckAccountValidityAndCompletion(String AccountType,boolean AccountCompletion,boolean AccountValidity)
     {
         if (AccountType.matches(DBConst.Patient))
         {
@@ -103,6 +117,18 @@ public class WelcomeActivity extends AppCompatActivity implements AccountStatusD
                 startActivity(intent);
             }
         }
+        else if (AccountType.matches("Admin"))
+        {
+            intent=new Intent(activity, AdminMainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        }
+    }
+    private void GotoSignInActivity()
+    {
+        intent=new Intent(activity,SignInActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+        DelayStartingActivityMethod(intent);
     }
     private void DelayStartingActivityMethod(final Intent intent)
     {
@@ -118,6 +144,7 @@ public class WelcomeActivity extends AppCompatActivity implements AccountStatusD
             }
         },2000);
     }
+
     @Override
     protected void onDestroy() {
         if (myLoadingDailog.isShowing() ) {
@@ -127,23 +154,25 @@ public class WelcomeActivity extends AppCompatActivity implements AccountStatusD
     }
 
 
+
+
+
+
+    ///***********************************************************************///
     ///************************Database Part**********************************///
-    @Override
-    public void GetAccountStatus(boolean result, ArrayList<AccountStatusDataModel> arrayList)
+    ///**********************************************************************///
+
+
+    ///************************Database Call**********************************///
+    private void CallDBForAccountStatus()
     {
-        if (result)
-        {
-            CheckAccountValidityAndCompletion(
-                    arrayList.get(0).isAccountCompletion(),
-                    arrayList.get(0).getAccountType(),
-                    arrayList.get(0).isAccountValidity());
-        }
-        else
-        {
-            intent=new Intent(activity,SignInActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-            DelayStartingActivityMethod(intent);
-        }
+        DB.accountStatusDB.GetUIDAccountStatusData();
+    }
+    ///**********************Interface Implementation*************************///
+    @Override
+    public void GetAccountStatus(boolean result, ArrayList<AccountStatusDM> arrayList)
+    {
+        GetAccountValidityStatus(result,arrayList.get(0).getAccountType(),arrayList.get(0).isAccountCompletion(),arrayList.get(0).isAccountValidity());
     }
     @Override
     public void AccountStatusSavingResult(boolean result) {

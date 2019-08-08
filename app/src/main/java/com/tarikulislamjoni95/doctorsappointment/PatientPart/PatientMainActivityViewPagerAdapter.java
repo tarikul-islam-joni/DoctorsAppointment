@@ -13,25 +13,14 @@ public class PatientMainActivityViewPagerAdapter extends FragmentPagerAdapter
     }
 
     @Override
-    public Fragment getItem(int position) {
-        switch (position)
-        {
-            case 0:
-                DoctorListFragment doctorListFragment=new DoctorListFragment();
-                return doctorListFragment;
-            case 1:
-                HospitalListFragment hospitalListFragment=new HospitalListFragment();
-                return hospitalListFragment;
-            case 2:
-                HospitalListFragment hospitalListFragment1=new HospitalListFragment();
-                return hospitalListFragment1;
-            default:
-                return new DoctorListFragment();
-        }
+    public Fragment getItem(int position)
+    {
+        return null;
     }
 
     @Override
-    public int getCount() {
+    public int getCount()
+    {
         return 3;
     }
 
@@ -41,14 +30,13 @@ public class PatientMainActivityViewPagerAdapter extends FragmentPagerAdapter
         switch (position)
         {
             case 0:
-                return "Doctor List";
+                return "Temporary Appointment";
             case 1:
-                return "Hospital List";
+                return "Current Appointment";
             case 2:
-                return "Hospital List";
+                return "Past Appointment";
             default:
                 return null;
-
         }
     }
 }

@@ -18,7 +18,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.tarikulislamjoni95.doctorsappointment.DatabasePart.AccountStatusDB;
-import com.tarikulislamjoni95.doctorsappointment.DatabasePart.AccountStatusDataModel;
+import com.tarikulislamjoni95.doctorsappointment.DatabasePart.AccountStatusDM;
+import com.tarikulislamjoni95.doctorsappointment.DatabasePart.MyDatabaseClass;
 import com.tarikulislamjoni95.doctorsappointment.DoctorPart.EditDoctorProfileActivity;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.VARConst;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.DBConst;
@@ -38,15 +39,9 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         AccountCreationInterface,AccountStatusDBInterface {
 
     //Class Variable
+    private MyDatabaseClass myDatabaseClass;
     private MyToastClass myToast;
     private MyLoadingDailog myLoadingDailog;
-
-    private SignInOrSignUpHelperClass SignUpHelperClass;
-    private AccountStatusDB accountStatusDB;
-
-    //Database Variable
-    FirebaseAuth myAuth;
-    DatabaseReference myRef;
 
     //Important component
     private Activity activity;
@@ -79,8 +74,6 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     private void Initialization()
     {
         activity=SignUpActivity.this;
-        myAuth=FirebaseAuth.getInstance();
-        myRef= FirebaseDatabase.getInstance().getReference();
         VALIDITY_COLOR= ContextCompat.getColor(activity,R.color.colorGreen);
     }
     //Initialization of UI variable
@@ -143,9 +136,9 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     private void InitializationClass()
     {
         myToast=new MyToastClass(activity);
-        SignUpHelperClass=new SignInOrSignUpHelperClass(activity);
         myLoadingDailog=new MyLoadingDailog(activity,R.drawable.spinner);
-        accountStatusDB=new AccountStatusDB(activity);
+
+        myDatabaseClass=new MyDatabaseClass(activity);
     }
     @Override
     public void onClick(View view)
@@ -202,6 +195,30 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
+    //*** Email or Phone Sign Up Choosing section ***//
+    private void ChooseEmailOrPhoneMethod()
+    {
+        if (ChooseEmailOrPhone)
+        {
+            SignUpPhoneSection.setVisibility(View.VISIBLE);
+            SignUpEmailSection.setVisibility(View.GONE);
+            SignUpChooseEmailOrPhoneBtn.setText("Email Sign Up");
+            ChooseEmailOrPhone=false;
+        }
+        else
+        {
+            SignUpEmailSection.setVisibility(View.VISIBLE);
+            SignUpPhoneSection.setVisibility(View.GONE);
+            SignUpChooseEmailOrPhoneBtn.setText("Phone Sign Up");
+            ChooseEmailOrPhone=true;
+        }
+    }
+    private void GotoSignInActivity()
+    {
+        intent=new Intent(activity,SignInActivity.class);
+        startActivity(intent);
+    }
+
     //*** Email SignUp method starting from here and other proccess completing in implementation section ***//
     private void EmailSignUp()
     {
@@ -223,12 +240,11 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         }
         else
         {
-            ShowLoadingDialog();
             EmailString=SignUpEmailEt.getText().toString();
             PasswordString=SignUpPasswordEt.getText().toString();
 
-            //Account Creating Part Started and Check the result in implementation section
-            SignUpHelperClass.EmailSignInOrUp(VARConst.SIGN_UP_ACTIVITY,EmailString,PasswordString);
+            //Database Call For Email SignUp
+            CallDBForEmailSignUp(EmailString,PasswordString);
         }
     }
 
@@ -241,11 +257,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         }
         else
         {
-            ShowLoadingDialog();
             PhoneString=SignupPhoneEt.getText().toString();
-            //Account Creating Part Started and Check the result in implementation section
-            SignUpHelperClass.PhoneSignIn(PhoneString);
-
             SignUpPhoneVerificationCodeEt.setEnabled(true);
             SignUpPhoneSignUpComfirmBtn.setEnabled(true);
             SignupPhoneEt.setEnabled(false);
@@ -254,9 +266,11 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
             {
                 myToast.LToast("Code resending limit exceeded");
             }
+
+            //Call Database For Phone Sign Up
+            CallDBForPhoneSignUp(PhoneString);
         }
     }
-    //*** Phone signup resend code option delay method for several seconds ***//
     private boolean ResendDelay()
     {
         RESEND_COUNTER--;
@@ -301,53 +315,128 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         }
         else
         {
-            ShowLoadingDialog();
             String VerificationCodeString=SignUpPhoneVerificationCodeEt.getText().toString();
 
-            //Account Creating Part Started and Check the result in implementation section
-            SignUpHelperClass.PhoneVerificationComplete(VerificationCodeString);
+            //Call Database For Phone Verification
+            CallDBForPhoneVerification(VerificationCodeString);
         }
     }
+
     //*** Google SignUp method starting from here and other proccess completing in implementation section ***//
     private void GoogleSignUp()
     {
-        //Account Creating Part Started and Check the result in implementation section
-        SignUpHelperClass.GoogleSignIn();
+        //Call Database For Google SignUp
+        CallDBForGoogleSignUp();
     }
     //*** Facebook SignUp method starting from here and other proccess completing in implementation section ***//
     private void FacebookSignUp()
     {
-        //Account Creating Part Started and Check the result in implementation section
-        SignUpHelperClass.FacebookSignIn(R.id.facebook_sign_in_or_up_btn);
+        //Call Database Facebook SignUp
+        CallDBForFacebookSignUp(SignUpFacebookSignUpBtn.getId());
     }
 
-    //*** Goto Sign in activity directly ***//
-    private void GotoSignInActivity()
-    {
-        intent=new Intent(activity,SignInActivity.class);
-        startActivity(intent);
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        //Call Database For Sending OnActivityResult
+        CallDBForSendingOnActivityResult(requestCode,resultCode,data);
     }
 
-    //*** Email or Phone Sign Up Choosing section ***//
-    private void ChooseEmailOrPhoneMethod()
+    private void GetSignUpStatus(String FromWhichMethod,boolean result)
     {
-        if (ChooseEmailOrPhone)
+        CancelLoadingDialog();
+
+        switch (FromWhichMethod)
         {
-            SignUpPhoneSection.setVisibility(View.VISIBLE);
-            SignUpEmailSection.setVisibility(View.GONE);
-            SignUpChooseEmailOrPhoneBtn.setText("Email Sign Up");
-            ChooseEmailOrPhone=false;
+            case VARConst.EMAIL_SIGN_UP:
+                if (result)
+                {
+                    myToast.LToast("Account successfully created\nPlease verify for next sign in...");
+                    CallDBForAccountExistanceCheck();
+                }
+                else
+                {
+                    myToast.LToast("Account creation failed.");
+                }
+                break;
+            case VARConst.PHONE_SIGN_IN:
+                if (result)
+                {
+                    myToast.LToast("Verification code sent to "+PhoneString);
+                }
+                else
+                {
+                    myToast.LToast("Verification code couldn't sent to "+PhoneString);
+                }
+                break;
+            case VARConst.PHONE_SIGN_IN_STATUS:
+                if (result)
+                {
+                    CallDBForAccountExistanceCheck();
+                }
+                else
+                {
+                    myToast.LToast("Verification code not matched !");
+                }
+                break;
+            case VARConst.GOOGLE_SIGN_IN_STATUS:
+                if (result)
+                {
+                    CallDBForAccountExistanceCheck();
+                }
+                else
+                {
+                    myToast.LToast("Account creation failed ! ");
+                }
+                break;
+            case VARConst.GOOGLE_SIGN_IN_EXCEPTION:
+                myToast.LToast("Google sign in exception occurred.\nPlease try again later");
+                break;
+            case VARConst.FACEBOOK_SIGN_IN_STATUS:
+                if (result)
+                {
+                    CallDBForAccountExistanceCheck();
+                }
+                else
+                {
+                    myToast.LToast("Account creation failed ! ");
+                }
+                break;
+            case VARConst.FACEBOOK_SIGN_IN_EXCEEPTION:
+                myToast.LToast("Facebook sign in exception occurred.\nPlease try again later");
+                break;
+
+        }
+    }
+
+    private void GetAccountExistanceStatus(boolean AccountExistanceResult)
+    {
+        CancelLoadingDialog();
+        if (AccountExistanceResult)
+        {
+            myToast.LToast("Account is already created!Please sign in...");
+            startActivity(new Intent(activity,SignInActivity.class));
         }
         else
         {
-            SignUpEmailSection.setVisibility(View.VISIBLE);
-            SignUpPhoneSection.setVisibility(View.GONE);
-            SignUpChooseEmailOrPhoneBtn.setText("Phone Sign Up");
-            ChooseEmailOrPhone=true;
+            CallDBForSavingAccountStatus();
         }
     }
 
-    ///**** This method is called from AccountStatusSavingResult method ****///
+    private void GetAccountStatusSavingResult(boolean AccountStatusSavingResult)
+    {
+        CancelLoadingDialog();
+        if (AccountStatusSavingResult)
+        {
+            GotoNextActivity();
+        }
+        else
+        {
+            myToast.LToast("Failed to create the account");
+            CallDBForDeletionUnsuccessFullUser();
+        }
+    }
     private void GotoNextActivity()
     {
         if (AccoutTypeString.matches(DBConst.Patient))
@@ -364,120 +453,68 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        SignUpHelperClass.onActivityResult(requestCode,resultCode,data);
+
+    ///******************************************************************************************///
+    ///*****************************************Database Part************************************///
+    ///******************************************************************************************///
+
+    ///**************************************Database Calling Method*****************************///
+    private void CallDBForEmailSignUp(String emailString, String passwordString)
+    {
+        myDatabaseClass.SignUp.EmailSignInOrUp(VARConst.SIGN_UP_ACTIVITY,emailString,passwordString);
+    }
+    private void CallDBForPhoneSignUp(String phoneString)
+    {
+        myDatabaseClass.SignUp.PhoneSignIn(phoneString);
+    }
+    private void CallDBForPhoneVerification(String VerificationCodeString)
+    {
+        myDatabaseClass.SignUp.PhoneVerificationComplete(VerificationCodeString);
+    }
+    private void CallDBForFacebookSignUp(int FacebookButtonId)
+    {
+        myDatabaseClass.SignUp.FacebookSignIn(FacebookButtonId);
+    }
+    private void CallDBForGoogleSignUp()
+    {
+        myDatabaseClass.SignUp.GoogleSignIn();
+    }
+    private void CallDBForSendingOnActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        myDatabaseClass.SignUp.onActivityResult(requestCode,resultCode,data);
     }
 
+    private void CallDBForAccountExistanceCheck()
+    {
+        myDatabaseClass.accountStatusDB.GetUIDAccountStatusData();
+    }
+    private void CallDBForSavingAccountStatus()
+    {
+        myDatabaseClass.accountStatusDB.SaveIntoAccountStatusDBFromUser(AccoutTypeString,false,false);
+    }
 
-
-
-    //Account Creating Part interface implementation section
+    private void CallDBForDeletionUnsuccessFullUser()
+    {
+        myDatabaseClass.SignUp.DeleteAccount();
+    }
     ///************************Account Creation Interface***********************///
     @Override
     public void AccountCreationResult(String FromWhichMethod, boolean result)
     {
-        switch (FromWhichMethod)
-        {
-            case VARConst.EMAIL_SIGN_UP:
-                if (result)
-                {
-                    myToast.LToast("Account successfully created\nPlease verify for next sign in...");
-                    SaveAccountInformationIntoDatabase();
-                }
-                else
-                {
-                    CancelLoadingDialog();
-                    myToast.LToast("Account creation failed.");
-                }
-                break;
-            case VARConst.PHONE_SIGN_IN:
-                if (result)
-                {
-                    CancelLoadingDialog();
-                    myToast.LToast("Verification code sent to "+PhoneString);
-                }
-                else
-                {
-                    CancelLoadingDialog();
-                    myToast.LToast("Verification code couldn't sent to "+PhoneString);
-                }
-                break;
-            case VARConst.PHONE_SIGN_IN_STATUS:
-                if (result)
-                {
-                    SaveAccountInformationIntoDatabase();
-                }
-                else
-                {
-                    CancelLoadingDialog();
-                    myToast.LToast("Verification code not matched !");
-                }
-                break;
-            case VARConst.GOOGLE_SIGN_IN_STATUS:
-                if (result)
-                {
-                    SaveAccountInformationIntoDatabase();
-                }
-                else
-                {
-                    myToast.LToast("Account creation failed ! ");
-                }
-                break;
-            case VARConst.GOOGLE_SIGN_IN_EXCEPTION:
-                myToast.LToast("Google sign in exception occurred.\nPlease try again later");
-                break;
-            case VARConst.FACEBOOK_SIGN_IN_STATUS:
-                if (result)
-                {
-                    SaveAccountInformationIntoDatabase();
-                }
-                else
-                {
-                    myToast.LToast("Account creation failed ! ");
-                }
-                break;
-            case VARConst.FACEBOOK_SIGN_IN_EXCEEPTION:
-                myToast.LToast("Facebook sign in exception occurred.\nPlease try again later");
-                break;
-
-        }
-    }
-
-    //**** Save Account information into database ****//
-    //*** This method is called from AccountCreationResult method ***///
-    private void SaveAccountInformationIntoDatabase()
-    {
-        accountStatusDB.GetUIDAccountStatusData();
+        GetSignUpStatus(FromWhichMethod,result);
     }
 
     ///*******************Account Status DB Interface*********************///
     @Override
-    public void GetAccountStatus(boolean result, ArrayList<AccountStatusDataModel> arrayList)
+    public void GetAccountStatus(boolean result, ArrayList<AccountStatusDM> arrayList)
     {
-        if (result)
-        {
-            CancelLoadingDialog();
-            myToast.LToast("Account is already created!Please sign in...");
-        }
-        else
-        {
-            accountStatusDB.SaveIntoAccountStatusDBFromUser(AccoutTypeString,false,false,false);
-        }
+        GetAccountExistanceStatus(result);
     }
+
 
     @Override
     public void AccountStatusSavingResult(boolean result)
     {
-        CancelLoadingDialog();
-        if (result)
-        {
-            GotoNextActivity();
-        }
-        else
-        {
-            SignUpHelperClass.DeleteAccount();
-        }
+        GetAccountStatusSavingResult(result);
     }
 }

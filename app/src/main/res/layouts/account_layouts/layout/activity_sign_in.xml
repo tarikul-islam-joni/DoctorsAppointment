@@ -119,7 +119,6 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_gravity="center"
-                        android:layout_weight="1"
                         android:gravity="center"/>
                 </LinearLayout>
 
@@ -129,9 +128,7 @@
                 android:id="@+id/sign_in_need_account_signup_btn"
                 style="@style/Widget.AppCompat.Button.Borderless"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Need Account ? Sign Up"
-                android:textAllCaps="false" />
+                android:layout_height="wrap_content" />
         </LinearLayout>
     </RelativeLayout>
 </LinearLayout>

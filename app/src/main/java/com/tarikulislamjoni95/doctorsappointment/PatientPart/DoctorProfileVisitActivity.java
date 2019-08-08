@@ -17,7 +17,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
-import com.tarikulislamjoni95.doctorsappointment.DatabasePart.AccountDataModel;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.DBConst;
 import com.tarikulislamjoni95.doctorsappointment.R;
 
@@ -31,12 +30,13 @@ public class DoctorProfileVisitActivity extends AppCompatActivity
     private TakeAppointmentAdapter adapter;
     private ArrayList<AppointmentListModel> arrayList;
 
-    private ArrayList<AccountDataModel> ProfileDataArrayList;
+    private ArrayList<PatientAccountDataModel> ProfileDataArrayList;
 
     private Activity activity;
     private Intent intent;
 
-    String UID;
+    private String AuthorityValidity;
+    private String UID;
 
     private AlertDialog dialog;
 
@@ -66,7 +66,8 @@ public class DoctorProfileVisitActivity extends AppCompatActivity
     {
         UserArrayList=new ArrayList<>();
         UserArrayList= getIntent().getStringArrayListExtra(DBConst.Doctor);
-        UID=UserArrayList.get(0);
+        AuthorityValidity=UserArrayList.get(0);
+        UID=UserArrayList.get(1);
         activity= DoctorProfileVisitActivity.this;
         arrayList=new ArrayList<>();
 
@@ -89,16 +90,16 @@ public class DoctorProfileVisitActivity extends AppCompatActivity
     }
     private void ShowDataIfAvailable()
     {
-        if (!UserArrayList.get(1).matches("null"))
+        if (!UserArrayList.get(2).matches("null"))
         {
             Picasso.get().load(UserArrayList.get(1)).into(ImageCiv);
         }
-        NameTv.setText(UserArrayList.get(2)+UserArrayList.get(3));
-        StudiedTv.setText(UserArrayList.get(4));
-        DegreeCompletedTv.setText(UserArrayList.get(5));
-        SpecialityTv.setText(UserArrayList.get(6));
-        NoOfYearPracTv.setText(UserArrayList.get(7));
-        AvailableAreaTv.setText(UserArrayList.get(8));
+        NameTv.setText(UserArrayList.get(3)+UserArrayList.get(4));
+        StudiedTv.setText(UserArrayList.get(5));
+        DegreeCompletedTv.setText(UserArrayList.get(6));
+        SpecialityTv.setText(UserArrayList.get(7));
+        NoOfYearPracTv.setText(UserArrayList.get(8));
+        AvailableAreaTv.setText(UserArrayList.get(9));
     }
 
     private void ShowAppointmentList()
@@ -119,7 +120,7 @@ public class DoctorProfileVisitActivity extends AppCompatActivity
                         String AppointmentFee=dataSnapshot1.child(DBConst.AppointmentFee).getValue().toString();
                         String UnavaiableSDate=dataSnapshot1.child(DBConst.UnavaiableSDate).getValue().toString();
                         String UnavaiableEDate=dataSnapshot1.child(DBConst.UnavaiableEDate).getValue().toString();
-                        arrayList.add(new AppointmentListModel(UID,NameTv.getText().toString(),HospitalName,AvaialableDay,AppointmentTime,AppointmentFee,UnavaiableSDate,UnavaiableEDate));
+                        arrayList.add(new AppointmentListModel(AuthorityValidity,UID,NameTv.getText().toString(),HospitalName,AvaialableDay,AppointmentTime,AppointmentFee,UnavaiableSDate,UnavaiableEDate));
                     }
                 }
                 adapter.notifyDataSetChanged();

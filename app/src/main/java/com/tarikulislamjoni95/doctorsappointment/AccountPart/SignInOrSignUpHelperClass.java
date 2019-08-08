@@ -44,9 +44,7 @@ public class SignInOrSignUpHelperClass
     private MyToastClass myToast;
     private AccountCreationInterface accountCreationInterface;
 
-    private FirebaseUser User=null;
     private AuthCredential credential;
-    private FirebaseAuth mAuth;
     private PhoneAuthProvider.OnVerificationStateChangedCallbacks PhoneCallBack;
     private CallbackManager FacebookCallBack;
     private Intent intent;
@@ -63,7 +61,6 @@ public class SignInOrSignUpHelperClass
     ///*************************Email SignIn Or SignUp Section Starting*************************///
     public void EmailSignInOrUp(String WhichActivity,String EmailString,String PasswordString)
     {
-        mAuth=FirebaseAuth.getInstance();
         this.EmailString=EmailString;
         this.PasswordString=PasswordString;
         if (WhichActivity.matches(VARConst.SIGN_IN_ACTIVITY))
@@ -75,25 +72,23 @@ public class SignInOrSignUpHelperClass
             EmailSignUpMethod();
         }
     }
-    public void ResendEmailVerification(FirebaseUser User)
+    public void ResendEmailVerification()
     {
-        this.User=User;
         ResendEmailVerificationMethod();
     }
-    public void CheckEmailVerificationStatus(FirebaseUser User)
+    public void CheckEmailVerificationStatus()
     {
-        this.User=User;
         CheckEmailVerificationStatusMethod();
     }
     private void EmailSignUpMethod()
     {
-        mAuth.createUserWithEmailAndPassword(EmailString,PasswordString).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+        FirebaseAuth.getInstance().createUserWithEmailAndPassword(EmailString,PasswordString).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task)
             {
                 if (task.isSuccessful())
                 {
-                    mAuth.getCurrentUser().sendEmailVerification();
+                    FirebaseAuth.getInstance().getCurrentUser().sendEmailVerification();
                     accountCreationInterface.AccountCreationResult(VARConst.EMAIL_SIGN_UP,true);
                 }
                 else
@@ -106,7 +101,7 @@ public class SignInOrSignUpHelperClass
     //Email SignIn Method
     private void EmailSignInMethod()
     {
-        mAuth.signInWithEmailAndPassword(EmailString,PasswordString).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+        FirebaseAuth.getInstance().signInWithEmailAndPassword(EmailString,PasswordString).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task)
             {
@@ -123,24 +118,27 @@ public class SignInOrSignUpHelperClass
     }
     private void ResendEmailVerificationMethod()
     {
-        User.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task)
-            {
-                if (task.isSuccessful())
+        if (FirebaseAuth.getInstance().getCurrentUser()!=null)
+        {
+            FirebaseAuth.getInstance().getCurrentUser().sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task)
                 {
-                    accountCreationInterface.AccountCreationResult(VARConst.RESEND_EMAIL_VERIFICATION_STATUS,true);
+                    if (task.isSuccessful())
+                    {
+                        accountCreationInterface.AccountCreationResult(VARConst.RESEND_EMAIL_VERIFICATION_STATUS,true);
+                    }
+                    else
+                    {
+                        accountCreationInterface.AccountCreationResult(VARConst.RESEND_EMAIL_VERIFICATION_STATUS,false);
+                    }
                 }
-                else
-                {
-                    accountCreationInterface.AccountCreationResult(VARConst.RESEND_EMAIL_VERIFICATION_STATUS,false);
-                }
-            }
-        });
+            });
+        }
     }
     private void CheckEmailVerificationStatusMethod()
     {
-        if (User.isEmailVerified())
+        if (FirebaseAuth.getInstance().getCurrentUser().isEmailVerified())
         {
             accountCreationInterface.AccountCreationResult(VARConst.EMAIL_VERIFICATION_STATUS,true);
         }
@@ -156,13 +154,11 @@ public class SignInOrSignUpHelperClass
     public void PhoneSignIn(String PhoneString)
     {
         this.PhoneString="+88"+PhoneString;
-        Log.d("myErrror",PhoneString+"Called 1");
         InitializationPhoneCallBack();
         PhoneSignInMethod();
     }
     private void PhoneSignInMethod()
     {
-        Log.d("myErrror",PhoneString+"Called 2");
         PhoneAuthProvider.getInstance().verifyPhoneNumber(PhoneString,60, TimeUnit.SECONDS,activity,PhoneCallBack);
     }
     private void InitializationPhoneCallBack()
@@ -171,7 +167,6 @@ public class SignInOrSignUpHelperClass
             @Override
             public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential)
             {
-                Log.d("myErrror",PhoneString+"Called 3");
                 credential=(AuthCredential) phoneAuthCredential;
                 accountCreationInterface.AccountCreationResult(VARConst.PHONE_SIGN_IN,true);
                 FirebaseAutheticationWithCredential(VARConst.PHONE_SIGN_IN_STATUS,credential);
@@ -179,7 +174,6 @@ public class SignInOrSignUpHelperClass
             @Override
             public void onCodeSent(String ValidationID, PhoneAuthProvider.ForceResendingToken forceResendingToken)
             {
-                Log.d("myErrror",PhoneString+"Called 4");
                 super.onCodeSent(ValidationID, forceResendingToken);
                 SharedPreferences sharedPreferences=activity.getSharedPreferences(VARConst.VALIDATION_ID, Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor=sharedPreferences.edit();
@@ -190,7 +184,6 @@ public class SignInOrSignUpHelperClass
             @Override
             public void onVerificationFailed(FirebaseException e)
             {
-                Log.d("myErrror",PhoneString+"Called 5");
                 accountCreationInterface.AccountCreationResult(VARConst.PHONE_SIGN_IN,false);
             }
         };
@@ -198,7 +191,6 @@ public class SignInOrSignUpHelperClass
     public void PhoneVerificationComplete(String PhoneVerificationCodeString)
     {
         this.PhoneVerificationCodeString=PhoneVerificationCodeString;
-        Log.d("myErrror",PhoneString+"Called 6");Log.d("myErrror",PhoneVerificationCodeString+"Called 6");
         PhoneVerificationCompleteMethod();
     }
     private void  PhoneVerificationCompleteMethod()
@@ -207,20 +199,17 @@ public class SignInOrSignUpHelperClass
         String VerificationSavedCode=sharedPreferences.getString(VARConst.VALIDATION_ID,"");
         if (PhoneVerificationCodeString.length()>5  && VerificationSavedCode.length()>5)
         {
-            Log.d("myErrror",PhoneString+"Called 6");Log.d("myErrror",PhoneVerificationCodeString+"Called 7");
             PhoneAuthCredential phoneAuthCredential = PhoneAuthProvider.getCredential(VerificationSavedCode, PhoneVerificationCodeString);
             credential=(AuthCredential) phoneAuthCredential;
             FirebaseAutheticationWithCredential(VARConst.PHONE_SIGN_IN_STATUS,credential);
         }
         else
         {
-            Log.d("myErrror",PhoneString+"Called 6");Log.d("myErrror",PhoneVerificationCodeString+"Called 8");
             accountCreationInterface.AccountCreationResult(VARConst.PHONE_SIGN_IN_STATUS,true);
         }
     }
     public void ResendPhoneVerificationCode(String PhoneString)
     {
-        Log.d("myErrror",PhoneString+"Called 6");Log.d("myErrror",PhoneString+"Called 9");
         PhoneSignIn(PhoneString);
     }
     ///*************************Phone SignIn Or SignUp Section Ending*************************///
@@ -286,9 +275,8 @@ public class SignInOrSignUpHelperClass
     ///*************************Firebase Authentication Section Starting*************************///
     private void FirebaseAutheticationWithCredential(final String FromWhichMethod, AuthCredential credential)
     {
-        mAuth=FirebaseAuth.getInstance();
         this.FromWhichMethod=FromWhichMethod;
-        mAuth.signInWithCredential(credential).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+        FirebaseAuth.getInstance().signInWithCredential(credential).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task)
             {

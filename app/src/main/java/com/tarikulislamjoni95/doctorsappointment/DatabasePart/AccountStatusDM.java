@@ -1,23 +1,21 @@
 package com.tarikulislamjoni95.doctorsappointment.DatabasePart;
 
-public class AccountStatusDataModel
+public class AccountStatusDM
 {
     private String UID;
-    private boolean AccountCompletion;
     private String AccountType;
+    private boolean AccountCompletion;
     private boolean AccountValidity;
-    private boolean AuthorityValidity;
 
-    public AccountStatusDataModel()
+    public AccountStatusDM()
     {
 
     }
-    public AccountStatusDataModel(String UID, boolean accountCompletion, String accountType, boolean accountValidity, boolean authorityValidity) {
+    public AccountStatusDM(String UID, String accountType, boolean accountCompletion, boolean accountValidity) {
         this.UID=UID;
         AccountCompletion = accountCompletion;
         AccountType = accountType;
         AccountValidity = accountValidity;
-        AuthorityValidity = authorityValidity;
     }
 
 
@@ -54,11 +52,4 @@ public class AccountStatusDataModel
         AccountValidity = accountValidity;
     }
 
-    public boolean isAuthorityValidity() {
-        return AuthorityValidity;
-    }
-
-    public void setAuthorityValidity(boolean authorityValidity) {
-        AuthorityValidity = authorityValidity;
-    }
 }

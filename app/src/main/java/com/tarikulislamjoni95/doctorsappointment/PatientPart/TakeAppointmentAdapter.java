@@ -41,6 +41,7 @@ import java.util.HashMap;
 
 public class TakeAppointmentAdapter extends ArrayAdapter<AppointmentListModel> implements View.OnClickListener
 {
+    private boolean AuthorityValidity;
     private int[] Starting_Date=new int[3];
     private int[] Ending_Date=new int[3];
     private String[] AvailableDay;
@@ -55,41 +56,6 @@ public class TakeAppointmentAdapter extends ArrayAdapter<AppointmentListModel> i
         super(activity, R.layout.model_take_appointment, arrayList);
         this.activity=activity;
         this.arrayList=arrayList;
-    }
-
-    private void GetAccountStatus(final String UID)
-    {
-        DatabaseReference reference=FirebaseDatabase.getInstance().getReference().child(DBConst.AccountStatus).child(UID);
-        reference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot)
-            {
-                if (dataSnapshot.exists())
-                {
-                    boolean AuthorityValidity=(boolean) dataSnapshot.child(DBConst.AuthorityValidity).getValue();
-                    if (!AuthorityValidity)
-                    {
-                        TextView status=activity.findViewById(R.id.appointment_availability_status_tv);
-                        status.setText("UnAuthorized");
-                        viewHolder.TakeAppointmentBtn.setClickable(false);
-                        viewHolder.TakeAppointmentBtn.setEnabled(false);
-                    }
-                    else
-                    {
-                        TextView status=activity.findViewById(R.id.appointment_availability_status_tv);
-                        status.setText("Authorized");
-                        status.setTextColor(activity.getResources().getColor(R.color.colorGreen));
-                        viewHolder.TakeAppointmentBtn.setClickable(true);
-                        viewHolder.TakeAppointmentBtn.setEnabled(true);
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
     }
 
     class ViewHolder
@@ -121,6 +87,18 @@ public class TakeAppointmentAdapter extends ArrayAdapter<AppointmentListModel> i
         viewHolder.TakeAppointmentBtn=convertView.findViewById(R.id.take_appointment_btn);
         viewHolder.TakeAppointmentBtn.setOnClickListener(this);
         viewHolder.TakeAppointmentBtn.setTag(position);
+        if (dataModel.getAuthorityValidity().matches("true"))
+        {
+            viewHolder.TakeAppointmentBtn.setVisibility(View.VISIBLE);
+            TextView status=activity.findViewById(R.id.appointment_availability_status_tv);
+            status.setText("Authorized");
+        }
+        else
+        {
+            viewHolder.TakeAppointmentBtn.setVisibility(View.GONE);
+            TextView status=activity.findViewById(R.id.appointment_availability_status_tv);
+            status.setText("UnAuthorized");
+        }
         viewHolder.HospitalNameTv.setText(dataModel.getHospitalName());
         viewHolder.AvailableDayTv.setText(dataModel.getAvailableDay());
         viewHolder.AppointmentTimeTv.setText(dataModel.getAppointmentTime());
@@ -136,8 +114,6 @@ public class TakeAppointmentAdapter extends ArrayAdapter<AppointmentListModel> i
             viewHolder.AppointmenetOffTv.setText(Start+"~"+End);
         }
         viewHolder.AppointmentFeeTv.setText("Appointment Fee : "+dataModel.getAppointmentFee());
-
-        GetAccountStatus(dataModel.getUID());
 
         return convertView;
     }

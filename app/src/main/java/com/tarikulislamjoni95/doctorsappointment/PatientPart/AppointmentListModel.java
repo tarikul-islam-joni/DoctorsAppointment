@@ -2,6 +2,7 @@ package com.tarikulislamjoni95.doctorsappointment.PatientPart;
 
 public class AppointmentListModel
 {
+    String AuthorityValidity;
     String UID;
     String HospitalName;
     String AvailableDay;
@@ -14,7 +15,9 @@ public class AppointmentListModel
 
     public AppointmentListModel() {
     }
-    public AppointmentListModel(String UID,String Name, String hospitalName, String availableDay, String appointmentTime,String appointmentFee, String AppointmentOffStart,String AppointmentOffEnd) {
+    public AppointmentListModel(String AuthorityValidity,String UID,String Name, String hospitalName, String availableDay, String appointmentTime,String appointmentFee, String AppointmentOffStart,String AppointmentOffEnd) {
+
+        this.AuthorityValidity=AuthorityValidity;
         this.Name=Name;
         this.UID = UID;
         HospitalName = hospitalName;
@@ -23,6 +26,14 @@ public class AppointmentListModel
         this.AppointmentOffStart = AppointmentOffStart;
         this.AppointmentOffEnd=AppointmentOffEnd;
         AppointmentFee = appointmentFee;
+    }
+
+    public String getAuthorityValidity() {
+        return AuthorityValidity;
+    }
+
+    public void setAuthorityValidity(String authorityValidity) {
+        AuthorityValidity = authorityValidity;
     }
 
     public String getName() {
