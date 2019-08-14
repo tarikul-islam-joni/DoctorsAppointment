@@ -38,7 +38,7 @@ public class AccountStatusDB
         if (FirebaseAuth.getInstance().getCurrentUser()!=null)
         {
             DatabaseReference mReference=FirebaseDatabase.getInstance().getReference().child(DBConst.AccountStatus).child(FirebaseAuth.getInstance().getCurrentUser().getUid());
-            mReference.addValueEventListener(new ValueEventListener() {
+            mReference.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot)
                 {
@@ -80,12 +80,12 @@ public class AccountStatusDB
     {
         if (FirebaseAuth.getInstance().getCurrentUser()!=null)
         {
-            DatabaseReference mReference=FirebaseDatabase.getInstance().getReference().child(DBConst.AccountStatus).child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+            DatabaseReference mReference=FirebaseDatabase.getInstance().getReference().child(DBConst.AccountStatus);
             HashMap<String,Object> hashMap=new HashMap<>();
             hashMap.put(DBConst.AccountType,AccountType);
             hashMap.put(DBConst.AccountCompletion,AccountCompletion);
             hashMap.put(DBConst.AccountValidity,AccountValidity);
-            mReference.setValue(hashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+            mReference.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).setValue(hashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task)
                 {

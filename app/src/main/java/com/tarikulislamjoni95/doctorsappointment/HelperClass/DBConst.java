@@ -2,6 +2,13 @@ package com.tarikulislamjoni95.doctorsappointment.HelperClass;
 
 public class DBConst
 {
+    public static final String NULL_USER="NULL_USER";
+    public static final String NOT_NULL_USER="NOT_NULL_USER";
+    public static final String DATA_EXIST="DATA_EXIST";
+    public static final String DATA_NOT_EXIST="DATA_NOT_EXIST";
+    public static final String DATABASE_ERROR="DATABASE_ERROR";
+    public static final String SUCCESSFULL="SUCCESSFULL";
+    public static final String UNSUCCESSFULL="UNSUCCESSFULL";
     //Account Status DB
     public static final String AccountStatus="AccountStatus";
     public static final String AccountType="AccountType";
@@ -10,20 +17,19 @@ public class DBConst
     public static final String AuthorityValidity="AuthorityValidity";
 
     //Account Profile DB
-    public static final String Account="Account";
+    public static final String PatientAccount="PatientAccount";
+    public static final String AccountInformation="AccountInformation";
     public static final String Patient="Patient";
-    public static final String Image="Image";
+    public static final String ProfileImageUrl="ProfileImageUrl";
     public static final String Name="Name";
     public static final String FatherName="FatherName";
     public static final String MotherName="MotherName";
-    public static final String ContactNo="ContactNo";
+    public static final String PhoneNumber="PhoneNumber";
     public static final String Gender="Gender";
     public static final String BloodGroup="BloodGroup";
-    public static final String BirthDate="BirthDate";
+    public static final String DateOfBirth="DateOfBirth";
     public static final String Address="Address";
-    public static final String AddressLongitude="AddressLongitude";
-    public static final String AddressLatitude="AddressLatitude";
-    public static final String BirthCertificateNo="BirthCertificateNo";
+    public static final String BirthCertificateNumber="BirthCertificateNumber";
     public static final String BirthCertificateImageUrl="BirthCertificateImageUrl";
     public static final String AnotherDocumentImageUrl="AnotherDocumentImageUrl";
 

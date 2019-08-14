@@ -13,6 +13,7 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 
 public class VARConst {
+    public static final String UNKNOWN="UNKNOWN";
     //MyTextWatcher constant Variable
     public static final String EMAIL_VALIDITY = "EMAIL_VALIDITY";
     public static final String PHONE_VALIDITY = "PHONE_VALIDITY";
@@ -27,11 +28,14 @@ public class VARConst {
     public static final String WELCOME_ACTIVITY = "WELCOME_ACTIVITY";
     //SignInActivity constant variable
     public static final String SIGN_IN_ACTIVITY = "SIGN_IN_ACTIVITY";
-    //SignUpActivity constant Variable
+    //Entrance constant Variable
     public static final String SIGN_UP_ACTIVITY = "SIGN_UP_ACTIVITY";
 
+    public static final String IV="IV";
+    public static final String CIV="CIV";
 
-    //SignInOrSignUpHelperClass Variable
+
+    //Firebase Authentication Variable
     public static final int GOOGLE_SIGN_IN_REQUEST_CODE=100;
     public static final String VALIDATION_ID="VALIDATION_ID";
     public static final String EMAIL_SIGN_UP="EMAIL_SIGN_UP";

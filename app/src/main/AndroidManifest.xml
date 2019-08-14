@@ -25,8 +25,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".AccountPart.SignInActivity"/>
-        <activity android:name=".AccountPart.SignUpActivity"/>
+        <activity android:name=".AccountPart.EntranceActivity"/>
 
         <activity android:name=".PatientPart.PatientMainActivity"
             android:label="@string/app_name"
@@ -46,6 +45,10 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".DoctorPart.EditDoctorProfileActivity" />
         <activity android:name=".DoctorPart.EditDoctorSecureInfo"/>
+
+        <activity android:name=".AdminPart.Example">
+
+        </activity>
 
         <activity android:name=".MyGoogleMapClass.SearchHospitalOnMap" />
         <activity
@@ -73,6 +76,14 @@
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.tarikulislamjoni95.doctorsappointment"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths"/>
+        </provider>
     </application>
 
 </manifest>

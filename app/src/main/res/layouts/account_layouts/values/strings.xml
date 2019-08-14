@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="get_enter">Get Enter</string>
+    <string name="entrance_with_email">Entrance With Email</string>
+    <string name="entrance_with_phone_number">Entrance With Phone Number</string>
+    <string name="entrance_with_google_account">Entrance With Google Account</string>
+    <string name="forget_password">Forget Password ?</string>
+    <string name="recover_your_account">Recover Your account</string>
+    <string name="profile_image">Profile Image</string>
+</resources>

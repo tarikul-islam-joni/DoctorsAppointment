@@ -1,4 +1,4 @@
-package com.tarikulislamjoni95.doctorsappointment.AccountPart;
+package com.tarikulislamjoni95.doctorsappointment.DatabasePart;
 
 import android.app.Activity;
 import android.content.Context;
@@ -39,7 +39,7 @@ import java.util.concurrent.TimeUnit;
 
 import static android.app.Activity.RESULT_OK;
 
-public class SignInOrSignUpHelperClass
+public class MyAuthenticationClass
 {
     private MyToastClass myToast;
     private AccountCreationInterface accountCreationInterface;
@@ -52,7 +52,7 @@ public class SignInOrSignUpHelperClass
     private String EmailString,PasswordString,PhoneString,PhoneVerificationCodeString,FromWhichMethod;
     private LoginButton SignInFacebookSignInBtn;
     //Constructor
-    public SignInOrSignUpHelperClass(Activity activity)
+    public MyAuthenticationClass(Activity activity)
     {
         this.activity=activity;
         myToast=new MyToastClass(activity);
@@ -138,6 +138,7 @@ public class SignInOrSignUpHelperClass
     }
     private void CheckEmailVerificationStatusMethod()
     {
+        Log.d("myError","CheckEmailVerificationStatusMethod : "+FirebaseAuth.getInstance().getCurrentUser().isEmailVerified());
         if (FirebaseAuth.getInstance().getCurrentUser().isEmailVerified())
         {
             accountCreationInterface.AccountCreationResult(VARConst.EMAIL_VERIFICATION_STATUS,true);

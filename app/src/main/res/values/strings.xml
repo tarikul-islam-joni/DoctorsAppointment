@@ -242,4 +242,42 @@
     </string-array>
 
 
+
+    <string name="sign_in_up_status">Enter To The Doctor\'s Appointment</string>
+    <string name="email_et_hint">Type your email</string>
+    <string name="password_et_hint">Type password</string>
+    <string name="retype_et_hint">Re-type password</string>
+    <string name="phone_et_hint">Type your phone number</string>
+    <string name="confirm_btn">Confirm</string>
+    <string name="phone_prefix_hint">+88</string>
+    <string name="doctor">Doctor</string>
+    <string name="patient">Patient</string>
+    <string name="NeedAccount">Haven\'t Account yet ? Sign Up</string>
+    <string name="AccountVerificationStatus">Account Verification Status</string>
+    <string name="Automatically_Detection_String_1">Waiting to automatically detect an sms sent to </string>
+    <string name="Automatically_Detection_String_2">Enter the OTP below in case we fail to detect the sms automatically</string>
+    <string name="Verification_email_hint_1">Verification email sent to </string>
+    <string name="Verification_email_hint_2">Goto your email inbox and please verify first and click the Next button</string>
+    <string name="RESEND">RESEND</string>
+    <string name="ENTER_OTP">ENTER OTP</string>
+    <string name="Check">Check</string>
+    <string name="Next">Next</string>
+    <string name="Cancel">Cancel</string>
+
+    <string name="Upload">Upload</string>
+    <string name="Full_Name">Full Name : </string>
+    <string name="Father_Name">Father Name : </string>
+    <string name="Mother_Name">Mother Name : </string>
+    <string name="Phone_Number">Phone Number : </string>
+    <string name="Date_Of_Birth">Date Of Birth : </string>
+    <string name="Blood_Group">Blood Group : </string>
+    <string name="Current_Address">Current Address</string>
+    <string name="I_Am_A">I am a</string>
+    <string name="Male">Male</string>
+    <string name="Female">Female</string>
+    <string name="Save">Save</string>
+    <string name="Basic_Information">Basic Information</string>
+    <string name="example_address">Example - House No, Road No, Town, City</string>
+    <string name="example_date">DD-MM-YY</string>
+
 </resources>

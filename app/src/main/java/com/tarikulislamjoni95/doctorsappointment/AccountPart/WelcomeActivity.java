@@ -7,8 +7,9 @@ import android.os.Bundle;
 import android.os.Handler;
 
 import com.tarikulislamjoni95.doctorsappointment.AdminPart.AdminMainActivity;
+import com.tarikulislamjoni95.doctorsappointment.DatabasePart.AccountStatusDB;
 import com.tarikulislamjoni95.doctorsappointment.DatabasePart.AccountStatusDM;
-import com.tarikulislamjoni95.doctorsappointment.DatabasePart.MyDatabaseClass;
+import com.tarikulislamjoni95.doctorsappointment.DatabasePart.DBHelper;
 import com.tarikulislamjoni95.doctorsappointment.DoctorPart.DoctorMainActivity;
 import com.tarikulislamjoni95.doctorsappointment.DoctorPart.EditDoctorProfileActivity;
 import com.tarikulislamjoni95.doctorsappointment.DoctorPart.EditDoctorSecureInfo;
@@ -23,11 +24,11 @@ import com.tarikulislamjoni95.doctorsappointment.R;
 import java.util.ArrayList;
 
 public class WelcomeActivity extends AppCompatActivity implements AccountStatusDBInterface {
+    private AccountStatusDB accountStatusDB;
 
     private Intent intent;
     private Activity activity;
 
-    private MyDatabaseClass DB;
     private MyLoadingDailog myLoadingDailog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,8 +38,10 @@ public class WelcomeActivity extends AppCompatActivity implements AccountStatusD
         Initialization();
         InitializationUI();
         InitializationClass();
+        InitializationDB();
         CheckLoggedInOrNot();
     }
+
     private void Initialization()
     {
         activity=WelcomeActivity.this;
@@ -50,8 +53,6 @@ public class WelcomeActivity extends AppCompatActivity implements AccountStatusD
     private void InitializationClass()
     {
         myLoadingDailog=new MyLoadingDailog(WelcomeActivity.this,R.drawable.spinner);
-        //Database Initialization
-        DB=new MyDatabaseClass(activity);
     }
     private void CheckLoggedInOrNot()
     {
@@ -126,7 +127,7 @@ public class WelcomeActivity extends AppCompatActivity implements AccountStatusD
     }
     private void GotoSignInActivity()
     {
-        intent=new Intent(activity,SignInActivity.class);
+        intent=new Intent(activity, EntranceActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
         DelayStartingActivityMethod(intent);
     }
@@ -162,11 +163,16 @@ public class WelcomeActivity extends AppCompatActivity implements AccountStatusD
     ///************************Database Part**********************************///
     ///**********************************************************************///
 
+    private void InitializationDB()
+    {
+        accountStatusDB=new AccountStatusDB(activity);
+    }
+
 
     ///************************Database Call**********************************///
     private void CallDBForAccountStatus()
     {
-        DB.accountStatusDB.GetUIDAccountStatusData();
+        accountStatusDB.GetUIDAccountStatusData();
     }
     ///**********************Interface Implementation*************************///
     @Override

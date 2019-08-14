@@ -19,6 +19,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MyLocationClass {
+    private MyPermissionClass myPermissionClass;
+    private MyPermissionGroup myPermissionGroup;
     private GetLocationInterface locationInterface;
     private MyResultReceiver resultReceiver;
     private Intent intent;
@@ -30,46 +32,57 @@ public class MyLocationClass {
         intent = new Intent(activity, MyLocationService.class);
         resultReceiver = new MyResultReceiver(null);
         locationInterface = (GetLocationInterface) activity;
+        myPermissionClass=new MyPermissionClass(activity);
+        myPermissionGroup=new MyPermissionGroup();
     }
 
     @SuppressLint("MissingPermission")
     public void GetCoOrdinateFromMaps() {
-        final FusedLocationProviderClient fusedLocationProviderClient = new FusedLocationProviderClient(activity);
-        LocationRequest locationRequest = new LocationRequest();
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        locationRequest.setInterval(1000);
-        locationRequest.setFastestInterval(1000);
-        locationCallback = new LocationCallback() {
-            @Override
-            public void onLocationResult(LocationResult locationResult) {
-                super.onLocationResult(locationResult);
-                intent.putExtra(VARConst.RECEIVER, resultReceiver);
-                intent.putExtra(VARConst.FETCH_TYPE, VARConst.TYPE_02_ADDRESS_COORDINATE);
-                intent.putExtra(VARConst.ADDRESS_LOCATION, locationResult.getLastLocation());
-                activity.startService(intent);
-                fusedLocationProviderClient.removeLocationUpdates(locationCallback);
-            }
-
-            @Override
-            public void onLocationAvailability(LocationAvailability locationAvailability) {
-                Map<Integer, String> map = new HashMap<>();
-                if (!locationAvailability.isLocationAvailable()) {
-                    map.put(0, "Turn on your location");
-                    locationInterface.GetLocation("LocationError", map);
+        if (myPermissionClass.CheckAndRequestPermission(myPermissionGroup.getLocationGroup()))
+        {
+            final FusedLocationProviderClient fusedLocationProviderClient = new FusedLocationProviderClient(activity);
+            LocationRequest locationRequest = new LocationRequest();
+            locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+            locationRequest.setInterval(1000);
+            locationRequest.setFastestInterval(1000);
+            locationCallback = new LocationCallback() {
+                @Override
+                public void onLocationResult(LocationResult locationResult) {
+                    super.onLocationResult(locationResult);
+                    intent.putExtra(VARConst.RECEIVER, resultReceiver);
+                    intent.putExtra(VARConst.FETCH_TYPE, VARConst.TYPE_02_ADDRESS_COORDINATE);
+                    intent.putExtra(VARConst.ADDRESS_LOCATION, locationResult.getLastLocation());
+                    activity.startService(intent);
+                    fusedLocationProviderClient.removeLocationUpdates(locationCallback);
                 }
-                super.onLocationAvailability(locationAvailability);
-            }
-        };
+
+                @Override
+                public void onLocationAvailability(LocationAvailability locationAvailability) {
+                    Map<Integer, String> map = new HashMap<>();
+                    if (!locationAvailability.isLocationAvailable()) {
+                        map.put(0, "Turn on your location");
+                        locationInterface.GetLocation("LocationError", map);
+                    }
+                    super.onLocationAvailability(locationAvailability);
+                }
+            };
 
 
-        fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null);
+            fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null);
+        }
     }
+
     public void GetCoOrdinateFromAddress(String AddressString)
     {
         intent.putExtra(VARConst.RECEIVER,resultReceiver);
         intent.putExtra(VARConst.FETCH_TYPE, VARConst.TYPE_01_ADDRESS_NAME);
         intent.putExtra(VARConst.ADDRESS_NAME,AddressString);
         activity.startService(intent);
+    }
+
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
+    {
+        myPermissionClass.onRequestPermissionResult(activity,requestCode,permissions,grantResults);
     }
 
     private class MyResultReceiver extends ResultReceiver
