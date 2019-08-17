@@ -17,13 +17,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
+        <meta-data android:name="com.google.android.geo.API_KEY"
+            android:value="@string/map_key"/>
+
 
         <activity android:name=".AccountPart.WelcomeActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity android:name=".AccountPart.EntranceActivity"/>
 
@@ -31,7 +30,8 @@
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar"/>
         <activity android:name=".PatientPart.EditPatientProfileActivity"/>
-        <activity android:name=".PatientPart.EditPatientSecureInfoActivity"/>
+        <activity android:name=".PatientPart.EditPatientSecureInfoActivity">
+        </activity>
 
 
         <activity
@@ -43,11 +43,16 @@
             android:name=".DoctorPart.DoctorMainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".DoctorPart.EditDoctorProfileActivity" />
+        <activity android:name=".DoctorPart.EditDoctorProfileActivity" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity android:name=".DoctorPart.EditDoctorSecureInfo"/>
 
         <activity android:name=".AdminPart.Example">
-
         </activity>
 
         <activity android:name=".MyGoogleMapClass.SearchHospitalOnMap" />

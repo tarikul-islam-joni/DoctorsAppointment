@@ -23,6 +23,12 @@
 
     <string name="fb_login_protocol_scheme">fb1378098839011681</string>
 
+    <string name="google_map_api_key">AIzaSyDDKYNrzEl0dHTuzK52czPK60GALqWLMXY</string>
+
+    <string name="map_key" translatable="false">
+        AIzaSyAqdSjpPp_Z3rYwQkxTMqwubdPNDpu7Oi8
+    </string>
+
 
 
     <string-array name="blood_group">
@@ -220,7 +226,16 @@
     </string-array>
 
 
-
+    <string-array name="division_list">
+        <item>Dhaka</item>
+        <item>Rajshahi</item>
+        <item>Khulna</item>
+        <item>Chittagong</item>
+        <item>Sylhet</item>
+        <item>Mymensingh</item>
+        <item>Rangpur</item>
+        <item>Barishal</item>
+    </string-array>
 
 
     <string-array name="select_day_arrya">

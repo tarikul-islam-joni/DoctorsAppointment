@@ -28,6 +28,10 @@ public class DataParser
             {
                 Vicinity=googlePlaceJson.getString("vicinity");
             }
+            if (!googlePlaceJson.isNull("formatted_address"))
+            {
+                Vicinity=googlePlaceJson.getString("formatted_address");
+            }
             if (!googlePlaceJson.isNull("geometry"))
             {
                 Latitude=googlePlaceJson.getJSONObject("geometry").getJSONObject("location").getString("lat");

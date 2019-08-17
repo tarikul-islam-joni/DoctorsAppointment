@@ -170,7 +170,7 @@ public class SearchHospitalOnMap extends AppCompatActivity implements View.OnCli
     public void onClick(View v)
     {
         Object dataTransfer[] = new Object[2];
-        GetNearByPlacesData getNearbyPlacesData = new GetNearByPlacesData();
+        GetNearByPlacesData getNearbyPlacesData = new GetNearByPlacesData(activity);
         switch(v.getId())
         {
             case R.id.search_btn:
@@ -213,7 +213,7 @@ public class SearchHospitalOnMap extends AppCompatActivity implements View.OnCli
     {
         StringBuilder googlePlaceUrl = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
 
-        //https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=-33.8670522,151.1957362&radius=1500&type=restaurant&keyword=cruise&key=YOUR_API_KEY
+        //https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=-33.8670522,151.1957362&radius=1500&type=restaurant&keyword=cruise&key=AIzaSyAqdSjpPp_Z3rYwQkxTMqwubdPNDpu7Oi8
         googlePlaceUrl.append("location="+latitude+","+longitude);
         googlePlaceUrl.append("&radius="+PROXIMITY_RADIUS);
         googlePlaceUrl.append("&type="+nearbyPlace);

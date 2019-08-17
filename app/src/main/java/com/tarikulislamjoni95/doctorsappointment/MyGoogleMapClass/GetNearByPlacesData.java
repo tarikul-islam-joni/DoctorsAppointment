@@ -1,5 +1,9 @@
 package com.tarikulislamjoni95.doctorsappointment.MyGoogleMapClass;
 
+import android.app.Activity;
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -8,6 +12,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.IOException;
@@ -19,6 +24,11 @@ public class GetNearByPlacesData extends AsyncTask<Object,String,String>
     String googlePlacesData;
     GoogleMap myGoogleMap;
     String url;
+    Activity activity;
+    public GetNearByPlacesData(Activity activity)
+    {
+        this.activity=activity;
+    }
     @Override
     protected String doInBackground(Object... objects) {
         myGoogleMap=(GoogleMap) objects[0];
@@ -54,14 +64,39 @@ public class GetNearByPlacesData extends AsyncTask<Object,String,String>
 
             Log.d("myError","My Place "+place_name);
 
-            LatLng latLng=new LatLng(place_latitude,place_longitude);
+            final LatLng latLng=new LatLng(place_latitude,place_longitude);
             markerOptions.position(latLng);
-            markerOptions.title(place_name+" : "+place_vicinity);
+            markerOptions.title(place_name+", "+place_vicinity);
             markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
 
             myGoogleMap.addMarker(markerOptions);
-            myGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-            myGoogleMap.animateCamera(CameraUpdateFactory.zoomTo(10));
+            //myGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+            //myGoogleMap.animateCamera(CameraUpdateFactory.zoomTo(10));
+            myGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,13));
+
+            myGoogleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                @Override
+                public boolean onMarkerClick(Marker marker) {
+                    LatLng latLng1=marker.getPosition();//+latLng1.latitude+","+latLng1.longitude
+                    Log.d("myError","Marker Cliked :: "+marker.getPosition()+" ::: "+marker.getTitle()+" ::: "+latLng.latitude+" : "+latLng.longitude);
+                    try
+                    {
+                        Uri gmmIntentUri = Uri.parse("google.navigation:q="+marker.getTitle());
+                        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+                        mapIntent.setPackage("com.google.android.apps.maps");
+                        activity.startActivity(mapIntent);
+
+                    }catch (ActivityNotFoundException e)
+                    {
+                        String url = "https://www.google.com/maps/dir/?api=1&destination=" + marker.getTitle() + "&travelmode=driving";
+                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                        activity.startActivity(intent);
+                    }
+
+
+                    return false;
+                }
+            });
 
 
 
@@ -70,4 +105,5 @@ public class GetNearByPlacesData extends AsyncTask<Object,String,String>
 
         }
     }
+
 }

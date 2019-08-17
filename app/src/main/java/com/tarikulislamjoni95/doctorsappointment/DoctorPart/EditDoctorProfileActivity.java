@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -32,9 +33,21 @@ import java.util.ArrayList;
 
 public class EditDoctorProfileActivity extends AppCompatActivity
 {
+    private TextView textView_0;
+    private EditText editText;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_doctor_profile);
+        textView_0=findViewById(R.id.tex_view_0);
+
+        textView_0.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view)
+            {
+                editText=findViewById(R.id.edit_text_1);
+                editText.requestFocus();
+            }
+        });
     }
 }

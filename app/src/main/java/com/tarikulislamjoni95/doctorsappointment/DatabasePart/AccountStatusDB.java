@@ -135,4 +135,48 @@ public class AccountStatusDB
             myInterface.AccountStatusSavingResult(false);
         }
     }
+
+    public void GetAccountStatusData(String uid)
+    {
+        arrayList.clear();
+        if (FirebaseAuth.getInstance().getCurrentUser()!=null)
+        {
+            DatabaseReference mReference=FirebaseDatabase.getInstance().getReference().child(DBConst.AccountStatus).child(uid);
+            mReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot)
+                {
+                    if (dataSnapshot.exists())
+                    {
+                        arrayList.add(
+                                new AccountStatusDM(
+                                        dataSnapshot.getKey().toString(),
+                                        dataSnapshot.child(DBConst.AccountType).getValue().toString(),
+                                        (boolean)dataSnapshot.child(DBConst.AccountCompletion).getValue(),
+                                        (boolean)dataSnapshot.child(DBConst.AccountValidity).getValue())
+                        );
+
+                        myInterface.GetAccountStatus(true,arrayList);
+                    }
+                    else
+                    {
+                        arrayList.add(new AccountStatusDM());
+                        myInterface.GetAccountStatus(false,arrayList);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError)
+                {
+                    arrayList.add(new AccountStatusDM());
+                    myInterface.GetAccountStatus(false,arrayList);
+                }
+            });
+        }
+        else
+        {
+            arrayList.add(new AccountStatusDM());
+            myInterface.GetAccountStatus(false,arrayList);
+        }
+    }
 }
