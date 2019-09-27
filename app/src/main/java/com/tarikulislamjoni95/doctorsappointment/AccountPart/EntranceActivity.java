@@ -22,36 +22,37 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.facebook.login.widget.LoginButton;
-import com.google.android.material.textfield.TextInputLayout;
 import com.tarikulislamjoni95.doctorsappointment.AdminPart.AdminMainActivity;
 import com.tarikulislamjoni95.doctorsappointment.DatabasePart.AccountStatusDB;
-import com.tarikulislamjoni95.doctorsappointment.DatabasePart.AccountStatusDM;
+import com.tarikulislamjoni95.doctorsappointment.DatabasePart.DBHelper;
 import com.tarikulislamjoni95.doctorsappointment.DatabasePart.MyAuthenticationClass;
 import com.tarikulislamjoni95.doctorsappointment.DoctorPart.DoctorMainActivity;
 import com.tarikulislamjoni95.doctorsappointment.DoctorPart.EditDoctorProfileActivity;
-import com.tarikulislamjoni95.doctorsappointment.DoctorPart.EditDoctorSecureInfo;
+import com.tarikulislamjoni95.doctorsappointment.DoctorPart.EditDoctorSecureInfoActivity;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.VARConst;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.DBConst;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.MyLoadingDailog;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.MyTextWatcher;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.MyToastClass;
-import com.tarikulislamjoni95.doctorsappointment.Interface.AccountStatusDBInterface;
 import com.tarikulislamjoni95.doctorsappointment.Interface.AccountCreationInterface;
+import com.tarikulislamjoni95.doctorsappointment.Interface.GetDataFromDBInterface;
 import com.tarikulislamjoni95.doctorsappointment.PatientPart.EditPatientProfileActivity;
 import com.tarikulislamjoni95.doctorsappointment.PatientPart.EditPatientSecureInfoActivity;
 import com.tarikulislamjoni95.doctorsappointment.PatientPart.PatientMainActivity;
 import com.tarikulislamjoni95.doctorsappointment.R;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class EntranceActivity extends AppCompatActivity implements View.OnClickListener ,
-        AccountCreationInterface,AccountStatusDBInterface {
+        AccountCreationInterface, GetDataFromDBInterface {
 
     //Database Class Variable
     private MyAuthenticationClass myAuthenticationClass;
     private AccountStatusDB accountStatusDB;
+    private DBHelper dbHelper;
 
     //Class Variable
     private MyToastClass myToast;
@@ -75,6 +76,7 @@ public class EntranceActivity extends AppCompatActivity implements View.OnClickL
 
 
     //Primitive Variable
+    private String UID;
     private int VALIDITY_COLOR;
     private String EmailString,PasswordString,PhoneString,AccoutTypeString=DBConst.Patient;
     private int RESEND_PHONE_COUNTER=2;
@@ -316,7 +318,7 @@ public class EntranceActivity extends AppCompatActivity implements View.OnClickL
                 if (result)
                 {
                     CancelVerificationDialog();
-                    CallDBForAccountExistanceCheck();
+                    CallDBForAccountUID();
                 }
                 else
                 {
@@ -355,7 +357,7 @@ public class EntranceActivity extends AppCompatActivity implements View.OnClickL
                 if (result)
                 {
                     CancelVerificationDialog();
-                    CallDBForAccountExistanceCheck();
+                    CallDBForAccountUID();
                 }
                 else
                 {
@@ -365,7 +367,7 @@ public class EntranceActivity extends AppCompatActivity implements View.OnClickL
             case VARConst.GOOGLE_SIGN_IN_STATUS:
                 if (result)
                 {
-                    CallDBForAccountExistanceCheck();
+                    CallDBForAccountUID();
                 }
                 else
                 {
@@ -378,7 +380,7 @@ public class EntranceActivity extends AppCompatActivity implements View.OnClickL
             case VARConst.FACEBOOK_SIGN_IN_STATUS:
                 if (result)
                 {
-                    CallDBForAccountExistanceCheck();
+                    CallDBForAccountUID();
                 }
                 else
                 {
@@ -436,8 +438,9 @@ public class EntranceActivity extends AppCompatActivity implements View.OnClickL
             CancelBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    CallDBForDeletionUnsuccessFullUser();
+                    CallDBForSignOut();
                     CancelVerificationDialog();
+                    startActivity(new Intent(EntranceActivity.this,EntranceActivity.class));
                 }
             });
         }
@@ -474,7 +477,7 @@ public class EntranceActivity extends AppCompatActivity implements View.OnClickL
         ResendBtn.setVisibility(View.GONE);
         CountDownTv.setVisibility(View.VISIBLE);
         progressBar.setVisibility(View.VISIBLE);
-        new CountDownTimer(60000,1000)
+        new CountDownTimer(SET_DELAY_TIMER,1000)
         {
             @Override
             public void onTick(long l)
@@ -487,7 +490,7 @@ public class EntranceActivity extends AppCompatActivity implements View.OnClickL
             @Override
             public void onFinish()
             {
-                SET_DELAY_TIMER=6000;
+                SET_DELAY_TIMER=60000;
                 COUNT_DOWN=60;
                 progressBar.setVisibility(View.GONE);
                 CountDownTv.setVisibility(View.GONE);
@@ -537,34 +540,56 @@ public class EntranceActivity extends AppCompatActivity implements View.OnClickL
             CancelBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    CallDBForDeletionUnsuccessFullUser();
+                    CallDBForSignOut();
                     CancelVerificationDialog();
+                    startActivity(new Intent(EntranceActivity.this,EntranceActivity.class));
                 }
             });
         }
         else
         {
-            myToast.LToast("Verification resending limit exceeded\nCheck your email and verify");
+            myToast.LToast("Verification resending limit exceeded\nCheck your email and verify !!! ");
         }
     }
 
-    private void GetAccountExistanceStatus(boolean AccountExistanceResult,String AccountType,boolean AccountCompletion,boolean AccountValidity)
+    private void SetUID(String UID)
+    {
+        this.UID=UID;
+    }
+    private void GetAccountUIDFromDB(String Result,String  UID)
+    {
+        //Call Database For Account Status
+        if (Result.matches(DBConst.NOT_NULL_USER))
+        {
+            SetUID(UID);
+            CallDBForAccountExistanceCheck(UID);
+        }
+    }
+
+
+    private void GetAccountExistanceStatus(HashMap<String,Object> DataHashMap)
     {
         CancelLoadingDialog();
-        if (AccountExistanceResult)
+        String AccountExistanceResult=(String) DataHashMap.get(DBConst.RESULT);
+        if (AccountExistanceResult.matches(DBConst.DATA_NOT_EXIST))
         {
+            CallDBForSavingAccountStatus(UID);
+        }
+        else if (AccountExistanceResult.matches(DBConst.DATA_EXIST))
+        {
+            String AccountType=(String)DataHashMap.get(DBConst.AccountType);
             if (AccountType.matches(DBConst.Patient))
             {
                 //Goto Patient Part
-                if (!AccountCompletion)
+                if (!(boolean)DataHashMap.get(DBConst.AccountCompletion))
                 {
                     StartActivity(new Intent(activity, EditPatientProfileActivity.class));
                 }
-                else if (!AccountValidity)
+                else if (!(boolean)DataHashMap.get(DBConst.AccountValidity))
                 {
                     StartActivity(new Intent(activity, EditPatientSecureInfoActivity.class));
                 }
-                else if (AccountCompletion && AccountValidity)
+                else if ((boolean)DataHashMap.get(DBConst.AccountCompletion) && (boolean)DataHashMap.get(DBConst.AccountValidity))
                 {
                     StartActivity(new Intent(activity, PatientMainActivity.class));
                 }
@@ -572,15 +597,15 @@ public class EntranceActivity extends AppCompatActivity implements View.OnClickL
             else if (AccountType.matches(DBConst.Doctor))
             {
                 //Goto Patient Part
-                if (!AccountCompletion)
+                if (!(boolean)DataHashMap.get(DBConst.AccountCompletion))
                 {
                     StartActivity(new Intent(activity, EditDoctorProfileActivity.class));
                 }
-                else if (!AccountValidity)
+                else if (!(boolean)DataHashMap.get(DBConst.AccountValidity))
                 {
-                    StartActivity(new Intent(activity, EditDoctorSecureInfo.class));
+                    StartActivity(new Intent(activity, EditDoctorSecureInfoActivity.class));
                 }
-                else if (AccountCompletion && AccountValidity)
+                else if ((boolean)DataHashMap.get(DBConst.AccountCompletion) && (boolean)DataHashMap.get(DBConst.AccountValidity))
                 {
                     StartActivity(new Intent(activity, DoctorMainActivity.class));
                 }
@@ -592,7 +617,7 @@ public class EntranceActivity extends AppCompatActivity implements View.OnClickL
         }
         else
         {
-            CallDBForSavingAccountStatus();
+            CallDBForSignOut();
         }
     }
 
@@ -604,17 +629,17 @@ public class EntranceActivity extends AppCompatActivity implements View.OnClickL
         startActivity(intent);
     }
 
-    private void GetAccountStatusSavingResult(boolean AccountStatusSavingResult)
+    private void GetAccountStatusSavingResult(String AccountStatusSavingResult)
     {
         CancelLoadingDialog();
-        if (AccountStatusSavingResult)
+        if (AccountStatusSavingResult.matches(DBConst.SUCCESSFUL))
         {
-            CallDBForAccountExistanceCheck();
+            CallDBForAccountExistanceCheck(UID);
         }
-        else
+        else if (AccountStatusSavingResult.matches(DBConst.UNSUCCESSFUL))
         {
-            myToast.LToast("Failed to create the account");
-            CallDBForDeletionUnsuccessFullUser();
+            CallDBForSignOut();
+            startActivity(new Intent(EntranceActivity.this,EntranceActivity.class));
         }
     }
 
@@ -632,6 +657,7 @@ public class EntranceActivity extends AppCompatActivity implements View.OnClickL
     {
         myAuthenticationClass=new MyAuthenticationClass(activity);
         accountStatusDB=new AccountStatusDB(activity);
+        dbHelper=new DBHelper(activity);
     }
 
 
@@ -680,19 +706,23 @@ public class EntranceActivity extends AppCompatActivity implements View.OnClickL
         myAuthenticationClass.ResendEmailVerification();
     }
 
-    private void CallDBForAccountExistanceCheck()
+    private void CallDBForAccountUID()
+    {
+        dbHelper.GetUID();
+    }
+    private void CallDBForAccountExistanceCheck(String UID)
     {
         ShowLoadingDialog();
-        accountStatusDB.GetUIDAccountStatusData();
+        accountStatusDB.GetAccountStatusData(UID);
     }
-    private void CallDBForSavingAccountStatus()
+    private void CallDBForSavingAccountStatus(String UID)
     {
         ShowLoadingDialog();
-        accountStatusDB.SaveIntoAccountStatusDBFromUser(AccoutTypeString,false,false);
+        accountStatusDB.SaveIntoAccountStatusDB(UID,AccoutTypeString,false,false);
     }
-    private void CallDBForDeletionUnsuccessFullUser()
+    private void CallDBForSignOut()
     {
-        myAuthenticationClass.DeleteAccount();
+        dbHelper.SignOut();
     }
     ///************************Account Creation Interface***********************///
     @Override
@@ -704,23 +734,25 @@ public class EntranceActivity extends AppCompatActivity implements View.OnClickL
 
     ///*******************Account Status DB Interface*********************///
     @Override
-    public void GetAccountStatus(boolean result, ArrayList<AccountStatusDM> arrayList)
+    public void GetSingleDataFromDatabase(String WhichDB, HashMap<String, Object> DataHashMap)
     {
-        CancelLoadingDialog();
-        if (result)
+        Log.d("EntranceActivity",WhichDB+" ::: "+DataHashMap.toString());
+        if (WhichDB.matches(DBConst.GetAccountUID))
         {
-            GetAccountExistanceStatus(true,arrayList.get(0).getAccountType(),arrayList.get(0).isAccountCompletion(),arrayList.get(0).isAccountValidity());
+            GetAccountUIDFromDB((String)DataHashMap.get(DBConst.RESULT),(String) DataHashMap.get(DBConst.UID));
         }
-        else
+        else if (WhichDB.matches(DBConst.GetAccountStatusDB))
         {
-            GetAccountExistanceStatus(false,"",false,false);
+            GetAccountExistanceStatus(DataHashMap);
+        }
+        else if (WhichDB.matches(DBConst.SaveAccountStatusDB))
+        {
+            GetAccountStatusSavingResult((String) DataHashMap.get(DBConst.RESULT));
         }
     }
 
-
     @Override
-    public void AccountStatusSavingResult(boolean result)
+    public void GetMultipleDataFromDatabase(String WhichDB, ArrayList<HashMap<String, Object>> DataHashMapArrayList)
     {
-        GetAccountStatusSavingResult(result);
     }
 }

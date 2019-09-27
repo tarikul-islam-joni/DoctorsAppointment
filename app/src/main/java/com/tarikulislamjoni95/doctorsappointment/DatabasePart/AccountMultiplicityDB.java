@@ -14,19 +14,21 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.DBConst;
-import com.tarikulislamjoni95.doctorsappointment.Interface.AccountMultiplicityInterface;
+import com.tarikulislamjoni95.doctorsappointment.Interface.GetDataFromDBInterface;
 
 import java.util.HashMap;
 
 public class AccountMultiplicityDB
 {
-    private AccountMultiplicityInterface accountMultiplicityInterface;
+    private HashMap<String,Object> DataHashMap;
+    private GetDataFromDBInterface myDataInterface;
     public AccountMultiplicityDB(Activity activity)
     {
-        accountMultiplicityInterface=(AccountMultiplicityInterface)activity;
+        myDataInterface=(GetDataFromDBInterface) activity;
     }
-    public void SaveAccountMultiplicity(String BirthNumberString,HashMap<String,Object> hashMap)
+    public void SaveAccountMultiplicity(String AccountType,String InformationString,HashMap<String,Object> hashMap)
     {
+        DataHashMap=new HashMap<>();
         if (hashMap.size()>2)
         {
             hashMap.put(DBConst.MultipleCheck,true);
@@ -34,18 +36,20 @@ public class AccountMultiplicityDB
 
         if (FirebaseAuth.getInstance().getCurrentUser()!=null)
         {
-            DatabaseReference reference= FirebaseDatabase.getInstance().getReference().child(DBConst.AccountMultiplicity).child(BirthNumberString);
+            DatabaseReference reference= FirebaseDatabase.getInstance().getReference().child(DBConst.AccountMultiplicity).child(AccountType).child(InformationString);
             reference.setValue(hashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task)
                 {
                     if (task.isComplete())
                     {
-                        accountMultiplicityInterface.SaveAccountMultiplicity(DBConst.SUCCESSFULL);
+                        DataHashMap.put(DBConst.RESULT,DBConst.SUCCESSFUL);
+                        myDataInterface.GetSingleDataFromDatabase(DBConst.SaveAccountMultiplicityDB,DataHashMap);
                     }
                     else
                     {
-                        accountMultiplicityInterface.SaveAccountMultiplicity(DBConst.UNSUCCESSFULL);
+                        DataHashMap.put(DBConst.RESULT,DBConst.UNSUCCESSFUL);
+                        myDataInterface.GetSingleDataFromDatabase(DBConst.SaveAccountMultiplicityDB,DataHashMap);
                     }
                 }
             });
@@ -53,17 +57,18 @@ public class AccountMultiplicityDB
         }
         else
         {
-            accountMultiplicityInterface.SaveAccountMultiplicity(DBConst.NULL_USER);
+            DataHashMap.put(DBConst.RESULT,DBConst.UNSUCCESSFUL);
+            myDataInterface.GetSingleDataFromDatabase(DBConst.SaveAccountMultiplicityDB,DataHashMap);
         }
 
     }
 
-    public void GetAccountMultiplicity(String BirthNumberString)
+    public void GetAccountMultiplicity(String AccountType,String InformationString)
     {
-        final HashMap<String,Object> hashMap=new HashMap<>();
+        DataHashMap=new HashMap<>();
         if (FirebaseAuth.getInstance().getCurrentUser()!=null)
         {
-            DatabaseReference reference=FirebaseDatabase.getInstance().getReference().child(DBConst.AccountMultiplicity).child(BirthNumberString);
+            DatabaseReference reference=FirebaseDatabase.getInstance().getReference().child(DBConst.AccountMultiplicity).child(AccountType).child(InformationString);
             reference.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot)
@@ -72,26 +77,30 @@ public class AccountMultiplicityDB
                     {
                         for (DataSnapshot dataSnapshot1:dataSnapshot.getChildren())
                         {
-                            hashMap.put(dataSnapshot1.getKey(),(Object) dataSnapshot1.getValue());
+                            DataHashMap.put(dataSnapshot1.getKey(),(Object) dataSnapshot1.getValue());
                         }
-                        accountMultiplicityInterface.GetAccountMultiplicityData(DBConst.DATA_EXIST,hashMap);
+                        DataHashMap.put(DBConst.RESULT,DBConst.DATA_EXIST);
+                        myDataInterface.GetSingleDataFromDatabase(DBConst.GetAccountMultiplicityDB,DataHashMap);
                     }
                     else
                     {
-                        accountMultiplicityInterface.GetAccountMultiplicityData(DBConst.DATA_NOT_EXIST,hashMap);
+                        DataHashMap.put(DBConst.RESULT,DBConst.DATA_NOT_EXIST);
+                        myDataInterface.GetSingleDataFromDatabase(DBConst.GetAccountMultiplicityDB,DataHashMap);
                     }
                 }
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError)
                 {
-                    accountMultiplicityInterface.GetAccountMultiplicityData(DBConst.DATABASE_ERROR,hashMap);
+                    DataHashMap.put(DBConst.RESULT,DBConst.DATABASE_ERROR);
+                    myDataInterface.GetSingleDataFromDatabase(DBConst.GetAccountMultiplicityDB,DataHashMap);
                 }
             });
         }
         else
         {
-            accountMultiplicityInterface.GetAccountMultiplicityData(DBConst.NULL_USER,hashMap);
+            DataHashMap.put(DBConst.RESULT,DBConst.NULL_USER);
+            myDataInterface.GetSingleDataFromDatabase(DBConst.GetAccountMultiplicityDB,DataHashMap);
         }
     }
 }

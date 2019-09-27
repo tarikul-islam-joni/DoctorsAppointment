@@ -25,23 +25,25 @@ Just enter the nid number and keep blank bmdc registration and click the confirm
             android:textColor="#000000"/>
         <EditText
             android:imeOptions="actionDone"
-            android:id="@+id/nid_number_et"
+            android:inputType="number"
+            android:id="@+id/edit_text_0"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="NID number for security"/>
         <ImageView
-            android:id="@+id/nid_iv"
+            android:id="@+id/image_view_0"
             android:layout_width="match_parent"
             android:layout_height="200dp"
             android:layout_gravity="center"/>
         <Button
-            android:id="@+id/upload_nid_btn"
+            android:id="@+id/button_0"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Upload NID Image"/>
         <EditText
             android:imeOptions="actionDone"
-            android:id="@+id/bmdc_reg_et"
+            android:inputType="text"
+            android:id="@+id/edit_text_1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="BMDC Registration number"/>
@@ -51,18 +53,19 @@ Just enter the nid number and keep blank bmdc registration and click the confirm
             android:layout_height="wrap_content"
             android:orientation="vertical">
             <ImageView
-                android:id="@+id/bmdc_reg_iv"
+                android:id="@+id/image_view_1"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
                 android:layout_gravity="center"/>
+
             <Button
-                android:id="@+id/upload_bmdc_btn"
+                android:id="@+id/button_1"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Upload BMDC Reg Image"/>
+                android:layout_height="64dp"
+                android:text="Upload BMDC Reg Image" />
         </LinearLayout>
         <Button
-            android:id="@+id/confirm_btn"
+            android:id="@+id/button_2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Confirm"/>

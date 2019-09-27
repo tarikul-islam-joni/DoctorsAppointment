@@ -27,7 +27,7 @@
             android:textColor="#000000"
             android:textSize="20sp" />
         <EditText
-            android:id="@+id/edit_text_1"
+            android:id="@+id/edit_text_0"
             android:autofillHints="@string/birth_certificat_hint_et"
             android:inputType="number"
             android:background="@drawable/button_background_1"
@@ -62,7 +62,7 @@
             android:visibility="visible"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/report_section"
+            android:id="@+id/linear_layout_0"
             android:orientation="vertical">
             <TextView
                 android:layout_width="match_parent"

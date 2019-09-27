@@ -3,6 +3,7 @@ package com.tarikulislamjoni95.doctorsappointment.DatabasePart;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.net.Uri;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -14,17 +15,22 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.tarikulislamjoni95.doctorsappointment.Interface.StorageDBInterface;
+import com.tarikulislamjoni95.doctorsappointment.HelperClass.DBConst;
+import com.tarikulislamjoni95.doctorsappointment.HelperClass.VARConst;
+import com.tarikulislamjoni95.doctorsappointment.Interface.GetDataFromDBInterface;
+import com.tarikulislamjoni95.doctorsappointment.Interface.GetProgressInterface;
+
+import java.util.HashMap;
 
 public class StorageDB
 {
+    private GetDataFromDBInterface myDataInterface;
     private Activity activity;
     private ProgressDialog progressDialog;
-    private StorageDBInterface storageDBInterface;
     public StorageDB(Activity activity)
     {
-        storageDBInterface =(StorageDBInterface)activity;
         this.activity=activity;
+        myDataInterface =(GetDataFromDBInterface) activity;
     }
     public void SaveFileIntoStorage(String FileDirectory,String FileName,byte[] FileBytes)
     {
@@ -38,7 +44,7 @@ public class StorageDB
             progressDialog.show();
 
             final StorageReference reference=FirebaseStorage.getInstance().getReference().child(FileDirectory).child(FileName);
-            UploadTask uploadTask=reference.putBytes(FileBytes);
+            final UploadTask uploadTask=reference.putBytes(FileBytes);
             Task<Uri> task=uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
                 @Override
                 public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
@@ -50,11 +56,19 @@ public class StorageDB
                 {
                     if (task.isComplete())
                     {
-                        storageDBInterface.GetResultAndUrl(true,task.getResult().toString());
+                        HashMap<String,Object> hashMap=new HashMap<>();
+                        hashMap.put(DBConst.RESULT,DBConst.SUCCESSFUL);
+                        hashMap.put(DBConst.URL,task.getResult().toString());
+                        progressDialog.dismiss();
+                        myDataInterface.GetSingleDataFromDatabase(DBConst.GetSavingFileUrlData,hashMap);
                     }
                     else
                     {
-                        storageDBInterface.GetResultAndUrl(false,"");
+                        HashMap<String,Object> hashMap=new HashMap<>();
+                        hashMap.put(DBConst.RESULT,DBConst.UNSUCCESSFUL);
+                        hashMap.put(DBConst.URL, VARConst.UNKNOWN);
+                        progressDialog.dismiss();
+                        myDataInterface.GetSingleDataFromDatabase(DBConst.GetSavingFileUrlData,hashMap);
                     }
                 }
             });
@@ -64,11 +78,6 @@ public class StorageDB
                 {
                     double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
                     progressDialog.setProgress((int)progress);
-                    if (progress>90)
-                    {
-                        progressDialog.dismiss();
-                    }
-                    //
                 }
             });
         }

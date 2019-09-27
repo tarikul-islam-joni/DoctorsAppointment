@@ -67,7 +67,7 @@
             android:textSize="22sp"
             android:textColor="#000000"/>
         <EditText
-            android:id="@+id/edit_text_1"
+            android:id="@+id/edit_text_0"
             android:selectAllOnFocus="true"
             android:inputType="textCapWords"
             android:layout_marginStart="10dp"
@@ -88,7 +88,7 @@
             android:textSize="22sp"
             android:textColor="#000000"/>
         <EditText
-            android:id="@+id/edit_text_2"
+            android:id="@+id/edit_text_1"
             android:inputType="textCapWords"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
@@ -108,7 +108,7 @@
             android:textSize="22sp"
             android:textColor="#000000"/>
         <EditText
-            android:id="@+id/edit_text_3"
+            android:id="@+id/edit_text_2"
             android:inputType="number"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
@@ -128,7 +128,7 @@
             android:textSize="22sp"
             android:textColor="#000000"/>
         <EditText
-            android:id="@+id/edit_text_4"
+            android:id="@+id/edit_text_3"
             android:inputType="textCapCharacters"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
@@ -148,7 +148,7 @@
             android:textSize="22sp"
             android:textColor="#000000"/>
         <EditText
-            android:id="@+id/edit_text_5"
+            android:id="@+id/edit_text_4"
             android:inputType="number"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
@@ -169,7 +169,7 @@
             android:textColor="#000000"/>
         <EditText
             android:autofillHints="@string/contact_number"
-            android:id="@+id/edit_text_6"
+            android:id="@+id/edit_text_5"
             android:inputType="phone"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
@@ -188,7 +188,7 @@
             android:textSize="22sp"
             android:textColor="#000000"/>
         <Spinner
-            android:id="@+id/spinner_1"
+            android:id="@+id/spinner_0"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
             android:background="@drawable/drop_down_spinner"

@@ -5,26 +5,28 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 
 import com.tarikulislamjoni95.doctorsappointment.AdminPart.AdminMainActivity;
 import com.tarikulislamjoni95.doctorsappointment.DatabasePart.AccountStatusDB;
-import com.tarikulislamjoni95.doctorsappointment.DatabasePart.AccountStatusDM;
 import com.tarikulislamjoni95.doctorsappointment.DatabasePart.DBHelper;
 import com.tarikulislamjoni95.doctorsappointment.DoctorPart.DoctorMainActivity;
 import com.tarikulislamjoni95.doctorsappointment.DoctorPart.EditDoctorProfileActivity;
-import com.tarikulislamjoni95.doctorsappointment.DoctorPart.EditDoctorSecureInfo;
+import com.tarikulislamjoni95.doctorsappointment.DoctorPart.EditDoctorSecureInfoActivity;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.DBConst;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.MyLoadingDailog;
-import com.tarikulislamjoni95.doctorsappointment.Interface.AccountStatusDBInterface;
+import com.tarikulislamjoni95.doctorsappointment.Interface.GetDataFromDBInterface;
 import com.tarikulislamjoni95.doctorsappointment.PatientPart.EditPatientProfileActivity;
 import com.tarikulislamjoni95.doctorsappointment.PatientPart.EditPatientSecureInfoActivity;
 import com.tarikulislamjoni95.doctorsappointment.PatientPart.PatientMainActivity;
 import com.tarikulislamjoni95.doctorsappointment.R;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
-public class WelcomeActivity extends AppCompatActivity implements AccountStatusDBInterface {
+public class WelcomeActivity extends AppCompatActivity implements GetDataFromDBInterface {
     private AccountStatusDB accountStatusDB;
+    private DBHelper dbHelper;
 
     private Intent intent;
     private Activity activity;
@@ -60,71 +62,87 @@ public class WelcomeActivity extends AppCompatActivity implements AccountStatusD
         {
             myLoadingDailog.show();
         }
-        //Call Database For Account Status
-        CallDBForAccountStatus();
+        //Call Database For Account UID
+        CallDBForAccountUID();
     }
-    private void GetAccountValidityStatus(boolean GetResult,String AccountType,boolean AccountCompletion,boolean AccountValidity)
+
+    private void GetAccountUIDFromDB(HashMap<String,Object> DataHashMap)
     {
-        if (GetResult==true)
+        //Call Database For Account Status
+        String GetResult=(String)DataHashMap.get(DBConst.RESULT);
+        if (GetResult.matches(DBConst.NOT_NULL_USER))
         {
-            CheckAccountValidityAndCompletion(AccountType,AccountCompletion,AccountValidity);
+            CallDBForAccountStatus((String)DataHashMap.get(DBConst.UID));
         }
         else
         {
             GotoSignInActivity();
         }
     }
-    private void CheckAccountValidityAndCompletion(String AccountType,boolean AccountCompletion,boolean AccountValidity)
+
+
+    private void GetAccountValidityStatus(HashMap<String,Object> DataHashMap)
     {
-        if (AccountType.matches(DBConst.Patient))
+        String GetResult=(String)DataHashMap.get(DBConst.RESULT);
+        if (GetResult.matches(DBConst.DATA_EXIST))
         {
-            if (!AccountCompletion)
+            String AccountType=(String)DataHashMap.get(DBConst.AccountType);
+            if (AccountType.matches(DBConst.Patient))
             {
-                intent=new Intent(activity, EditPatientProfileActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
+                if (!(boolean)DataHashMap.get(DBConst.AccountCompletion))
+                {
+                    intent=new Intent(activity, EditPatientProfileActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                }
+                else if (!(boolean)DataHashMap.get(DBConst.AccountValidity))
+                {
+                    intent=new Intent(activity, EditPatientSecureInfoActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                }
+                else
+                {
+                    intent=new Intent(activity, PatientMainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                }
             }
-            else if (!AccountValidity)
+            else if (AccountType.matches(DBConst.Doctor))
             {
-                intent=new Intent(activity, EditPatientSecureInfoActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
+                if (!(boolean)DataHashMap.get(DBConst.AccountCompletion))
+                {
+                    intent=new Intent(WelcomeActivity.this, EditDoctorProfileActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                }
+                else if (!(boolean)DataHashMap.get(DBConst.AccountValidity))
+                {
+                    intent=new Intent(activity, EditDoctorSecureInfoActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                }
+                else
+                {
+                    intent=new Intent(activity,DoctorMainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                }
             }
-            else
+            else if (AccountType.matches(DBConst.Admin))
             {
-                intent=new Intent(activity, PatientMainActivity.class);
+                intent=new Intent(activity, AdminMainActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
             }
         }
-        else if (AccountType.matches(DBConst.Doctor))
+        else
         {
-            if (!AccountCompletion)
-            {
-                intent=new Intent(WelcomeActivity.this, EditDoctorProfileActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-            }
-            else if (!AccountValidity)
-            {
-                intent=new Intent(activity, EditDoctorSecureInfo.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-            }
-            else
-            {
-                intent=new Intent(activity,DoctorMainActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-            }
-        }
-        else if (AccountType.matches("Admin"))
-        {
-            intent=new Intent(activity, AdminMainActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
+            CallDBForSignOut();
+            startActivity(new Intent(WelcomeActivity.this,EntranceActivity.class));
         }
     }
+
     private void GotoSignInActivity()
     {
         intent=new Intent(activity, EntranceActivity.class);
@@ -165,23 +183,41 @@ public class WelcomeActivity extends AppCompatActivity implements AccountStatusD
 
     private void InitializationDB()
     {
+        dbHelper=new DBHelper(activity);
         accountStatusDB=new AccountStatusDB(activity);
     }
 
 
     ///************************Database Call**********************************///
-    private void CallDBForAccountStatus()
+    private void CallDBForAccountUID()
     {
-        accountStatusDB.GetUIDAccountStatusData();
+        dbHelper.GetUID();
+    }
+    private void CallDBForAccountStatus(String UID)
+    {
+        accountStatusDB.GetAccountStatusData(UID);
+    }
+    private void CallDBForSignOut()
+    {
+        dbHelper.SignOut();
     }
     ///**********************Interface Implementation*************************///
     @Override
-    public void GetAccountStatus(boolean result, ArrayList<AccountStatusDM> arrayList)
+    public void GetSingleDataFromDatabase(String WhichDB, HashMap<String, Object> DataHashMap)
     {
-        GetAccountValidityStatus(result,arrayList.get(0).getAccountType(),arrayList.get(0).isAccountCompletion(),arrayList.get(0).isAccountValidity());
+        Log.d("WelcomeActivity",WhichDB+" ::: "+DataHashMap.toString());
+        if (WhichDB.matches(DBConst.GetAccountUID))
+        {
+            GetAccountUIDFromDB(DataHashMap);
+        }
+        else if (WhichDB.matches(DBConst.GetAccountStatusDB))
+        {
+            GetAccountValidityStatus(DataHashMap);
+        }
     }
-    @Override
-    public void AccountStatusSavingResult(boolean result) {
 
+    @Override
+    public void GetMultipleDataFromDatabase(String WhichDB, ArrayList<HashMap<String, Object>> DataHashMapArrayList)
+    {
     }
 }

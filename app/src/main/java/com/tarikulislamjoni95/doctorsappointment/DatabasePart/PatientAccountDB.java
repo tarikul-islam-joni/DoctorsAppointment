@@ -1,7 +1,6 @@
 package com.tarikulislamjoni95.doctorsappointment.DatabasePart;
 
 import android.app.Activity;
-import android.hardware.camera2.DngCreator;
 
 import androidx.annotation.NonNull;
 
@@ -14,106 +13,117 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.DBConst;
-import com.tarikulislamjoni95.doctorsappointment.Interface.PatientAccountDBInterface;
+import com.tarikulislamjoni95.doctorsappointment.Interface.GetDataFromDBInterface;
 
 import java.util.HashMap;
 
 public class PatientAccountDB
 {
-    private Activity activity;
-    private PatientAccountDBInterface patientAccountDBInterface;
+    private DatabaseReference reference;
+    private GetDataFromDBInterface myDataInterface;
     public PatientAccountDB(Activity activity)
     {
-        this.activity=activity;
-        patientAccountDBInterface=(PatientAccountDBInterface)activity;
+        myDataInterface=(GetDataFromDBInterface)activity;
+        reference=FirebaseDatabase.getInstance().getReference().child(DBConst.Account).child(DBConst.PatientAccount);
     }
 
-    public void GetPatientAccountInformation(final String UID)
+
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    public void SaveAccountInformation(String UID,HashMap<String,String> DataHashMap)
     {
+        final HashMap<String,Object> hashMap=new HashMap<>();
         if (FirebaseAuth.getInstance().getCurrentUser()!=null)
         {
-            DatabaseReference reference= FirebaseDatabase.getInstance().getReference().child(DBConst.PatientAccount).child(UID).child(DBConst.AccountInformation);
-            reference.addListenerForSingleValueEvent(new ValueEventListener() {
+            reference.child(UID).child(DBConst.AccountInformation).setValue(DataHashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if (task.isComplete())
+                    {
+                        hashMap.put(DBConst.RESULT,DBConst.SUCCESSFUL);
+                        myDataInterface.GetSingleDataFromDatabase(DBConst.SavePatientAccountInformation,hashMap);
+                    }
+                    else
+                    {
+                        hashMap.put(DBConst.RESULT,DBConst.UNSUCCESSFUL);
+                        myDataInterface.GetSingleDataFromDatabase(DBConst.SavePatientAccountInformation,hashMap);
+                    }
+                }
+            });
+        }
+        else
+        {
+            hashMap.put(DBConst.RESULT,DBConst.NULL_USER);
+            myDataInterface.GetSingleDataFromDatabase(DBConst.SavePatientAccountInformation,hashMap);
+        }
+    }
+    public void GetPatientAccountInformation(final String UID)
+    {
+        final HashMap<String,Object> hashMap=new HashMap<>();
+        if (FirebaseAuth.getInstance().getCurrentUser()!=null)
+        {
+            reference.child(UID).child(DBConst.AccountInformation).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot)
                 {
                     if (dataSnapshot.exists())
                     {
-                        PatientAccountDM patientAccountDM=new PatientAccountDM(
-                                UID,
-                                dataSnapshot.child(DBConst.ProfileImageUrl).getValue().toString(),
-                                dataSnapshot.child(DBConst.Name).getValue().toString(),
-                                dataSnapshot.child(DBConst.FatherName).getValue().toString(),
-                                dataSnapshot.child(DBConst.MotherName).getValue().toString(),
-                                dataSnapshot.child(DBConst.PhoneNumber).getValue().toString(),
-                                dataSnapshot.child(DBConst.Gender).getValue().toString(),
-                                dataSnapshot.child(DBConst.DateOfBirth).getValue().toString(),
-                                dataSnapshot.child(DBConst.BloodGroup).getValue().toString(),
-                                dataSnapshot.child(DBConst.Address).getValue().toString(),
-                                dataSnapshot.child(DBConst.BirthCertificateNumber).getValue().toString(),
-                                dataSnapshot.child(DBConst.BirthCertificateImageUrl).getValue().toString(),
-                                dataSnapshot.child(DBConst.AnotherDocumentImageUrl).getValue().toString()
-
-                        );
-                        patientAccountDBInterface.GetPatientAccountData(DBConst.DATA_EXIST,patientAccountDM);
+                        String[] DataField={DBConst.Name,DBConst.FatherName,DBConst.MotherName,DBConst.PhoneNumber,
+                                DBConst.Gender,DBConst.DateOfBirth,DBConst.BloodGroup,DBConst.Address,DBConst.BirthCertificateNumber,
+                                DBConst.ProfileImageUrl,DBConst.BirthCertificateImageUrl,DBConst.AnotherDocumentImageUrl};
+                        hashMap.put(DBConst.RESULT,DBConst.DATA_EXIST);
+                        for(int i=0; i<DataField.length; i++)
+                        {
+                            if (dataSnapshot.child(DataField[i]).exists())
+                            {
+                                hashMap.put(DataField[i],dataSnapshot.child(DataField[i]).getValue());
+                            }
+                            else
+                            {
+                                hashMap.put(DataField[i],DBConst.UNKNOWN);
+                            }
+                        }
+                        myDataInterface.GetSingleDataFromDatabase(DBConst.GetPatientAccountInformation,hashMap);
                     }
                     else
                     {
-                        PatientAccountDM patientAccountDM=new PatientAccountDM();
-                        patientAccountDBInterface.GetPatientAccountData(DBConst.DATA_NOT_EXIST,patientAccountDM);
+                        hashMap.put(DBConst.RESULT,DBConst.DATA_NOT_EXIST);
+                        myDataInterface.GetSingleDataFromDatabase(DBConst.GetPatientAccountInformation,hashMap);
                     }
                 }
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError)
                 {
-                    PatientAccountDM patientAccountDM=new PatientAccountDM();
-                    patientAccountDBInterface.GetPatientAccountData(DBConst.DATABASE_ERROR,patientAccountDM);
+                    hashMap.put(DBConst.RESULT,DBConst.DATABASE_ERROR);
+                    myDataInterface.GetSingleDataFromDatabase(DBConst.GetPatientAccountInformation,hashMap);
                 }
             });
         }
         else
         {
-            PatientAccountDM patientAccountDM=new PatientAccountDM();
-            patientAccountDBInterface.GetPatientAccountData(DBConst.NULL_USER,patientAccountDM);
+            hashMap.put(DBConst.RESULT,DBConst.NULL_USER);
+            myDataInterface.GetSingleDataFromDatabase(DBConst.GetPatientAccountInformation,hashMap);
         }
     }
 
-    public void SaveAccountInformation(String UID, final PatientAccountDM patientAccountDM)
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    private void GetAppointmentInformation(String UID)
     {
-        if (FirebaseAuth.getInstance().getCurrentUser()!=null)
-        {
-            DatabaseReference reference=FirebaseDatabase.getInstance().getReference().child(DBConst.PatientAccount).child(UID).child(DBConst.AccountInformation);
-            HashMap<String,String> hashMap=new HashMap<>();
-            hashMap.put(DBConst.ProfileImageUrl,patientAccountDM.getProfileImageUrl());
-            hashMap.put(DBConst.Name,patientAccountDM.getName());
-            hashMap.put(DBConst.FatherName,patientAccountDM.getFatherName());
-            hashMap.put(DBConst.MotherName,patientAccountDM.getMotherName());
-            hashMap.put(DBConst.PhoneNumber,patientAccountDM.getPhoneNumber());
-            hashMap.put(DBConst.Gender,patientAccountDM.getGender());
-            hashMap.put(DBConst.DateOfBirth,patientAccountDM.getDateOfBirth());
-            hashMap.put(DBConst.BloodGroup,patientAccountDM.getBloodGroup());
-            hashMap.put(DBConst.Address,patientAccountDM.getAddress());
-            hashMap.put(DBConst.BirthCertificateNumber,patientAccountDM.getBirthNumber());
-            hashMap.put(DBConst.BirthCertificateImageUrl,patientAccountDM.getBirthNumberImageUrl());
-            hashMap.put(DBConst.AnotherDocumentImageUrl,patientAccountDM.getAnotherDocumentImageUrl());
-            reference.setValue(hashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    if (task.isComplete())
-                    {
-                        patientAccountDBInterface.GetPatientAccountData(DBConst.SUCCESSFULL,patientAccountDM);
-                    }
-                    else
-                    {
-                        patientAccountDBInterface.GetPatientAccountData(DBConst.UNSUCCESSFULL,patientAccountDM);
-                    }
-                }
-            });
-        }
-        else
-        {
-            patientAccountDBInterface.GetPatientAccountData(DBConst.NULL_USER,patientAccountDM);
-        }
     }
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    private void GetHistoryCloud(String UID)
+    {
+
+    }
+    ////////////////////////////////////////////////////////////////////////////////////////////////
 }

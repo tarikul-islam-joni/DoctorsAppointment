@@ -13,6 +13,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.widget.ImageView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
 
@@ -167,5 +168,10 @@ public class MyImageGettingClass
         imageFilePath=Uri.fromFile(storageDir);
         return storageDir;
 
+    }
+
+    public void onRequestPermissionsResult(Activity activity,int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
+    {
+        myPermissionClass.onRequestPermissionResult(activity,requestCode,permissions,grantResults);
     }
 }

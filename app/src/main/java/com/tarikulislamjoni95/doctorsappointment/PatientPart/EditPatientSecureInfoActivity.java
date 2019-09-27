@@ -2,7 +2,6 @@ package com.tarikulislamjoni95.doctorsappointment.PatientPart;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -15,25 +14,21 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
-import com.google.errorprone.annotations.Var;
-import com.google.firebase.auth.FirebaseAuth;
 import com.tarikulislamjoni95.doctorsappointment.DatabasePart.AccountMultiplicityDB;
 import com.tarikulislamjoni95.doctorsappointment.DatabasePart.AccountStatusDB;
-import com.tarikulislamjoni95.doctorsappointment.DatabasePart.AccountStatusDM;
 import com.tarikulislamjoni95.doctorsappointment.DatabasePart.DBHelper;
+import com.tarikulislamjoni95.doctorsappointment.DatabasePart.DataModel;
 import com.tarikulislamjoni95.doctorsappointment.DatabasePart.PatientAccountDB;
-import com.tarikulislamjoni95.doctorsappointment.DatabasePart.PatientAccountDM;
 import com.tarikulislamjoni95.doctorsappointment.DatabasePart.StorageDB;
+import com.tarikulislamjoni95.doctorsappointment.HelperClass.InitializationUIHelperClass;
+import com.tarikulislamjoni95.doctorsappointment.HelperClass.MyLoadingDailog;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.VARConst;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.DBConst;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.MyImageGettingClass;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.MyTextWatcher;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.MyToastClass;
-import com.tarikulislamjoni95.doctorsappointment.Interface.AccountMultiplicityInterface;
-import com.tarikulislamjoni95.doctorsappointment.Interface.AccountStatusDBInterface;
-import com.tarikulislamjoni95.doctorsappointment.Interface.DBHelperInterface;
-import com.tarikulislamjoni95.doctorsappointment.Interface.PatientAccountDBInterface;
-import com.tarikulislamjoni95.doctorsappointment.Interface.StorageDBInterface;
+import com.tarikulislamjoni95.doctorsappointment.Interface.GetDataFromDBInterface;
+import com.tarikulislamjoni95.doctorsappointment.Interface.GetProgressInterface;
 import com.tarikulislamjoni95.doctorsappointment.R;
 
 import java.util.ArrayList;
@@ -42,7 +37,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 public class EditPatientSecureInfoActivity extends AppCompatActivity implements View.OnClickListener,
-        DBHelperInterface,AccountStatusDBInterface, PatientAccountDBInterface, StorageDBInterface, AccountMultiplicityInterface
+        GetDataFromDBInterface
 {
     private DBHelper dbHelper;
     private AccountStatusDB accountStatusDB;
@@ -51,33 +46,34 @@ public class EditPatientSecureInfoActivity extends AppCompatActivity implements 
     private StorageDB storageDB;
 
     private String UID=VARConst.UNKNOWN;
-    private PatientAccountDM patientAccountDM;
+    private HashMap<String,String> PatientAccountDataHashMap;
     private HashMap<String,Object> AccountMultiplicityData;
+    private HashMap<String,Object> DataHashMap;
 
+    private InitializationUIHelperClass initializationUIHelperClass;
     private MyImageGettingClass myImageGettingClass;
     private MyToastClass myToastClass;
+    private MyLoadingDailog myLoadingDailog;
+    private DataModel dataModel;
 
     private int WhichImageViewEnable;
-    private String BirthNumberString=VARConst.UNKNOWN;
-    private String BirthDocImageUrl=VARConst.UNKNOWN;
-    private String AnotherDocImageUrl=VARConst.UNKNOWN;
     private ArrayList<String> ImageUrlArrayList=new ArrayList<>();
 
     private Activity activity;
     private Intent intent;
     private int VALIDATION_COLOR;
 
-    private LinearLayout ReportSection;
-    private ImageView[] imageViews=new ImageView[2];
-    private EditText editText;
-    private Button[] buttons=new Button[3];
+    private LinearLayout[] linearLayouts;
+    private ImageView[] imageViews;
+    private EditText[] editTexts;
+    private Button[] buttons;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_patient_secure_info);
         Initialization();
-        InitializationUI();
         InitializationClass();
+        InitializationUI();
         InitializationDB();
 
         CallDBForGetUID();
@@ -87,53 +83,44 @@ public class EditPatientSecureInfoActivity extends AppCompatActivity implements 
     {
         this.activity=EditPatientSecureInfoActivity.this;
         VALIDATION_COLOR=ContextCompat.getColor(activity,R.color.colorGreen);
+        DataHashMap=new HashMap<>();
+        PatientAccountDataHashMap=new HashMap<>();
+        AccountMultiplicityData=new HashMap<>();
     }
 
     private void InitializationUI()
     {
-        editText=findViewById(R.id.edit_text_1);
-        editText.addTextChangedListener(new MyTextWatcher(activity,VARConst.VERIFICATION_CODE_VALIDITY,R.id.edit_text_1));
+        int[] editTextId={R.id.edit_text_0};
+        int[] buttonId={R.id.button_0,R.id.button_1,R.id.button_2};
+        int[] imageViewId={R.id.image_view_0,R.id.image_view_1};
+        int[] linearLayoutId={R.id.linear_layout_0};
+        editTexts= initializationUIHelperClass.setEditTexts(editTextId);
+        editTexts[0].addTextChangedListener(new MyTextWatcher(activity,VARConst.VERIFICATION_CODE_VALIDITY,editTexts[0].getId()));
 
-        buttons[0]=findViewById(R.id.button_0);
-        buttons[1]=findViewById(R.id.button_1);
-        buttons[2]=findViewById(R.id.button_2);
+        buttons= initializationUIHelperClass.setButtons(buttonId);
         for(int i=0; i<buttons.length; i++)
         {
             buttons[i].setOnClickListener(this);
         }
 
-        imageViews[0]=findViewById(R.id.image_view_0);
-        imageViews[1]=findViewById(R.id.image_view_1);
+        imageViews= initializationUIHelperClass.setImageViews(imageViewId);
         for(int i=0; i<imageViews.length; i++)
         {
             imageViews[i].setEnabled(false);
         }
 
-        ReportSection=findViewById(R.id.report_section);
-        ReportSection.setVisibility(View.GONE);
+        linearLayouts= initializationUIHelperClass.setLinearLayout(linearLayoutId);
+        linearLayouts[0].setVisibility(View.GONE);
     }
 
     private void InitializationClass()
     {
+        initializationUIHelperClass =new InitializationUIHelperClass(getWindow().getDecorView());
         myImageGettingClass=new MyImageGettingClass(activity);
         myToastClass=new MyToastClass(activity);
+        myLoadingDailog=new MyLoadingDailog(activity,R.drawable.spinner);
+        dataModel=new DataModel();
     }
-
-
-    private void GetUIDFromDB(String uid)
-    {
-        this.UID=uid;
-        if (!UID.matches(VARConst.UNKNOWN))
-        {
-            CallDBForGetPatientAccountDB(UID);
-        }
-    }
-
-    private void GetPatientAccountDataFromDB(PatientAccountDM patientAccountDM)
-    {
-        this.patientAccountDM=patientAccountDM;
-    }
-
 
     @Override
     public void onClick(View view)
@@ -143,12 +130,10 @@ public class EditPatientSecureInfoActivity extends AppCompatActivity implements 
             case R.id.button_0:
                 WhichImageViewEnable=0;
                 myImageGettingClass.GetImageFromCameraOrGallery();
-                Log.d("3 myError","WhichImageViewEnable : "+WhichImageViewEnable+"Image View Id : "+imageViews[WhichImageViewEnable].getId());
                 break;
             case R.id.button_1:
                 WhichImageViewEnable=1;
                 myImageGettingClass.GetImageFromCameraOrGallery();
-                Log.d("4 myError","WhichImageViewEnable : "+WhichImageViewEnable+"Image View Id : "+imageViews[WhichImageViewEnable].toString());
 
                 break;
             case R.id.button_2:
@@ -169,57 +154,17 @@ public class EditPatientSecureInfoActivity extends AppCompatActivity implements 
 
     private void ConfirmButtonMethod()
     {
-        if (!(editText.getCurrentTextColor()==VALIDATION_COLOR))
+        if (!(editTexts[0].getCurrentTextColor()==VALIDATION_COLOR))
         {
-            editText.setError("Birth number invalid");
+            editTexts[0].setError("Birth number invalid");
         }
-        if (editText.getCurrentTextColor()==VALIDATION_COLOR)
+        if (editTexts[0].getCurrentTextColor()==VALIDATION_COLOR)
         {
-            BirthNumberString=editText.getText().toString();
-
             //Check Birth Number Already registered or not
-            CallDBForCheckBirthNumberMultiplicity(BirthNumberString);
+            CallDBForCheckBirthNumberMultiplicity();
         }
     }
-
-
-    private void GetAccountMultiplicityResult(String GettingDataResult,HashMap<String,Object> AccountMultiplicityData)
-    {
-        this.AccountMultiplicityData=AccountMultiplicityData;
-        switch (GettingDataResult)
-        {
-            case DBConst.DATA_EXIST:
-                if (AccountMultiplicityData.size()>2)
-                {
-                    UploadBothDocument();
-                }
-                else if (AccountMultiplicityData.size()==2)
-                {
-                    Set keyset=AccountMultiplicityData.keySet();
-                    String[] keys=new String[2];
-                    int count=0;
-                    Iterator iterator=keyset.iterator();
-                    while (iterator.hasNext())
-                    {
-                        keys[count]=(String) iterator.next();
-                        count++;
-                    }
-                    if (keys[0].matches(UID) || keys[1].matches(UID))
-                    {
-                        UploadOnlyBirthCertificate();
-                    }
-                    else
-                    {
-                        UploadBothDocument();
-                    }
-                }
-                break;
-            case DBConst.DATA_NOT_EXIST:
-                UploadOnlyBirthCertificate();
-                break;
-        }
-    }
-    private void UploadOnlyBirthCertificate()
+    private void UploadBirthCertificate()
     {
         if (imageViews[0].isEnabled())
         {
@@ -231,63 +176,173 @@ public class EditPatientSecureInfoActivity extends AppCompatActivity implements 
             myToastClass.LToast("Upload Required Document Images");
         }
     }
-    private void UploadBothDocument()
+    private void UploadAnotherDocument()
     {
-        ReportSection.setVisibility(View.VISIBLE);
-        if (imageViews[0].isEnabled() && imageViews[1].isEnabled())
+        String FileName=DBConst.AnotherDocumentImageUrl+"_"+UID+".jpg";
+        CallDBForSaveImageAndGetUrl(DBConst.SecureData,FileName,myImageGettingClass.GetFullImageBytes(VARConst.IV,R.id.image_view_1));
+    }
+
+    public void ShowLoadingDialog()
+    {
+        if (myLoadingDailog!=null)
         {
-            String FileName=DBConst.BirthCertificateImageUrl+"_"+UID+".jpg";
-            CallDBForSaveImageAndGetUrl(DBConst.SecureData,FileName,myImageGettingClass.GetFullImageBytes(VARConst.IV,R.id.image_view_0));
-            FileName=DBConst.AnotherDocumentImageUrl+"_"+UID+".jpg";
-            CallDBForSaveImageAndGetUrl(DBConst.SecureData,FileName,myImageGettingClass.GetFullImageBytes(VARConst.IV,R.id.image_view_1));
+            if (!myLoadingDailog.isShowing())
+            {
+                myLoadingDailog.show();
+            }
+        }
+    }
+
+    private void CancelDialog()
+    {
+        if (myLoadingDailog!=null)
+        {
+            if (myLoadingDailog.isShowing())
+            {
+                myLoadingDailog.dismiss();
+            }
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        CancelDialog();
+    }
+
+    //********************************Database Return********************************************///
+    //Get UID From Database
+    private void GetAccountUIDFromDB()
+    {
+        if (DataHashMap.get(DBConst.RESULT).toString().matches(DBConst.NOT_NULL_USER))
+        {
+            if (!DataHashMap.get(DBConst.UID).toString().matches(DBConst.UNKNOWN))
+            {
+                this.UID=DataHashMap.get(DBConst.UID).toString();
+                CallDBForGetPatientAccountDB();
+            }
         }
         else
         {
-            myToastClass.LToast("Upload Required Document Images");
+            finish();
         }
     }
-    private void GetImageUrlFromDB(String url)
+
+    //Get Patient Account Information From DB
+    private void GetPatientAccountDataFromDB()
     {
-        ImageUrlArrayList.add(url);
-        if (ImageUrlArrayList.size()==1)
+        String[] DataKey=dataModel.GetPatientAccountInformationDataKey();
+        if (DataHashMap.get(DBConst.RESULT).toString().matches(DBConst.DATA_EXIST))
         {
-            BirthDocImageUrl=ImageUrlArrayList.get(0);
-            AnotherDocImageUrl=VARConst.UNKNOWN;
-            CallDBForSavePatientAccountData(UID,new PatientAccountDM(patientAccountDM.getUID(),patientAccountDM.getProfileImageUrl(),
-                    patientAccountDM.getName(),patientAccountDM.getFatherName(),patientAccountDM.getMotherName(),patientAccountDM.getPhoneNumber(),
-                    patientAccountDM.getGender(),patientAccountDM.getDateOfBirth(),patientAccountDM.getBloodGroup(),patientAccountDM.getAddress(),
-                    BirthNumberString,BirthDocImageUrl,AnotherDocImageUrl));
-        }
-        else  if (ImageUrlArrayList.size()==2)
-        {
-            BirthDocImageUrl=ImageUrlArrayList.get(0);
-            AnotherDocImageUrl=ImageUrlArrayList.get(1);
-            CallDBForSavePatientAccountData(UID,new PatientAccountDM(patientAccountDM.getUID(),patientAccountDM.getProfileImageUrl(),
-                    patientAccountDM.getName(),patientAccountDM.getFatherName(),patientAccountDM.getMotherName(),patientAccountDM.getPhoneNumber(),
-                    patientAccountDM.getGender(),patientAccountDM.getDateOfBirth(),patientAccountDM.getBloodGroup(),patientAccountDM.getAddress(),
-                    BirthNumberString,BirthDocImageUrl,AnotherDocImageUrl));
+            for(int i=0; i<DataKey.length; i++)
+            {
+                PatientAccountDataHashMap.put(DataKey[i],(String)DataHashMap.get(DataKey[i]));
+            }
         }
     }
-    private void GetPatientAccountSaveStatusFromDB(String SavingResult)
+
+    //Get Account Multiplicity Result From DB
+    private void GetAccountMultiplicityData()
     {
-        if (SavingResult.matches(DBConst.SUCCESSFULL))
+        String GettingDataResult=DataHashMap.get(DBConst.RESULT).toString();
+        DataHashMap.remove(DBConst.RESULT);
+
+        AccountMultiplicityData=new HashMap<>();
+        Set KeySet=DataHashMap.keySet();
+        Iterator iterator1=KeySet.iterator();
+        int counter=0;
+        int check=0;
+        while (iterator1.hasNext())
+        {
+            String key=(String) iterator1.next();
+            if (key.matches(DBConst.MultipleCheck))
+            {
+                AccountMultiplicityData.put(key,DataHashMap.get(key));
+            }
+            else
+            {
+                AccountMultiplicityData.put(key,counter);
+                if (key.matches(UID))
+                {
+                    check=1;
+                }
+                counter++;
+            }
+        }
+        if (check==0)
+        {
+            AccountMultiplicityData.put(DBConst.MultipleCheck,false);
+            AccountMultiplicityData.put(UID,counter);
+        }
+
+        switch (GettingDataResult)
+        {
+            case DBConst.DATA_EXIST:
+                linearLayouts[0].setVisibility(View.VISIBLE);
+                if (imageViews[0].isEnabled() && imageViews[1].isEnabled())
+                {
+                    UploadBirthCertificate();
+                }
+                else
+                {
+                    myToastClass.LToast("Upload Required Document Images");
+                }
+                break;
+            case DBConst.DATA_NOT_EXIST:
+                UploadBirthCertificate();
+                break;
+        }
+    }
+
+    //Get Image Uploading Result and URL From DB
+    private void GetImageUrlFromDB()
+    {
+        if (DataHashMap.get(DBConst.RESULT).toString().matches(DBConst.SUCCESSFUL))
+        {
+            ImageUrlArrayList.add(DataHashMap.get(DBConst.URL).toString());
+            if (imageViews[0].isEnabled() && !(imageViews[1].isEnabled()) && ImageUrlArrayList.size()==1)
+            {
+                PatientAccountDataHashMap.put(DBConst.BirthCertificateNumber,editTexts[0].getText().toString());
+                PatientAccountDataHashMap.put(DBConst.BirthCertificateImageUrl,ImageUrlArrayList.get(0));
+                PatientAccountDataHashMap.put(DBConst.AnotherDocumentImageUrl,VARConst.UNKNOWN);
+                CallDBForSavePatientAccountData();
+            }
+            if (imageViews[0].isEnabled() && imageViews[1].isEnabled() && ImageUrlArrayList.size()==2)
+            {
+                PatientAccountDataHashMap.put(DBConst.BirthCertificateNumber,editTexts[0].getText().toString());
+                PatientAccountDataHashMap.put(DBConst.BirthCertificateImageUrl,ImageUrlArrayList.get(0));
+                PatientAccountDataHashMap.put(DBConst.AnotherDocumentImageUrl,ImageUrlArrayList.get(1));
+                CallDBForSavePatientAccountData();
+            }
+
+            if (imageViews[0].isEnabled() && imageViews[1].isEnabled() && ImageUrlArrayList.size()==1)
+            {
+                UploadAnotherDocument();
+            }
+        }
+    }
+
+    private void GetPatientAccountInformationSaveStatusFromDB()
+    {
+        if (DataHashMap.get(DBConst.RESULT).toString().matches(DBConst.SUCCESSFUL))
         {
             CallDBForSaveAccountMultiplicity();
         }
     }
 
-    private void GetAccountMultiplicitySavingStatus(String SavingResult)
+    private void GetAccountMultiplicitySavingStatus()
     {
-        if (SavingResult.matches(DBConst.SUCCESSFULL))
+        if (DataHashMap.get(DBConst.RESULT).toString().matches(DBConst.SUCCESSFUL))
         {
             CallDBForUpdateAccountStatus();
         }
     }
 
-    private void GetAccountStatusSavingStatus(boolean SavingResult)
+    private void GetAccountStatusSavingStatusFromDB()
     {
-        if (SavingResult)
+        if (DataHashMap.get(DBConst.RESULT).toString().matches(DBConst.SUCCESSFUL))
         {
+            CancelDialog();
             intent=new Intent(activity,PatientMainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
@@ -311,12 +366,14 @@ public class EditPatientSecureInfoActivity extends AppCompatActivity implements 
     //***************************************Database Calling Method ****************************///
     private void CallDBForGetUID()
     {
+        ShowLoadingDialog();
         dbHelper.GetUID();
     }
 
-    private void CallDBForGetPatientAccountDB(String uid)
+    private void CallDBForGetPatientAccountDB()
     {
-        patientAccountDB.GetPatientAccountInformation(uid);
+        ShowLoadingDialog();
+        patientAccountDB.GetPatientAccountInformation(UID);
     }
 
     private void CallDBForSaveImageAndGetUrl(String secureData, String fileName, byte[] getFullImageBytes)
@@ -324,85 +381,68 @@ public class EditPatientSecureInfoActivity extends AppCompatActivity implements 
         storageDB.SaveFileIntoStorage(secureData,fileName,getFullImageBytes);
     }
 
-    private void CallDBForSavePatientAccountData(String uid,PatientAccountDM patientAccountDM)
+    private void CallDBForSavePatientAccountData()
     {
-        patientAccountDB.SaveAccountInformation(uid,patientAccountDM);
+        ShowLoadingDialog();
+        patientAccountDB.SaveAccountInformation(UID,PatientAccountDataHashMap);
     }
 
-    private void CallDBForCheckBirthNumberMultiplicity(String BirthNumberString)
+    private void CallDBForCheckBirthNumberMultiplicity()
     {
-        accountMultiplicityDB.GetAccountMultiplicity(BirthNumberString);
+        ShowLoadingDialog();
+        accountMultiplicityDB.GetAccountMultiplicity(DBConst.Patient,editTexts[0].getText().toString());
     }
     private void CallDBForSaveAccountMultiplicity()
     {
-        AccountMultiplicityData.put(DBConst.MultipleCheck,false);
-        AccountMultiplicityData.put(UID,"");
-        accountMultiplicityDB.SaveAccountMultiplicity(BirthNumberString,AccountMultiplicityData);
+        ShowLoadingDialog();
+        accountMultiplicityDB.SaveAccountMultiplicity(DBConst.Patient,editTexts[0].getText().toString(),AccountMultiplicityData);
     }
 
     private void CallDBForUpdateAccountStatus()
     {
-        accountStatusDB.SaveIntoAccountStatusDBFromAdmin(UID,DBConst.Patient,true,true);
+        ShowLoadingDialog();
+        accountStatusDB.SaveIntoAccountStatusDB(UID,DBConst.Patient,true,true);
     }
 
     ///******************************************************************************************///
     ///**********************************Interface Implementation********************************///
     ///******************************************************************************************///
 
-    ///**********************************DBHelperInterface Implementation************************///
     @Override
-    public void GetUID(String UID)
+    public void GetSingleDataFromDatabase(String WhichDB, HashMap<String, Object> DataHashMap)
     {
-        GetUIDFromDB(UID);
-    }
-    ///**********************************AccountStatusDBInterface Implementation************************///
-    @Override
-    public void GetAccountStatus(boolean result, ArrayList<AccountStatusDM> arrayList)
-    {
-
-    }
-
-    @Override
-    public void AccountStatusSavingResult(boolean result)
-    {
-        GetAccountStatusSavingStatus(result);
-    }
-
-    ///**********************************PatientAccountDBInterface Implementation************************///
-    @Override
-    public void GetPatientAccountData(String DataResult, PatientAccountDM patientAccountDM)
-    {
-        switch (DataResult)
+        CancelDialog();
+        this.DataHashMap.clear();
+        this.DataHashMap=DataHashMap;
+        switch (WhichDB)
         {
-            case DBConst.DATA_EXIST:
-                GetPatientAccountDataFromDB(patientAccountDM);
+            case DBConst.GetAccountUID:
+                GetAccountUIDFromDB();
                 break;
-            case DBConst.SUCCESSFULL:
-                GetPatientAccountSaveStatusFromDB(DataResult);
+            case DBConst.GetPatientAccountInformation:
+                GetPatientAccountDataFromDB();
                 break;
+            case DBConst.GetSavingFileUrlData:
+                GetImageUrlFromDB();
+                break;
+            case DBConst.SavePatientAccountInformation:
+                GetPatientAccountInformationSaveStatusFromDB();
+                break;
+            case DBConst.GetAccountMultiplicityDB:
+                GetAccountMultiplicityData();
+                break;
+            case DBConst.SaveAccountMultiplicityDB:
+                GetAccountMultiplicitySavingStatus();
+                break;
+            case DBConst.SaveAccountStatusDB:
+                GetAccountStatusSavingStatusFromDB();
+                break;
+
         }
     }
 
-    ///**********************************StorageDBInterface Implementation************************///
     @Override
-    public void GetResultAndUrl(boolean result, String Url)
-    {
-        if (result)
-        {
-            GetImageUrlFromDB(Url);
-        }
-    }
+    public void GetMultipleDataFromDatabase(String WhichDB, ArrayList<HashMap<String, Object>> DataHashMapArrayList) {
 
-    ///**********************************AccountMultiplicityInterface Implementation************************///
-    @Override
-    public void GetAccountMultiplicityData(String GettingResult, HashMap<String, Object> hashMap)
-    {
-        GetAccountMultiplicityResult(GettingResult,hashMap);
-    }
-
-    @Override
-    public void SaveAccountMultiplicity(String SavingResult)
-    {
-        GetAccountMultiplicitySavingStatus(SavingResult);
     }
 }

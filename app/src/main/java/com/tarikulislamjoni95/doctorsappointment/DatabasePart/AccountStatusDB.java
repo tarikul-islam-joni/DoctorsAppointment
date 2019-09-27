@@ -1,6 +1,7 @@
 package com.tarikulislamjoni95.doctorsappointment.DatabasePart;
 
 import android.app.Activity;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -13,70 +14,63 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.DBConst;
-import com.tarikulislamjoni95.doctorsappointment.Interface.AccountStatusDBInterface;
+import com.tarikulislamjoni95.doctorsappointment.Interface.GetDataFromDBInterface;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class AccountStatusDB
 {
-    private ArrayList<AccountStatusDM> arrayList;
 
-    private AccountStatusDBInterface myInterface;
+    private GetDataFromDBInterface myDataInterface;
 
     public AccountStatusDB(Activity activity)
     {
-        ///Note This may causes fault;
-        myInterface=(AccountStatusDBInterface)activity;
-
-        arrayList=new ArrayList<>();
+        myDataInterface=(GetDataFromDBInterface) activity;
     }
-
-    public void GetUIDAccountStatusData()
+    public void GetAccountStatusData(String UID)
     {
-        arrayList.clear();
         if (FirebaseAuth.getInstance().getCurrentUser()!=null)
         {
-            DatabaseReference mReference=FirebaseDatabase.getInstance().getReference().child(DBConst.AccountStatus).child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+            DatabaseReference mReference=FirebaseDatabase.getInstance().getReference().child(DBConst.AccountStatus).child(UID);
             mReference.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot)
                 {
                     if (dataSnapshot.exists())
                     {
-                        arrayList.add(
-                                new AccountStatusDM(
-                                        dataSnapshot.getKey().toString(),
-                                        dataSnapshot.child(DBConst.AccountType).getValue().toString(),
-                                        (boolean)dataSnapshot.child(DBConst.AccountCompletion).getValue(),
-                                        (boolean)dataSnapshot.child(DBConst.AccountValidity).getValue())
-                        );
-
-                        myInterface.GetAccountStatus(true,arrayList);
+                        HashMap<String,Object> hashMap=new HashMap<>();
+                        hashMap.put(DBConst.RESULT,DBConst.DATA_EXIST);
+                        hashMap.put(DBConst.AccountType,dataSnapshot.child(DBConst.AccountType).getValue());
+                        hashMap.put(DBConst.AccountCompletion,dataSnapshot.child(DBConst.AccountCompletion).getValue());
+                        hashMap.put(DBConst.AccountValidity,dataSnapshot.child(DBConst.AccountValidity).getValue());
+                        myDataInterface.GetSingleDataFromDatabase(DBConst.GetAccountStatusDB,hashMap);
                     }
                     else
                     {
-                        arrayList.add(new AccountStatusDM());
-                        myInterface.GetAccountStatus(false,arrayList);
+                        HashMap<String,Object> hashMap=new HashMap<>();
+                        hashMap.put(DBConst.RESULT,DBConst.DATA_NOT_EXIST);
+                        myDataInterface.GetSingleDataFromDatabase(DBConst.GetAccountStatusDB,hashMap);
                     }
                 }
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError)
                 {
-                    arrayList.add(new AccountStatusDM());
-                    myInterface.GetAccountStatus(false,arrayList);
+                    HashMap<String,Object> hashMap=new HashMap<>();
+                    hashMap.put(DBConst.RESULT,DBConst.DATABASE_ERROR);
+                    myDataInterface.GetSingleDataFromDatabase(DBConst.GetAccountStatusDB,hashMap);
                 }
             });
         }
         else
         {
-            arrayList.add(new AccountStatusDM());
-            myInterface.GetAccountStatus(false,arrayList);
+            HashMap<String,Object> hashMap=new HashMap<>();
+            hashMap.put(DBConst.RESULT,DBConst.NULL_USER);
+            myDataInterface.GetSingleDataFromDatabase(DBConst.GetAccountStatusDB,hashMap);
         }
     }
 
-    public void SaveIntoAccountStatusDBFromUser(String AccountType,boolean AccountCompletion,boolean AccountValidity)
+    public void SaveIntoAccountStatusDB(String UID, final String AccountType, final boolean AccountCompletion, final boolean AccountValidity)
     {
         if (FirebaseAuth.getInstance().getCurrentUser()!=null)
         {
@@ -85,98 +79,30 @@ public class AccountStatusDB
             hashMap.put(DBConst.AccountType,AccountType);
             hashMap.put(DBConst.AccountCompletion,AccountCompletion);
             hashMap.put(DBConst.AccountValidity,AccountValidity);
-            mReference.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).setValue(hashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+            mReference.child(UID).setValue(hashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task)
                 {
                     if (task.isComplete())
                     {
-                        myInterface.AccountStatusSavingResult(true);
+                        HashMap<String,Object> hashMap=new HashMap<>();
+                        hashMap.put(DBConst.RESULT,DBConst.SUCCESSFUL);
+                        myDataInterface.GetSingleDataFromDatabase(DBConst.SaveAccountStatusDB,hashMap);
                     }
                     else
                     {
-                        myInterface.AccountStatusSavingResult(false);
+                        HashMap<String,Object> hashMap=new HashMap<>();
+                        hashMap.put(DBConst.RESULT,DBConst.UNSUCCESSFUL);
+                        myDataInterface.GetSingleDataFromDatabase(DBConst.SaveAccountStatusDB,hashMap);
                     }
                 }
             });
         }
         else
         {
-            myInterface.AccountStatusSavingResult(false);
-        }
-    }
-
-    public void SaveIntoAccountStatusDBFromAdmin(String UID,String AccountType,boolean AccountCompletion,boolean AccountValidity)
-    {
-        if (FirebaseAuth.getInstance().getCurrentUser()!=null)
-        {
-            DatabaseReference mReference=FirebaseDatabase.getInstance().getReference().child(DBConst.AccountStatus).child(UID);
             HashMap<String,Object> hashMap=new HashMap<>();
-            hashMap.put(DBConst.AccountCompletion,AccountCompletion);
-            hashMap.put(DBConst.AccountType,AccountType);
-            hashMap.put(DBConst.AccountValidity,AccountValidity);
-            mReference.setValue(hashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task)
-                {
-                    if (task.isComplete())
-                    {
-                        myInterface.AccountStatusSavingResult(true);
-                    }
-                    else
-                    {
-                        myInterface.AccountStatusSavingResult(false);
-                    }
-                }
-            });
-        }
-        else
-        {
-            myInterface.AccountStatusSavingResult(false);
-        }
-    }
-
-    public void GetAccountStatusData(String uid)
-    {
-        arrayList.clear();
-        if (FirebaseAuth.getInstance().getCurrentUser()!=null)
-        {
-            DatabaseReference mReference=FirebaseDatabase.getInstance().getReference().child(DBConst.AccountStatus).child(uid);
-            mReference.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot)
-                {
-                    if (dataSnapshot.exists())
-                    {
-                        arrayList.add(
-                                new AccountStatusDM(
-                                        dataSnapshot.getKey().toString(),
-                                        dataSnapshot.child(DBConst.AccountType).getValue().toString(),
-                                        (boolean)dataSnapshot.child(DBConst.AccountCompletion).getValue(),
-                                        (boolean)dataSnapshot.child(DBConst.AccountValidity).getValue())
-                        );
-
-                        myInterface.GetAccountStatus(true,arrayList);
-                    }
-                    else
-                    {
-                        arrayList.add(new AccountStatusDM());
-                        myInterface.GetAccountStatus(false,arrayList);
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError)
-                {
-                    arrayList.add(new AccountStatusDM());
-                    myInterface.GetAccountStatus(false,arrayList);
-                }
-            });
-        }
-        else
-        {
-            arrayList.add(new AccountStatusDM());
-            myInterface.GetAccountStatus(false,arrayList);
+            hashMap.put(DBConst.RESULT,DBConst.NULL_USER);
+            myDataInterface.GetSingleDataFromDatabase(DBConst.SaveAccountStatusDB,hashMap);
         }
     }
 }

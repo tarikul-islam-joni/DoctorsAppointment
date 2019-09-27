@@ -3,7 +3,6 @@ package com.tarikulislamjoni95.doctorsappointment.PatientPart;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Intent;
-import android.location.Address;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -25,29 +24,29 @@ import androidx.core.content.ContextCompat;
 
 import com.squareup.picasso.Picasso;
 import com.tarikulislamjoni95.doctorsappointment.DatabasePart.AccountStatusDB;
-import com.tarikulislamjoni95.doctorsappointment.DatabasePart.AccountStatusDM;
+import com.tarikulislamjoni95.doctorsappointment.DatabasePart.DataModel;
 import com.tarikulislamjoni95.doctorsappointment.DatabasePart.PatientAccountDB;
-import com.tarikulislamjoni95.doctorsappointment.DatabasePart.PatientAccountDM;
 import com.tarikulislamjoni95.doctorsappointment.DatabasePart.DBHelper;
 import com.tarikulislamjoni95.doctorsappointment.DatabasePart.StorageDB;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.DBConst;
+import com.tarikulislamjoni95.doctorsappointment.HelperClass.InitializationUIHelperClass;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.MyImageGettingClass;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.MyLocationClass;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.VARConst;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.MyTextWatcher;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.MyToastClass;
-import com.tarikulislamjoni95.doctorsappointment.Interface.AccountStatusDBInterface;
+import com.tarikulislamjoni95.doctorsappointment.Interface.GetDataFromDBInterface;
 import com.tarikulislamjoni95.doctorsappointment.Interface.GetLocationInterface;
-import com.tarikulislamjoni95.doctorsappointment.Interface.PatientAccountDBInterface;
-import com.tarikulislamjoni95.doctorsappointment.Interface.DBHelperInterface;
-import com.tarikulislamjoni95.doctorsappointment.Interface.StorageDBInterface;
 import com.tarikulislamjoni95.doctorsappointment.R;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Map;
 
-public class EditPatientProfileActivity extends AppCompatActivity implements View.OnClickListener, GetLocationInterface, DBHelperInterface, PatientAccountDBInterface, AccountStatusDBInterface, StorageDBInterface
+import de.hdodenhof.circleimageview.CircleImageView;
+
+public class EditPatientProfileActivity extends AppCompatActivity implements View.OnClickListener, GetLocationInterface, GetDataFromDBInterface
 {
     //Database Variable
     private DBHelper dbHelper;
@@ -59,93 +58,103 @@ public class EditPatientProfileActivity extends AppCompatActivity implements Vie
     private MyToastClass myToastClass;
     private MyImageGettingClass myImageGettingClass;
     private MyLocationClass myLocationClass;
+    private InitializationUIHelperClass initializationUIHelperClass;
+    private DataModel dataModel;
 
     //Object Variable
     private Intent intent;
     private Activity activity;
 
     //Resource Variable
+    private String[] DataKey;
     private String[] BloodGroupRes;
     private int VALIDITY_COLOR;
     //Primitive Variable
-    private byte[] ProfileImageByte;
     private String UID;
-    private String ProfileImageUrl=VARConst.UNKNOWN,BirthImageUrl=VARConst.UNKNOWN,AnotherDocImageUrl=VARConst.UNKNOWN;
-    private String FullNameString=VARConst.UNKNOWN,FatherNameString=VARConst.UNKNOWN,MotherNameString=VARConst.UNKNOWN;
-    private String PhoneNumberString=VARConst.UNKNOWN,DateOfBirthString=VARConst.UNKNOWN,BloodGroupString=VARConst.UNKNOWN;
-    private String AddressString=VARConst.UNKNOWN,GenderString=VARConst.UNKNOWN,BirthNumberString=VARConst.UNKNOWN;
-
+    private byte[] ProfileImageByte;
+    private HashMap<String,String> MyFieldDataHashMap;
     //UI Variable
-    private ImageView ProfileIv;
-    private Button ProfileImageUploadBtn,ProfileImageCancelBtn,SaveBtn;
-    private EditText FullNameEt,FatherNameEt,MotherNameEt,PhoneNumberEt,AddressEt;
-    private Spinner BloodGroupSpinner;
-    private TextView DateOfBirthTv;
-    private ImageView DateOfBirthBtnIv,AddressBtnIv;
-    private RadioGroup GenderGroup;
-    private RadioButton MaleRbtn,FemaleRbtn;
+    private CircleImageView[] circleImageViews;
+    private ImageView[] imageViews;
+    private Button[] buttons;
+    private EditText[] editTexts;
+    private TextView[] textViews;
+    private Spinner[] spinners;
+    private RadioGroup[] radioGroups;
+    private RadioButton[] radioButtons;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_patient_profile);
         Initialization();
-        InitializationUI();
         InitializationClass();
+        InitializationUI();
         InitializationDB();
-        CallDBForUID();
-        CallDBForExistingData(UID);
-    }
 
+        SetDataHashMap();
+        CallDBForUID();
+    }
+    private void SetDataHashMap()
+    {
+        MyFieldDataHashMap=new HashMap<>();
+        DataKey=dataModel.GetPatientAccountInformationDataKey();
+        for(int i=0; i<DataKey.length; i++)
+        {
+            MyFieldDataHashMap.put(DataKey[i],DBConst.UNKNOWN);
+        }
+    }
     private void Initialization()
     {
         activity=EditPatientProfileActivity.this;
         BloodGroupRes=getResources().getStringArray(R.array.blood_group);
         VALIDITY_COLOR= ContextCompat.getColor(activity,R.color.colorGreen);
     }
+
     private void InitializationUI()
     {
         //ImageView
-        ProfileIv=findViewById(R.id.image_civ);
-        ProfileIv.setEnabled(false);
-        DateOfBirthBtnIv=findViewById(R.id.date_of_birth_btn_iv);
-        DateOfBirthBtnIv.setOnClickListener(this);
-        AddressBtnIv=findViewById(R.id.address_btn_iv);
-        AddressBtnIv.setOnClickListener(this);
+        int [] civImageViewsId={R.id.image_civ_0};
+        circleImageViews= initializationUIHelperClass.setCircleImageViews(civImageViewsId);
+        circleImageViews[0].setEnabled(false);
 
-        //Button
-        ProfileImageUploadBtn=findViewById(R.id.upload_btn);
-        ProfileImageUploadBtn.setOnClickListener(this);
-        ProfileImageCancelBtn=findViewById(R.id.cancel_btn);
-        ProfileImageCancelBtn.setOnClickListener(this);
-        SaveBtn=findViewById(R.id.save_btn);
-        SaveBtn.setOnClickListener(this);
+        int[] imageViewsId={R.id.image_view_0,R.id.image_view_1};
+        imageViews= initializationUIHelperClass.setImageViews(imageViewsId);
+        imageViews[0].setOnClickListener(this);
+        imageViews[1].setOnClickListener(this);
 
-        //TextView
-        DateOfBirthTv=findViewById(R.id.date_of_birth_tv);
+        int[] textViewsId={R.id.text_view_0,R.id.text_view_1};
+        textViews= initializationUIHelperClass.setTextViews(textViewsId);
+        textViews[0].setOnClickListener(this);
 
-        //EditText
-        FullNameEt=findViewById(R.id.full_name_et);
-        FullNameEt.setOnEditorActionListener(new MyTextWatcher(activity).actionListener);
-        FullNameEt.addTextChangedListener(new MyTextWatcher(activity,VARConst.NAME_VALIDITY,R.id.full_name_et));
-        FatherNameEt=findViewById(R.id.father_name_et);
-        FatherNameEt.setOnEditorActionListener(new MyTextWatcher(activity).actionListener);
-        FatherNameEt.addTextChangedListener(new MyTextWatcher(activity,VARConst.NAME_VALIDITY,R.id.father_name_et));
-        MotherNameEt=findViewById(R.id.mother_name_et);
-        MotherNameEt.setOnEditorActionListener(new MyTextWatcher(activity).actionListener);
-        MotherNameEt.addTextChangedListener(new MyTextWatcher(activity,VARConst.NAME_VALIDITY,R.id.mother_name_et));
-        PhoneNumberEt=findViewById(R.id.phone_et);
-        PhoneNumberEt.setOnEditorActionListener(new MyTextWatcher(activity).actionListener);
-        PhoneNumberEt.addTextChangedListener(new MyTextWatcher(activity,VARConst.PHONE_VALIDITY,R.id.phone_et));
-        AddressEt=findViewById(R.id.address_et);
-        AddressEt.setOnEditorActionListener(new MyTextWatcher(activity).actionListener);
+        int[] editTextId={R.id.edit_text_0,R.id.edit_text_1,R.id.edit_text_2,R.id.edit_text_3,R.id.edit_text_4};
+        editTexts= initializationUIHelperClass.setEditTexts(editTextId);
+        for(int i=0; i<editTextId.length; i++)
+        {
+            if (i<3)
+            {
+                editTexts[i].addTextChangedListener(new MyTextWatcher(activity,VARConst.NAME_VALIDITY,editTexts[i].getId()));
+            }
+            else if (i==3)
+            {
+                editTexts[i].addTextChangedListener(new MyTextWatcher(activity,VARConst.PHONE_VALIDITY,editTexts[i].getId()));
+            }
+        }
+
+        int[] buttonId={R.id.button_0};
+        buttons= initializationUIHelperClass.setButtons(buttonId);
+        buttons[0].setOnClickListener(this);
+
+
+
 
         //Spinner
-        BloodGroupSpinner=findViewById(R.id.blood_group_spinner);
-        BloodGroupSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        int[] spinnersId={R.id.spinner_0};
+        spinners= initializationUIHelperClass.setSpinner(spinnersId);
+        spinners[0].setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l)
             {
-                BloodGroupString=BloodGroupRes[i];
+                MyFieldDataHashMap.put(DBConst.BloodGroup,BloodGroupRes[i]);
             }
 
             @Override
@@ -155,69 +164,57 @@ public class EditPatientProfileActivity extends AppCompatActivity implements Vie
         });
 
 
-        GenderGroup=findViewById(R.id.radio_group);
-        MaleRbtn=findViewById(R.id.male_rbtn);
-        FemaleRbtn=findViewById(R.id.female_rbtn);
+        int[] radioGroupsId={R.id.radio_group_0};
+        radioGroups= initializationUIHelperClass.setRadioGroup(radioGroupsId);
 
-        GenderGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+        int[] radioButtonsId={R.id.radio_button_0,R.id.radio_button_1};
+        radioButtons= initializationUIHelperClass.setRadioButton(radioButtonsId);
+
+        radioGroups[0].setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int i)
             {
                 int RadioButtonID=radioGroup.getCheckedRadioButtonId();
                 RadioButton rbtn=findViewById(RadioButtonID);
-                GenderString=rbtn.getText().toString();
+                MyFieldDataHashMap.put(DBConst.Gender,rbtn.getText().toString());
             }
         });
     }
     private void InitializationClass()
     {
+        initializationUIHelperClass =new InitializationUIHelperClass(getWindow().getDecorView());
         myToastClass=new MyToastClass(activity);
         myImageGettingClass=new MyImageGettingClass(activity);
         myLocationClass=new MyLocationClass(activity);
+        dataModel=new DataModel();
     }
     @Override
     public void onClick(View view)
     {
         switch (view.getId())
         {
-            case R.id.upload_btn:
-                GetImageFromCameraOrGallery();
+            case R.id.text_view_0:
+                myImageGettingClass.GetImageFromCameraOrGallery();
                 break;
-            case R.id.cancel_btn:
-                CancelImageMethod();
-                break;
-            case R.id.date_of_birth_btn_iv:
+            case R.id.image_view_0:
                 GetDateOfBirthFromCalender();
                 break;
-            case R.id.address_btn_iv:
+            case R.id.image_view_1:
                 GetAddressFromLocationClass();
                 break;
-            case R.id.save_btn:
+            case R.id.button_0:
                 SaveDataToDatabase();
                 break;
         }
     }
 
-    ///Getting Image
-    private void GetImageFromCameraOrGallery()
-    {
-        myImageGettingClass.GetImageFromCameraOrGallery();
-    }
-    private void CancelImageMethod()
-    {
-        ProfileIv.setImageResource(R.drawable.user_2);
-        ProfileIv.setEnabled(false);
-        ProfileImageUrl=VARConst.UNKNOWN;
-
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        myImageGettingClass.onActivityResult(VARConst.CIV,R.id.image_civ,requestCode,resultCode,data);
+        myImageGettingClass.onActivityResult(VARConst.CIV,R.id.image_civ_0,requestCode,resultCode,data);
         if (resultCode==RESULT_OK&&data!=null)
         {
-            ProfileIv.setEnabled(true);
+            circleImageViews[0].setEnabled(true);
         }
     }
 
@@ -226,6 +223,7 @@ public class EditPatientProfileActivity extends AppCompatActivity implements Vie
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         myLocationClass.onRequestPermissionsResult(requestCode,permissions,grantResults);
     }
+
 
     //Getting Date
     private void GetDateOfBirthFromCalender()
@@ -238,9 +236,9 @@ public class EditPatientProfileActivity extends AppCompatActivity implements Vie
             @Override
             public void onDateSet(DatePicker datePicker, int year, int month, int date)
             {
-                DateOfBirthString=date+"-"+(month+1)+"-"+year;
-                DateOfBirthTv.setText(DateOfBirthString);
-                DateOfBirthTv.setVisibility(View.VISIBLE);
+                MyFieldDataHashMap.put(DBConst.DateOfBirth,date+"-"+(month+1)+"-"+year);
+                textViews[1].setText(MyFieldDataHashMap.get(DBConst.DateOfBirth));
+                textViews[1].setVisibility(View.VISIBLE);
             }
         },year,month,date);
         datePickerDialog.getDatePicker().setMaxDate(calendar.getTimeInMillis());
@@ -250,150 +248,163 @@ public class EditPatientProfileActivity extends AppCompatActivity implements Vie
     //Getting Address
     private void GetAddressFromLocationClass()
     {
-        AddressEt.setVisibility(View.VISIBLE);
+        editTexts[4].setVisibility(View.VISIBLE);
         myLocationClass.GetCoOrdinateFromMaps();
     }
     private void GetLocationFromGoogleMap(String CurrentLocation)
     {
-        AddressString=CurrentLocation;
-        AddressEt.setText(AddressString);
+        editTexts[4].setText(CurrentLocation);
     }
 
     private void SaveDataToDatabase()
     {
-        if (!(FullNameEt.getCurrentTextColor()==VALIDITY_COLOR))
+        if (!(editTexts[0].getCurrentTextColor()==VALIDITY_COLOR))
         {
-            FullNameEt.setError("Type your name correctly");
+            editTexts[0].setError("Type your name correctly");
         }
-        else if (!(FatherNameEt.getCurrentTextColor()==VALIDITY_COLOR))
+        else if (!(editTexts[1].getCurrentTextColor()==VALIDITY_COLOR))
         {
-            FatherNameEt.setError("Type your father name correctly");
+            editTexts[1].setError("Type your father name correctly");
         }
-        else if (!(MotherNameEt.getCurrentTextColor()==VALIDITY_COLOR))
+        else if (!(editTexts[2].getCurrentTextColor()==VALIDITY_COLOR))
         {
-            MotherNameEt.setError("Type your mother name correctly");
+            editTexts[2].setError("Type your mother name correctly");
         }
-        else if (!(PhoneNumberEt.getCurrentTextColor()==VALIDITY_COLOR))
+        else if (!(editTexts[3].getCurrentTextColor()==VALIDITY_COLOR))
         {
-            FatherNameEt.setError("Type your phone number correctly");
+            editTexts[3].setError("Type your phone number correctly");
         }
-        else if (GenderString.matches(VARConst.UNKNOWN))
+        else if (MyFieldDataHashMap.get(DBConst.Gender).matches(VARConst.UNKNOWN))
         {
             myToastClass.LToast("Select your gender");
         }
         else
         {
-            FullNameString=FullNameEt.getText().toString();
-            FatherNameString=FatherNameEt.getText().toString();
-            MotherNameString=MotherNameEt.getText().toString();
-            PhoneNumberString=PhoneNumberEt.getText().toString();
-            DateOfBirthString=DateOfBirthTv.getText().toString();
-            AddressString=AddressEt.getText().toString();
-            if (ProfileIv.isEnabled())
+            for(int i=0; i<4; i++)
             {
-                ProfileImageByte=myImageGettingClass.GetCompressImageBytes(VARConst.CIV,R.id.image_civ);
-                storageDB.SaveFileIntoStorage(DBConst.ProfileImages,UID+".jpg",ProfileImageByte);
-                //CallDBForSavingData is called after uploading finished and getting back with url
+                MyFieldDataHashMap.put(DataKey[i+1],editTexts[i].getText().toString());
+            }
+            MyFieldDataHashMap.put(DataKey[6],textViews[1].getText().toString());
+            MyFieldDataHashMap.put(DataKey[8],editTexts[4].getText().toString());
+
+            if (circleImageViews[0].isEnabled())
+            {
+                ProfileImageByte=myImageGettingClass.GetCompressImageBytes(VARConst.CIV,R.id.image_civ_0);
+                ////////////////////////////////////////////
+                CallDBForSaveImageIntoStorage(UID+".jpg",ProfileImageByte);
+                ////////////////////////////////////////////
             }
             else
             {
-                PatientAccountDM patientAccountDM=new PatientAccountDM(UID,ProfileImageUrl,FullNameString,FatherNameString,MotherNameString,PhoneNumberString,GenderString,DateOfBirthString,BloodGroupString, AddressString,BirthNumberString,BirthImageUrl,AnotherDocImageUrl);
-                CallDBForSavingData(UID,patientAccountDM);
+                ///////////////////////////////////////////
+                CallDBForSavingData(UID,MyFieldDataHashMap);
+                //////////////////////////////////////////
             }
         }
     }
 
     //********************************Get Data Return From Database******************************///
-    private void GetUIDFromDB(String UID)
+    private void GetAccountUIDFromDB(String GettingResult,String UID)
     {
-        this.UID=UID;
+        if (GettingResult.matches(DBConst.NOT_NULL_USER))
+        {
+            this.UID=UID;
+            //////////////////////////
+            CallDBForExistingData(UID);
+            //////////////////////////
+        }
+        else
+        {
+            finish();
+        }
     }
-    private void GetExistingDataFromDB(PatientAccountDM patientAccountDM)
+    private void GetExistingDataFromDB(HashMap<String,Object> DataHashMap)
     {
-        UID= patientAccountDM.getUID();
-        ProfileImageUrl= patientAccountDM.getProfileImageUrl();
-        FullNameString= patientAccountDM.getName();
-        FatherNameString= patientAccountDM.getFatherName();
-        MotherNameString= patientAccountDM.getMotherName();
-        PhoneNumberString= patientAccountDM.getPhoneNumber();
-        GenderString= patientAccountDM.getGender();
-        DateOfBirthString= patientAccountDM.getDateOfBirth();
-        BloodGroupString= patientAccountDM.getBloodGroup();
-        AddressString= patientAccountDM.getAddress();
-        BirthNumberString= patientAccountDM.getBirthNumber();
-        BirthImageUrl= patientAccountDM.getBirthNumberImageUrl();
-        AnotherDocImageUrl= patientAccountDM.getAnotherDocumentImageUrl();
 
-        //Fill All the Data
-
-        if (!ProfileImageUrl.matches(VARConst.UNKNOWN))
+        if (DataHashMap.get(DBConst.RESULT).toString().matches(DBConst.DATA_EXIST))
         {
-            ProfileIv.setEnabled(true);
-            Picasso.get().load(ProfileImageUrl).into(ProfileIv);
-        }
-        FullNameEt.setText(FullNameString);
-        FatherNameEt.setText(FatherNameString);
-        MotherNameEt.setText(MotherNameString);
-        PhoneNumberEt.setText(PhoneNumberString);
-        if (!DateOfBirthString.matches(VARConst.UNKNOWN))
-        {
-            DateOfBirthTv.setVisibility(View.VISIBLE);
-            DateOfBirthTv.setText(DateOfBirthString);
-        }
-        if (!AddressString.matches(VARConst.UNKNOWN))
-        {
-            AddressEt.setVisibility(View.VISIBLE);
-            AddressEt.setText(AddressString);
-        }
-
-        if (GenderString.matches(MaleRbtn.getText().toString()))
-        {
-            MaleRbtn.setChecked(true);
-        }
-        else if (GenderString.matches(FemaleRbtn.getText().toString()))
-        {
-            FemaleRbtn.setChecked(true);
-        }
-
-        if (!BloodGroupString.matches(VARConst.UNKNOWN))
-        {
-            ArrayList<String> BloodGroupArrayList=new ArrayList<>();
-            BloodGroupArrayList.add(BloodGroupString);
-            for(int i=0; i<BloodGroupRes.length; i++)
+            for(int i=0; i<DataKey.length; i++)
             {
-                if (!BloodGroupRes[i].matches(BloodGroupString))
+                MyFieldDataHashMap.put(DataKey[i],(String) DataHashMap.get(DataKey[i]));
+                if (i<4)
                 {
-                    BloodGroupArrayList.add(BloodGroupRes[i]);
+                    editTexts[i].setText(DataHashMap.get(DataKey[i+1]).toString());
                 }
             }
 
-            ArrayAdapter<String> adapter=new ArrayAdapter<String >(activity,android.R.layout.simple_list_item_1,BloodGroupArrayList);
-            BloodGroupSpinner.setAdapter(adapter);
-        }
+            if (DataHashMap.get(DataKey[5]).toString().matches("Male"))
+            {
+                radioButtons[0].setChecked(true);
+            }
+            else
+            {
+                radioButtons[1].setChecked(true);
+            }
 
+            if (!DataHashMap.get(DataKey[6]).toString().matches(VARConst.UNKNOWN))
+            {
+                textViews[1].setVisibility(View.VISIBLE);
+                textViews[1].setText(DataHashMap.get(DataKey[6]).toString());
+            }
 
-    }
-    private void GetImageUrlFromDB(boolean ImageSavingResult, String url)
-    {
-        if (ImageSavingResult)
-        {
-            ProfileImageUrl=url;
-            PatientAccountDM patientAccountDM=new PatientAccountDM(UID,ProfileImageUrl,FullNameString,FatherNameString,MotherNameString,PhoneNumberString,GenderString,DateOfBirthString,BloodGroupString,AddressString,BirthNumberString,BirthImageUrl,AnotherDocImageUrl);
-            CallDBForSavingData(UID,patientAccountDM);
+            if (!DataHashMap.get(DataKey[7]).toString().matches(VARConst.UNKNOWN))
+            {
+                ArrayList<String> BloodGroupArrayList=new ArrayList<>();
+                BloodGroupArrayList.add(DataHashMap.get(DataKey[7]).toString());
+                for(int k=0; k<BloodGroupRes.length; k++)
+                {
+                    if (!BloodGroupRes[k].matches(DataHashMap.get(DataKey[6]).toString()))
+                    {
+                        BloodGroupArrayList.add(BloodGroupRes[k]);
+                    }
+                }
+
+                ArrayAdapter<String> adapter=new ArrayAdapter<String >(activity,android.R.layout.simple_list_item_1,BloodGroupArrayList);
+                spinners[0].setAdapter(adapter);
+            }
+
+            if (!MyFieldDataHashMap.get(DataKey[8]).matches(DBConst.UNKNOWN))
+            {
+                editTexts[4].setVisibility(View.VISIBLE);
+                editTexts[4].setText(MyFieldDataHashMap.get(DataKey[8]));
+            }
+
+            if (!MyFieldDataHashMap.get(DataKey[0]).matches(VARConst.UNKNOWN))
+            {
+                circleImageViews[0].setEnabled(false);
+                Picasso.get().load(MyFieldDataHashMap.get(DataKey[0])).into(circleImageViews[0]);
+            }
         }
     }
-    private void GetDataSavedResultFromDB(boolean DataSavingResult)
+    private void GetImageUrlFromDB(String ImageSavingResult, String url)
     {
-        if (DataSavingResult)
+        if (ImageSavingResult.matches(DBConst.SUCCESSFUL))
         {
-            CallDBForAccountStatus();
+            MyFieldDataHashMap.put(DBConst.ProfileImageUrl,url);
+
+            ////////////////////////////////////////////
+            CallDBForSavingData(UID,MyFieldDataHashMap);
+            ////////////////////////////////////////////
         }
     }
-    private void GetAccountStatusFromDB(boolean GettingAccountStatusResult, boolean accountValidity)
+    private void GetDataSavedResultFromDB(String DataSavingResult)
     {
-        if (GettingAccountStatusResult)
+        if (DataSavingResult.matches(DBConst.SUCCESSFUL))
         {
-            if (accountValidity)
+            //////////////////////////
+            CallDBForAccountStatus(UID);
+            //////////////////////////
+        }
+        else
+        {
+            myToastClass.LToast("Data not saved\nPlease try again... ");
+        }
+    }
+    private void GetAccountStatusFromDB(String GettingResult,String AccountType,boolean AccountCompletion, boolean AccountValidity)
+    {
+        if (GettingResult.matches(DBConst.DATA_EXIST))
+        {
+            if (AccountValidity)
             {
                 GotoMainActivity();
             }
@@ -401,6 +412,14 @@ public class EditPatientProfileActivity extends AppCompatActivity implements Vie
             {
                 GotoSecureInformationEditActivity();
             }
+        }
+        else if (GettingResult.matches(DBConst.DATA_NOT_EXIST))
+        {
+            CallDBForAccountDelete();
+        }
+        else
+        {
+            CallDBForSignOut();
         }
     }
     private void GotoMainActivity()
@@ -432,18 +451,31 @@ public class EditPatientProfileActivity extends AppCompatActivity implements Vie
     {
         dbHelper.GetUID();
     }
+    private void CallDBForSignOut()
+    {
+        dbHelper.SignOut();
+    }
+    private void CallDBForAccountDelete()
+    {
+        dbHelper.DeleteUID();
+    }
 
     private void CallDBForExistingData(String UID)
     {
         patientAccountDB.GetPatientAccountInformation(UID);
     }
-    private void CallDBForSavingData(String UID,PatientAccountDM patientAccountDM)
+    private void CallDBForSaveImageIntoStorage( String ImageTitle, byte[] ImageBytes)
     {
-        patientAccountDB.SaveAccountInformation(UID,patientAccountDM);
+
+        storageDB.SaveFileIntoStorage(DBConst.ProfileImages,UID+".jpg",ProfileImageByte);
     }
-    private void CallDBForAccountStatus()
+    private void CallDBForSavingData(String UID,HashMap<String,String> DataHashMap)
     {
-        accountStatusDB.GetUIDAccountStatusData();
+        patientAccountDB.SaveAccountInformation(UID,DataHashMap);
+    }
+    private void CallDBForAccountStatus(String UID)
+    {
+        accountStatusDB.GetAccountStatusData(UID);
     }
 
 
@@ -455,46 +487,7 @@ public class EditPatientProfileActivity extends AppCompatActivity implements Vie
 
 
     ///*******************************Database Interface Implementation**************************///
-    @Override
-    public void GetUID(String UID)
-    {
-        GetUIDFromDB(UID);
-    }
 
-    @Override
-    public void GetPatientAccountData(String DataResult, PatientAccountDM patientAccountDM)
-    {
-        switch (DataResult)
-        {
-            case DBConst.DATA_EXIST:
-                GetExistingDataFromDB(patientAccountDM);
-                break;
-            case DBConst.SUCCESSFULL:
-                GetDataSavedResultFromDB(true);
-                break;
-            case DBConst.UNSUCCESSFULL:
-                GetDataSavedResultFromDB(false);
-                break;
-
-        }
-    }
-
-    @Override
-    public void GetAccountStatus(boolean result, ArrayList<AccountStatusDM> arrayList)
-    {
-        GetAccountStatusFromDB(result,arrayList.get(0).isAccountValidity());
-    }
-
-
-    @Override
-    public void AccountStatusSavingResult(boolean result) {
-    }
-
-    @Override
-    public void GetResultAndUrl(boolean result, String Url)
-    {
-        GetImageUrlFromDB(result,Url);
-    }
 
     ///***************************Location Interface Implementation******************************///
     @Override
@@ -503,4 +496,30 @@ public class EditPatientProfileActivity extends AppCompatActivity implements Vie
         GetLocationFromGoogleMap(map.get(0));
     }
 
+    @Override
+    public void GetSingleDataFromDatabase(String WhichDB, HashMap<String, Object> DataHashMap)
+    {
+        Log.d("myError","WhichDB :: "+WhichDB);
+        switch (WhichDB)
+        {
+            case DBConst.GetAccountUID:
+                GetAccountUIDFromDB((String)DataHashMap.get(DBConst.RESULT),(String)DataHashMap.get(DBConst.UID));
+                break;
+            case DBConst.GetSavingFileUrlData:
+                GetImageUrlFromDB((String) DataHashMap.get(DBConst.RESULT),(String) DataHashMap.get(DBConst.URL));
+                break;
+            case DBConst.GetPatientAccountInformation:
+                GetExistingDataFromDB(DataHashMap);
+                break;
+            case DBConst.SavePatientAccountInformation:
+                GetDataSavedResultFromDB((String) DataHashMap.get(DBConst.RESULT));
+                break;
+            case DBConst.GetAccountStatusDB:
+                GetAccountStatusFromDB((String) DataHashMap.get(DBConst.RESULT),(String) DataHashMap.get(DBConst.AccountType),(boolean)DataHashMap.get(DBConst.AccountCompletion),(boolean)DataHashMap.get(DBConst.AccountValidity));
+                break;
+        }
+    }
+
+    @Override
+    public void GetMultipleDataFromDatabase(String WhichDB, ArrayList<HashMap<String, Object>> DataHashMapArrayList) { }
 }
