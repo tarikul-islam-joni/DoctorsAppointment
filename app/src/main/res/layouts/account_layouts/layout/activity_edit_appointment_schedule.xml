@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".DoctorPart.EditAppointmentSchedule">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Set Appointment Schedule"
+        android:textSize="25sp"
+        android:gravity="center"
+        android:textColor="@color/com_facebook_blue"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:gravity="center"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:text="Hospital Name"
+            android:textSize="18sp"
+            android:textColor="@color/colorBlack"/>
+
+        <EditText
+            android:id="@+id/edit_text_0"
+            android:layout_width="0dp"
+            android:layout_height="59dp"
+            android:layout_weight="2"
+            android:background="@drawable/edit_text_box"
+            android:hint="Hospital Name/Place Name" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:gravity="center"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:text="Specialized Field"
+            android:textSize="18sp"
+            android:textColor="@color/colorBlack"/>
+        <TextView
+            android:id="@+id/text_view_0"
+            android:background="@drawable/drop_down_spinner"
+            android:layout_weight="2"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:hint=""/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:gravity="center"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:text="Available Day"
+            android:textSize="18sp"
+            android:textColor="@color/colorBlack"/>
+        <TextView
+            android:id="@id/text_view_1"
+            android:background="@drawable/drop_down_spinner"
+            android:layout_weight="2"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:hint=""/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:gravity="center"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:text="Time Slot"
+            android:textSize="18sp"
+            android:textColor="@color/colorBlack"/>
+        <TextView
+            android:id="@+id/text_view_2"
+            android:gravity="left|center"
+            android:background="@drawable/drop_down_spinner"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:hint="Starting Time"/>
+        <TextView
+            android:id="@+id/text_view_3"
+            android:gravity="left|center"
+            android:background="@drawable/drop_down_spinner"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:hint="Ending Time"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:gravity="center"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:text="Appointment Capacity"
+            android:textSize="18sp"
+            android:textColor="@color/colorBlack"/>
+        <LinearLayout
+            android:layout_weight="2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@drawable/edit_text_box">
+            <EditText
+                android:id="@+id/edit_text_1"
+                android:gravity="center"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:hint="50"/>
+            <TextView
+                android:textColor="@color/colorBlack"
+                android:gravity="center"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:text=" Persons"/>
+        </LinearLayout>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:gravity="center"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:text="Appointment Fee"
+            android:textSize="18sp"
+            android:textColor="@color/colorBlack"/>
+        <EditText
+            android:id="@+id/edit_text_2"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:hint="500"/>
+        <TextView
+            android:textColor="@color/colorBlack"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:text="Taka"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:gravity="center"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:text="Advance Leave"
+            android:textSize="18sp"
+            android:textColor="@color/colorBlack"/>
+        <TextView
+            android:id="@+id/text_view_4"
+            android:gravity="left|center"
+            android:background="@drawable/drop_down_spinner"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:hint="Starting Date"/>
+        <TextView
+            android:id="@+id/text_view_5"
+            android:gravity="left|center"
+            android:background="@drawable/drop_down_spinner"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:hint="Ending Date"/>
+    </LinearLayout>
+    <Button
+        android:id="@+id/button_0"
+        android:textSize="20sp"
+        android:background="@drawable/button_background_3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Save"/>
+
+</LinearLayout>

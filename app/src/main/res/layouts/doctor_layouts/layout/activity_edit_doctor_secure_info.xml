@@ -1,73 +1,111 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+    xmlns:tools="http://schemas.android.com/tools" android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:orientation="vertical">
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="30sp"
             android:gravity="center"
-            android:text="Secure Data"
-            android:textColor="#000000"/>
-        <TextView
+            android:text="@string/attention"
+            android:textColor="@color/colorRed"
+            android:textSize="30sp" />
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="15sp"
-            android:text="Without BMDC registration number verification , you can not be able to online appointment feature.
-So make sure the valid information and get those feature.If you doesn't have the number,do not input anything.
-Just enter the nid number and keep blank bmdc registration and click the confirm button"
-            android:textColor="#000000"/>
+            android:orientation="horizontal">
+
+            <View
+                android:layout_margin="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@color/colorRed" />
+        </LinearLayout>
+
+        <TextView
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/without_bmdc_registration_number_verification_you_can_not_be_able_to_online_appointment_feature_so_make_sure_the_valid_information_and_get_those_feature_if_you_doesn_t_have_the_number_do_not_input_anything_just_enter_the_nid_number_and_keep_blank_bmdc_registration_and_click_the_confirm_button"
+            android:textColor="#000000"
+            android:textSize="15sp" />
+
         <EditText
-            android:imeOptions="actionDone"
-            android:inputType="number"
             android:id="@+id/edit_text_0"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="NID number for security"/>
+            android:layout_margin="5dp"
+            android:autofillHints="@string/hint_nid_number_for_security_purpose"
+            android:background="@drawable/edit_text_box"
+            android:hint="@string/hint_nid_number_for_security_purpose"
+            android:imeOptions="actionDone"
+            android:inputType="number" tools:targetApi="o"/>
+
         <ImageView
             android:id="@+id/image_view_0"
             android:layout_width="match_parent"
             android:layout_height="200dp"
-            android:layout_gravity="center"/>
+            android:layout_gravity="center"
+            android:contentDescription="@string/aanother_document_image_hint"
+            android:src="@drawable/upload_doc_image" />
+
         <Button
             android:id="@+id/button_0"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Upload NID Image"/>
+            android:layout_margin="5dp"
+            android:background="@drawable/button_background_2"
+            android:text="@string/text_upload_nid_image" />
+
         <EditText
-            android:imeOptions="actionDone"
-            android:inputType="text"
             android:id="@+id/edit_text_1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="BMDC Registration number"/>
+            android:layout_margin="5dp"
+            android:autofillHints="@string/hint_bmdc_registration_number"
+            android:background="@drawable/edit_text_box"
+            android:hint="@string/hint_bmdc_registration_number"
+            android:imeOptions="actionDone"
+            android:inputType="text" tools:targetApi="o"/>
+
         <LinearLayout
-            android:layout_gravity="center"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:orientation="vertical">
+
             <ImageView
                 android:id="@+id/image_view_1"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
-                android:layout_gravity="center"/>
+                android:layout_gravity="center"
+                android:contentDescription="@string/aanother_document_image_hint"
+                android:src="@drawable/upload_doc_image" />
 
             <Button
                 android:id="@+id/button_1"
                 android:layout_width="match_parent"
-                android:layout_height="64dp"
-                android:text="Upload BMDC Reg Image" />
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:background="@drawable/button_background_2"
+                android:text="@string/text_upload_bmdc_reg_image" />
         </LinearLayout>
+
         <Button
+
             android:id="@+id/button_2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Confirm"/>
+            android:layout_margin="5dp"
+            android:background="@drawable/button_background_3"
+            android:text="@string/confirm_btn" />
     </LinearLayout>
 </ScrollView>

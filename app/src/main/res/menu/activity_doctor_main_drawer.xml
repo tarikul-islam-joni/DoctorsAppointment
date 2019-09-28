@@ -5,10 +5,10 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/edit_profile_btn"
+            android:id="@+id/expanded_menu_0"
             android:title="Edit Profile" />
         <item
-            android:id="@+id/edit_appointment_info"
-            android:title="Edit Appointment Info" />
+            android:id="@+id/expanded_menu_1"
+            android:title="Set Appointment Schedule" />
     </group>
 </menu>

@@ -125,13 +125,14 @@ public class DoctorMainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id== R.id.edit_profile_btn)
+        if (id== R.id.expanded_menu_0)
         {
             intent=new Intent(activity, EditDoctorProfileActivity.class);
             startActivity(intent);
         }
-        else if (id==R.id.edit_appointment_info)
+        else if (id==R.id.expanded_menu_1)
         {
+            startActivity(new Intent(DoctorMainActivity.this,EditAppointmentSchedule.class));
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
