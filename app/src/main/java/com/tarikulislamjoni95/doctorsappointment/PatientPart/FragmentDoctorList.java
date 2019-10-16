@@ -105,6 +105,9 @@ public class FragmentDoctorList extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext(),RecyclerView.VERTICAL,false));
         recyclerView.setHasFixedSize(true);
 
+        doctorListViewAdapter=new DoctorListViewAdapter(getActivity(),new ArrayList<HashMap<String, Object>>(),PatientAccountInfoHashMap);
+        recyclerView.setAdapter(doctorListViewAdapter);
+
         buttons[0].setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -189,8 +192,6 @@ public class FragmentDoctorList extends Fragment {
             DataParseModel dataParseModel=new DataParseForDoctorFiltration().GetTypeListAndUIDList(DBConst.AvailableArea,dataSnapshop);
             Division_ArrayList=dataParseModel.getArrayList1();
             Division_UID_ArrayList=dataParseModel.getArrayList2();
-            //myToastClass.LToast("Division 1: "+Division_ArrayList.toString());
-            Log.d("myError 1 : ","Division : "+Division_ArrayList.toString());
         }
         textViews[0].setOnClickListener(new View.OnClickListener() {
             @Override
@@ -217,8 +218,6 @@ public class FragmentDoctorList extends Fragment {
         {
             DivisionStringArray[i]=Division_ArrayList.get(i);
         }
-        //myToastClass.LToast("Division 2: "+Division_ArrayList.toString());
-        Log.d("myError 1 : ","Division : "+DivisionStringArray.toString());
         builder.setSingleChoiceItems(DivisionStringArray, -1, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i)
