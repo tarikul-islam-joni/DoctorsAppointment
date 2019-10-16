@@ -24,6 +24,7 @@ public class VARConst {
     public static final String MONTH_VALIDITY="MONTH_VALIDITY";
     public static final String YEAR_VALIDITY="YEAR_VALIDITY";
 
+
     //WelcomeActivity constant Variable
     public static final String WELCOME_ACTIVITY = "WELCOME_ACTIVITY";
     //SignInActivity constant variable
@@ -79,6 +80,9 @@ public class VARConst {
 
     public static final int REQUEST_CAMERA_CODE=200;
     public static final int REQUEST_GALLERY_CODE=201;
+
+
+    public static final String NO_IMAGE_VIEW="NO_IMAGE_VIEW";
 
 
 

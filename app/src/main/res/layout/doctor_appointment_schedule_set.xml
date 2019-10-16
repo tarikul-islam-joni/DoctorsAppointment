@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/gradient_3"
+    android:orientation="vertical"
+    tools:context=".DoctorPart.EditAppointmentSchedule">
+
+    <TextView
+        android:visibility="gone"
+        android:layout_gravity="center"
+        android:id="@+id/text_view_0"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="25sp"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:drawableTop="@drawable/calender_1"
+        android:textAllCaps="true"
+        android:fontFamily="serif-monospace"
+        android:textColor="@color/colorRed"
+        android:text="@string/no_appointment_schedule_has_created_yet"/>
+
+    <TextView
+        android:id="@+id/text_view_1"
+        android:layout_margin="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/edit_text_box"
+        android:drawableEnd="@drawable/calender_1"
+        android:fontFamily="serif-monospace"
+        android:gravity="start"
+        android:text="@string/add_new_nappointment_schedule"
+        android:textAllCaps="true"
+        android:textColor="@color/colorBlack"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+    <ListView
+        android:visibility="gone"
+        android:id="@+id/list_view_0"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingBottom="10dp"
+        android:dividerHeight="10dp"/>
+
+</LinearLayout>

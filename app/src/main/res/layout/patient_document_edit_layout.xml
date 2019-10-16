@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/gradient_3">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        android:background="@drawable/button_background_1">
+        <ImageView
+            android:id="@+id/image_view_0"
+            android:src="@drawable/quantum_ic_arrow_back_grey600_24"
+            android:layout_weight="0.5"
+            android:layout_width="10dp"
+            android:layout_height="match_parent" />
+        <Button
+            android:id="@+id/button_0"
+            android:layout_weight="5"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:text="Save Report"
+            android:textSize="18sp"
+            android:textColor="@color/colorBlack"
+            android:textStyle="bold"
+            android:fontFamily="serif-monospace"
+            android:background="@drawable/button_background_3"/>
+        <ImageView
+            android:id="@+id/image_view_1"
+            android:src="@drawable/delete_folder_01"
+            android:layout_weight="0.5"
+            android:layout_width="10dp"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_weight="1.8"
+            android:fontFamily="monospace"
+            android:gravity="center"
+            android:text="Report Title:"
+            android:textColor="#000000"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+        <EditText
+            android:visibility="visible"
+            android:imeOptions="actionDone"
+            android:inputType="text"
+            android:gravity="center"
+            android:id="@+id/edit_text_0"
+            android:layout_gravity="center"
+            android:layout_weight="3"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:hint="Give a title..."
+            android:textSize="18sp"
+            android:textColor="@color/colorBlack"
+            android:fontFamily="monospace"/>
+        <TextView
+            android:visibility="gone"
+            android:inputType="text"
+            android:gravity="center"
+            android:id="@+id/text_view_edit_text_0"
+            android:layout_gravity="center"
+            android:layout_weight="3"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:textSize="18sp"
+            android:textColor="@color/colorBlack"
+            android:fontFamily="monospace"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:background="@drawable/edit_text_box"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_weight="1.8"
+            android:fontFamily="monospace"
+            android:gravity="center"
+            android:text="Report Details:"
+            android:textColor="@color/colorBlack"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <EditText
+            android:inputType="text"
+            android:imeOptions="actionDone"
+            android:id="@+id/edit_text_1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_weight="3"
+            android:fontFamily="monospace"
+            android:gravity="center"
+            android:hint="Write report details..."
+            android:textColor="@color/colorBlack"
+            android:textSize="18sp" />
+    </LinearLayout>
+    <Button
+        android:id="@+id/button_1"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:text="Upload Report Image"
+        android:background="@drawable/button_background_1"
+        android:drawableRight="@drawable/upload_image_icon"/>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view_0"
+        android:layout_margin="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+</LinearLayout>

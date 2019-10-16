@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:background="@drawable/gradient_background_2"
+    android:layout_height="wrap_content"
+    android:layout_margin="5dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+        <LinearLayout
+            android:id="@+id/linear_layout_0"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center">
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/image_civ_0"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:padding="10dp"
+                android:src="@drawable/male_doc"/>
+            <Button
+                android:id="@+id/button_0"
+                android:textColor="@color/colorWhite"
+                android:background="@drawable/button_background_3"
+                android:textSize="15sp"
+                android:layout_width="match_parent"
+                android:layout_height="18dp"
+                android:text="See Details"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_weight="3"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <LinearLayout
+                android:gravity="center"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:orientation="horizontal">
+                <TextView
+                    android:textStyle="bold"
+                    android:gravity="center"
+                    android:background="@drawable/design_text_view_0"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:text="Name : "
+                    android:textSize="15sp"
+                    android:textColor="@color/colorBlack"/>
+                <TextView
+                    android:id="@+id/text_view_0"
+                    android:gravity="center"
+                    android:background="@drawable/design_text_view_0"
+                    android:layout_weight="3"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:text="Tarikul Islam Joni"
+                    android:textSize="15sp"
+                    android:textColor="@color/colorBlack"/>
+            </LinearLayout>
+            <LinearLayout
+                android:gravity="center"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:orientation="horizontal">
+                <TextView
+                    android:gravity="center"
+                    android:background="@drawable/design_text_view_0"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:text="Specialization : "
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/colorBlack"/>
+                <TextView
+                    android:id="@+id/text_view_1"
+                    android:gravity="center"
+                    android:background="@drawable/design_text_view_0"
+                    android:layout_weight="3"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:text="Tarikul Islam Joni"
+                    android:textSize="15sp"
+                    android:textColor="@color/colorBlack"/>
+            </LinearLayout>
+            <LinearLayout
+                android:gravity="center"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:orientation="horizontal">
+                <TextView
+                    android:textStyle="bold"
+                    android:gravity="center"
+                    android:background="@drawable/design_text_view_0"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:text="Available Area : "
+                    android:textSize="15sp"
+                    android:textColor="@color/colorBlack"/>
+                <TextView
+                    android:id="@+id/text_view_2"
+                    android:gravity="center"
+                    android:background="@drawable/design_text_view_0"
+                    android:layout_weight="3"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:text="Tarikul Islam Joni"
+                    android:textSize="15sp"
+                    android:textColor="@color/colorBlack"/>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

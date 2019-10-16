@@ -3,7 +3,6 @@ package com.tarikulislamjoni95.doctorsappointment.DoctorPart;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -17,10 +16,9 @@ import androidx.core.content.ContextCompat;
 import com.tarikulislamjoni95.doctorsappointment.DatabasePart.AccountMultiplicityDB;
 import com.tarikulislamjoni95.doctorsappointment.DatabasePart.AccountStatusDB;
 import com.tarikulislamjoni95.doctorsappointment.DatabasePart.DBHelper;
-import com.tarikulislamjoni95.doctorsappointment.DatabasePart.DataModel;
 import com.tarikulislamjoni95.doctorsappointment.DatabasePart.DoctorAccountDB;
 import com.tarikulislamjoni95.doctorsappointment.DatabasePart.StorageDB;
-import com.tarikulislamjoni95.doctorsappointment.HelperClass.DBConst;
+import com.tarikulislamjoni95.doctorsappointment.DatabasePart.DBConst;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.InitializationUIHelperClass;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.MyImageGettingClass;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.MyLoadingDailog;
@@ -28,7 +26,6 @@ import com.tarikulislamjoni95.doctorsappointment.HelperClass.MyTextWatcher;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.MyToastClass;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.VARConst;
 import com.tarikulislamjoni95.doctorsappointment.Interface.GetDataFromDBInterface;
-import com.tarikulislamjoni95.doctorsappointment.Interface.GetProgressInterface;
 import com.tarikulislamjoni95.doctorsappointment.R;
 import com.theartofdev.edmodo.cropper.CropImage;
 
@@ -40,7 +37,6 @@ import java.util.Set;
 public class EditDoctorSecureInfoActivity extends AppCompatActivity implements View.OnClickListener,
         GetDataFromDBInterface
 {
-    private static final String myError="myError";
     //Database Variable
     private DBHelper dbHelper;
     private DoctorAccountDB doctorAccountDB;
@@ -52,19 +48,18 @@ public class EditDoctorSecureInfoActivity extends AppCompatActivity implements V
     private InitializationUIHelperClass initializationUIHelperClass;
     private MyImageGettingClass myImageGettingClass;
     private MyToastClass myToastClass;
-    private DataModel dataModel;
     private MyLoadingDailog myLoadingDailog;
 
     //Primitive Variable
     private int WhichImageView;
     private int VALIDATION_COLOR_GREEN;
     private String UID;
-    private int Counter=0;
     private ArrayList<String> ImageUrlArrayList;
 
     //Object Variable
     private Activity activity;
-    private HashMap<String,Object> DataHashMap;
+
+    private String[] DataKey;
     private HashMap<String,String> AccountDataHashMap;
 
     private EditText[] editTexts;
@@ -73,7 +68,7 @@ public class EditDoctorSecureInfoActivity extends AppCompatActivity implements V
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_edit_doctor_secure_info);
+        setContentView(R.layout.doctor_edit_secure_info);
         Initialization();
         InitializationClass();
         InitializationUI();
@@ -85,9 +80,12 @@ public class EditDoctorSecureInfoActivity extends AppCompatActivity implements V
     {
         activity= EditDoctorSecureInfoActivity.this;
         VALIDATION_COLOR_GREEN= ContextCompat.getColor(activity,R.color.colorGreen);
-        DataHashMap=new HashMap<>();
         AccountDataHashMap=new HashMap<>();
         ImageUrlArrayList=new ArrayList<>();
+        DataKey=new String[]{DBConst.ProfileImageUrl,DBConst.Name,DBConst.StudiedCollege,DBConst.PassingYear,
+                DBConst.CompletedDegree,DBConst.Specialization,DBConst.NoOfPracticingYear,DBConst.PhoneNumber,DBConst.AvailableArea,
+                DBConst.Specialization, DBConst.NIDNumber,DBConst.BMDCRegNumber,
+                DBConst.NIDImageUrl,DBConst.BMDCRegImageUrl, DBConst.AuthorityValidity};
     }
     private void InitializationClass()
     {
@@ -95,7 +93,6 @@ public class EditDoctorSecureInfoActivity extends AppCompatActivity implements V
         myImageGettingClass=new MyImageGettingClass(activity);
         myToastClass=new MyToastClass(activity);
         myLoadingDailog=new MyLoadingDailog(activity,R.drawable.spinner);
-        dataModel=new DataModel();
     }
     private void InitializationUI()
     {
@@ -213,11 +210,11 @@ public class EditDoctorSecureInfoActivity extends AppCompatActivity implements V
 
 
     ///***************************Database Return Section Start************************************///
-    private void GetAccountUIDFromDB()
+    private void GetAccountUIDFromDB(HashMap<String,Object> hashMap)
     {
-        if (DataHashMap.get(DBConst.RESULT).toString().matches(DBConst.NOT_NULL_USER))
+        if (hashMap.get(DBConst.RESULT).toString().matches(DBConst.NOT_NULL_USER))
         {
-            this.UID=DataHashMap.get(DBConst.UID).toString();
+            this.UID=hashMap.get(DBConst.UID).toString();
             CallDBForGetDoctorAccountInformation();
         }
         else
@@ -225,18 +222,24 @@ public class EditDoctorSecureInfoActivity extends AppCompatActivity implements V
             finish();
         }
     }
-    private void GetDoctorAccountInformationFromDB()
+    private void GetDoctorAccountInformationFromDB(HashMap<String,Object> hashMap)
     {
-        if (DataHashMap.get(DBConst.RESULT).toString().matches(DBConst.DATA_EXIST))
+        if (hashMap.get(DBConst.RESULT).toString().matches(DBConst.DATA_EXIST))
         {
-            String[] DataKey=dataModel.GetDoctorAccountInformationDataKey();
             for(int i=0; i<DataKey.length; i++)
             {
-                AccountDataHashMap.put(DataKey[i],DataHashMap.get(DataKey[i]).toString());
+                if (hashMap.containsKey(DataKey[i]))
+                {
+                    AccountDataHashMap.put(DataKey[i],hashMap.get(DataKey[i]).toString());
+                }
+                else
+                {
+                    AccountDataHashMap.put(DataKey[i],DBConst.UNKNOWN);
+                }
             }
             AccountDataHashMap.put(DBConst.AuthorityValidity,DBConst.UNVERIFIED);
         }
-        else if (DataHashMap.get(DBConst.RESULT).toString().matches(DBConst.DATA_NOT_EXIST))
+        else if (hashMap.get(DBConst.RESULT).toString().matches(DBConst.DATA_NOT_EXIST))
         {
             startActivity(new Intent(activity,EditDoctorProfileActivity.class));
         }
@@ -246,12 +249,12 @@ public class EditDoctorSecureInfoActivity extends AppCompatActivity implements V
         }
     }
 
-    private void GetBMDCNumberAlreadyRegisteredOrNotResultFromDB()
+    private void GetBMDCNumberAlreadyRegisteredOrNotResultFromDB(HashMap<String,Object> hashMap)
     {
-        String GettingResult=DataHashMap.get(DBConst.RESULT).toString();
+        String GettingResult=hashMap.get(DBConst.RESULT).toString();
         if (GettingResult.matches(DBConst.DATA_EXIST))
         {
-            Set keyset=DataHashMap.keySet();
+            Set keyset=hashMap.keySet();
             int check=0;
             Iterator iterator=keyset.iterator();
             while (iterator.hasNext())
@@ -268,7 +271,7 @@ public class EditDoctorSecureInfoActivity extends AppCompatActivity implements V
             if (check==0)
             {
                 editTexts[1].setText("");
-                imageViews[1].setImageResource(R.drawable.user_2);
+                imageViews[1].setImageResource(R.drawable.upload_doc_image);
                 imageViews[1].setEnabled(false);
                 myToastClass.LToast("Sorry BMDC number already registered ! ! !");
             }
@@ -283,11 +286,11 @@ public class EditDoctorSecureInfoActivity extends AppCompatActivity implements V
         }
     }
 
-    private void GetImageURLFromDB()
+    private void GetImageURLFromDB(HashMap<String,Object> hashMap)
     {
-        if (DataHashMap.get(DBConst.RESULT).toString().matches(DBConst.SUCCESSFUL))
+        if (hashMap.get(DBConst.RESULT).toString().matches(DBConst.SUCCESSFUL))
         {
-            ImageUrlArrayList.add(DataHashMap.get(DBConst.URL).toString());
+            ImageUrlArrayList.add(hashMap.get(DBConst.URL).toString());
             if (editTexts[1].getText().length()>4 && imageViews[1].isEnabled() && ImageUrlArrayList.size()==2)
             {
                 AccountDataHashMap.put(DBConst.NIDNumber,editTexts[0].getText().toString());
@@ -317,9 +320,9 @@ public class EditDoctorSecureInfoActivity extends AppCompatActivity implements V
         }
     }
 
-    private void GetAccountMultiplicitySavingStatusFromDB()
+    private void GetAccountMultiplicitySavingStatusFromDB(HashMap<String,Object> hashMap)
     {
-        if (DataHashMap.get(DBConst.RESULT).toString().matches(DBConst.SUCCESSFUL))
+        if (hashMap.get(DBConst.RESULT).toString().matches(DBConst.SUCCESSFUL))
         {
             UploadOnlyNIDDocument();
         }
@@ -328,9 +331,9 @@ public class EditDoctorSecureInfoActivity extends AppCompatActivity implements V
             myToastClass.LToast("Please retry...");
         }
     }
-    private void GetDoctorAccountInformationSavingStatusFromDB()
+    private void GetDoctorAccountInformationSavingStatusFromDB(HashMap<String,Object> hashMap)
     {
-        if (DataHashMap.get(DBConst.RESULT).toString().matches(DBConst.SUCCESSFUL))
+        if (hashMap.get(DBConst.RESULT).toString().matches(DBConst.SUCCESSFUL))
         {
             CallDBForSaveAccountStatus();
         }
@@ -339,9 +342,9 @@ public class EditDoctorSecureInfoActivity extends AppCompatActivity implements V
             myToastClass.LToast("Please retry...");
         }
     }
-    private void GetAccountStatusSavingResultFromDB()
+    private void GetAccountStatusSavingResultFromDB(HashMap<String,Object> hashMap)
     {
-        if (DataHashMap.get(DBConst.RESULT).toString().matches(DBConst.SUCCESSFUL))
+        if (hashMap.get(DBConst.RESULT).toString().matches(DBConst.SUCCESSFUL))
         {
             startActivity(new Intent(activity,DoctorMainActivity.class));
             CancelDialog();
@@ -426,37 +429,35 @@ public class EditDoctorSecureInfoActivity extends AppCompatActivity implements V
     private void CallDBForSaveAccountStatus()
     {
         ShowLoadingDialog();
-        accountStatusDB.SaveIntoAccountStatusDB(UID,DBConst.Doctor,true,true);
+        accountStatusDB.SaveIntoAccountStatusDB(UID,DBConst.Doctor,true,true,false);
     }
 
     @Override
     public void GetSingleDataFromDatabase(String WhichDB, HashMap<String, Object> DataHashMap)
     {
         CancelDialog();
-        this.DataHashMap.clear();
-        this.DataHashMap=DataHashMap;
         switch (WhichDB)
         {
             case DBConst.GetAccountUID:
-                GetAccountUIDFromDB();
+                GetAccountUIDFromDB(DataHashMap);
                 break;
             case DBConst.GetDoctorAccountInformation:
-                GetDoctorAccountInformationFromDB();
+                GetDoctorAccountInformationFromDB(DataHashMap);
                 break;
             case DBConst.GetAccountMultiplicityDB:
-                GetBMDCNumberAlreadyRegisteredOrNotResultFromDB();
+                GetBMDCNumberAlreadyRegisteredOrNotResultFromDB(DataHashMap);
                 break;
             case DBConst.SaveAccountMultiplicityDB:
-                GetAccountMultiplicitySavingStatusFromDB();
+                GetAccountMultiplicitySavingStatusFromDB(DataHashMap);
                 break;
             case DBConst.GetSavingFileUrlData:
-                GetImageURLFromDB();
+                GetImageURLFromDB(DataHashMap);
                 break;
             case DBConst.SaveDoctorAccountInformation:
-                GetDoctorAccountInformationSavingStatusFromDB();
+                GetDoctorAccountInformationSavingStatusFromDB(DataHashMap);
                 break;
             case DBConst.SaveAccountStatusDB:
-                GetAccountStatusSavingResultFromDB();
+                GetAccountStatusSavingResultFromDB(DataHashMap);
                 break;
         }
     }

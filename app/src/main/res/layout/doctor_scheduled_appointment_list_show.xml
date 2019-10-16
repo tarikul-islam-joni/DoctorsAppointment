@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/gradient_background_1">
+    <LinearLayout
+        android:layout_gravity="bottom"
+        android:id="@+id/linear_layout_0"
+        android:visibility="gone"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <Button
+            android:padding="1dp"
+            android:id="@+id/button_0"
+            android:textColor="@color/colorWhite"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:text="Next Seven Day"
+            android:textSize="12sp"
+            android:background="@drawable/button_background_5"/>
+        <Button
+            android:padding="1dp"
+            android:id="@+id/button_3"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:text="Current Month"
+            android:textColor="@color/colorWhite"
+            android:textSize="12sp"
+            android:background="@drawable/button_backgrount_4"/>
+        <Button
+            android:padding="1dp"
+            android:id="@+id/button_1"
+            android:textColor="@color/colorWhite"
+            android:textSize="12sp"
+            android:background="@drawable/button_backgrount_4"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:text="Choose Month"/>
+        <Button
+            android:padding="1dp"
+            android:id="@+id/button_2"
+            android:textColor="@color/colorWhite"
+            android:textSize="12sp"
+            android:background="@drawable/button_backgrount_4"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:text="Choose Date"/>
+    </LinearLayout>
+    <TextView
+        android:visibility="visible"
+        android:id="@+id/text_view_0"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Status Bar"
+        android:textSize="20sp"
+        android:textColor="@color/colorRed"
+        android:textStyle="bold"
+        android:fontFamily="serif-monospace"
+        android:gravity="center"
+        android:background="@drawable/gradient_background_2"/>
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_margin="5dp"
+        android:id="@+id/recycler_view_0"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+</LinearLayout>

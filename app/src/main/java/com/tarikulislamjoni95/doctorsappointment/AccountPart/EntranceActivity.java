@@ -6,6 +6,7 @@ import androidx.core.content.ContextCompat;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -30,7 +31,7 @@ import com.tarikulislamjoni95.doctorsappointment.DoctorPart.DoctorMainActivity;
 import com.tarikulislamjoni95.doctorsappointment.DoctorPart.EditDoctorProfileActivity;
 import com.tarikulislamjoni95.doctorsappointment.DoctorPart.EditDoctorSecureInfoActivity;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.VARConst;
-import com.tarikulislamjoni95.doctorsappointment.HelperClass.DBConst;
+import com.tarikulislamjoni95.doctorsappointment.DatabasePart.DBConst;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.MyLoadingDailog;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.MyTextWatcher;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.MyToastClass;
@@ -60,10 +61,10 @@ public class EntranceActivity extends AppCompatActivity implements View.OnClickL
 
     //Important component
     private Activity activity;
-    private Intent intent;
     private Animation pushupin;
 
     //Dialog Variable
+    private AlertDialog AccountStatusDialog;
     private AlertDialog VerificationDialog;
     private LinearLayout DialogEmailSection;
     private ProgressBar progressBar;
@@ -84,7 +85,7 @@ public class EntranceActivity extends AppCompatActivity implements View.OnClickL
     private int COUNT_DOWN=60;
     private int SET_DELAY_TIMER=60000;
     //UI Variable
-    private LinearLayout EmailSection,PhoneSection,ChoosePatientOrDoctorSection;
+    private LinearLayout EmailSection,PhoneSection;
     private CircleImageView AccountTypeCiv;
     private EditText EmailEt,PasswordEt,PhoneEt;
     private Button PatientBtn,DoctorBtn;
@@ -96,7 +97,7 @@ public class EntranceActivity extends AppCompatActivity implements View.OnClickL
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_sign_in_up);
+        setContentView(R.layout.app_entrance_layout);
         Initialization();
         InitializationUI();
         InitializationClass();
@@ -108,7 +109,6 @@ public class EntranceActivity extends AppCompatActivity implements View.OnClickL
     {
         activity= EntranceActivity.this;
         VALIDITY_COLOR= ContextCompat.getColor(activity,R.color.colorGreen);
-
         pushupin = AnimationUtils.loadAnimation(getApplicationContext(),R.anim.push_up_in);
 
     }
@@ -156,6 +156,9 @@ public class EntranceActivity extends AppCompatActivity implements View.OnClickL
         FacebookEntranceBtn=findViewById(R.id.facebook_entrance_btn);
         FacebookEntranceBtn.setOnClickListener(this);
 
+        ForgetPasswordTv=findViewById(R.id.forgot_text_tv);
+        ForgetPasswordTv.setOnClickListener(this);
+
     }
     //Initialization of class variable
     private void InitializationClass()
@@ -201,8 +204,12 @@ public class EntranceActivity extends AppCompatActivity implements View.OnClickL
                 PhoneSectionBtn.setBackground(getResources().getDrawable(R.drawable.button_background_1));
                 GoogleEntranceBtn.setBackground(getResources().getDrawable(R.drawable.button_background_1));
                 FacebookSignUp();
+                break;
+            case R.id.forgot_text_tv:
+                ForgetPasswordMethod();
+                break;
             case R.id.email_section_btn:
-
+                EmailEt.requestFocus();
                 PhoneSection.setVisibility(View.GONE);
                 EmailSection.setVisibility(View.VISIBLE);
                 EmailSection.startAnimation(pushupin);
@@ -213,13 +220,14 @@ public class EntranceActivity extends AppCompatActivity implements View.OnClickL
 
                 break;
             case R.id.phone_section_btn:
+                PhoneEt.requestFocus();
                 EmailSection.setVisibility(View.GONE);
                 PhoneSection.setVisibility(View.VISIBLE);
                 PhoneSection.startAnimation(pushupin);
 
                 EmailSectionBtn.setBackground(getResources().getDrawable(R.drawable.button_background_1));
                 PhoneSectionBtn.setBackground(getResources().getDrawable(R.drawable.button_background_2));
-                PhoneSectionBtn.setBackground(getResources().getDrawable(R.drawable.button_background_1));
+                GoogleEntranceBtn.setBackground(getResources().getDrawable(R.drawable.button_background_1));
                 break;
         }
     }
@@ -290,6 +298,17 @@ public class EntranceActivity extends AppCompatActivity implements View.OnClickL
         CallDBForFacebookSignUp(FacebookEntranceBtn.getId());
     }
 
+    private void ForgetPasswordMethod()
+    {
+        if (EmailEt.getText().toString().isEmpty())
+        {
+            myToast.LToast("Input registered email without password and the click forgot password for receiving the re-edit password link");
+        }
+        else
+        {
+            CallDBForSendingForgetPasswordLink(EmailEt.getText().toString());
+        }
+    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -399,7 +418,7 @@ public class EntranceActivity extends AppCompatActivity implements View.OnClickL
         if (RESEND_PHONE_COUNTER>=0)
         {
             final AlertDialog.Builder builder=new AlertDialog.Builder(activity,android.R.style.Theme_DeviceDefault_Light_NoActionBar_Fullscreen);
-            View view= LayoutInflater.from(activity).inflate(R.layout.verification_dialog_layout,null,false);
+            View view= LayoutInflater.from(activity).inflate(R.layout.app_account_verification_layout,null,false);
             builder.setView(view);
             builder.setCancelable(false);
             VerificationDialog=builder.create();
@@ -505,7 +524,7 @@ public class EntranceActivity extends AppCompatActivity implements View.OnClickL
         if (RESEND_EMAIL_COUNTER>0)
         {
             final AlertDialog.Builder builder=new AlertDialog.Builder(activity,android.R.style.Theme_DeviceDefault_Light_NoActionBar_Fullscreen);
-            View view= LayoutInflater.from(activity).inflate(R.layout.verification_dialog_layout,null,false);
+            View view= LayoutInflater.from(activity).inflate(R.layout.app_account_verification_layout,null,false);
             builder.setView(view);
             builder.setCancelable(false);
             VerificationDialog=builder.create();
@@ -577,42 +596,61 @@ public class EntranceActivity extends AppCompatActivity implements View.OnClickL
         }
         else if (AccountExistanceResult.matches(DBConst.DATA_EXIST))
         {
-            String AccountType=(String)DataHashMap.get(DBConst.AccountType);
-            if (AccountType.matches(DBConst.Patient))
+            if (!(boolean)DataHashMap.get(DBConst.AccountLockState))
             {
-                //Goto Patient Part
-                if (!(boolean)DataHashMap.get(DBConst.AccountCompletion))
+                String AccountType=(String)DataHashMap.get(DBConst.AccountType);
+                if (AccountType.matches(DBConst.Patient))
                 {
-                    StartActivity(new Intent(activity, EditPatientProfileActivity.class));
+                    //Goto Patient Part
+                    if (!(boolean)DataHashMap.get(DBConst.AccountCompletion))
+                    {
+                        StartActivity(new Intent(activity, EditPatientProfileActivity.class));
+                    }
+                    else if (!(boolean)DataHashMap.get(DBConst.AccountValidity))
+                    {
+                        StartActivity(new Intent(activity, EditPatientSecureInfoActivity.class));
+                    }
+                    else if ((boolean)DataHashMap.get(DBConst.AccountCompletion) && (boolean)DataHashMap.get(DBConst.AccountValidity))
+                    {
+                        StartActivity(new Intent(activity, PatientMainActivity.class));
+                    }
                 }
-                else if (!(boolean)DataHashMap.get(DBConst.AccountValidity))
+                else if (AccountType.matches(DBConst.Doctor))
                 {
-                    StartActivity(new Intent(activity, EditPatientSecureInfoActivity.class));
+                    //Goto Patient Part
+                    if (!(boolean)DataHashMap.get(DBConst.AccountCompletion))
+                    {
+                        StartActivity(new Intent(activity, EditDoctorProfileActivity.class));
+                    }
+                    else if (!(boolean)DataHashMap.get(DBConst.AccountValidity))
+                    {
+                        StartActivity(new Intent(activity, EditDoctorSecureInfoActivity.class));
+                    }
+                    else if ((boolean)DataHashMap.get(DBConst.AccountCompletion) && (boolean)DataHashMap.get(DBConst.AccountValidity))
+                    {
+                        StartActivity(new Intent(activity, DoctorMainActivity.class));
+                    }
                 }
-                else if ((boolean)DataHashMap.get(DBConst.AccountCompletion) && (boolean)DataHashMap.get(DBConst.AccountValidity))
+                else if (AccountType.matches(DBConst.Admin))
                 {
-                    StartActivity(new Intent(activity, PatientMainActivity.class));
-                }
-            }
-            else if (AccountType.matches(DBConst.Doctor))
-            {
-                //Goto Patient Part
-                if (!(boolean)DataHashMap.get(DBConst.AccountCompletion))
-                {
-                    StartActivity(new Intent(activity, EditDoctorProfileActivity.class));
-                }
-                else if (!(boolean)DataHashMap.get(DBConst.AccountValidity))
-                {
-                    StartActivity(new Intent(activity, EditDoctorSecureInfoActivity.class));
-                }
-                else if ((boolean)DataHashMap.get(DBConst.AccountCompletion) && (boolean)DataHashMap.get(DBConst.AccountValidity))
-                {
-                    StartActivity(new Intent(activity, DoctorMainActivity.class));
+                    StartActivity(new Intent(activity, AdminMainActivity.class));
                 }
             }
             else
             {
-                StartActivity(new Intent(activity, AdminMainActivity.class));
+                AlertDialog.Builder builder=new AlertDialog.Builder(activity);
+                builder.setTitle("App Entrance Status");
+                builder.setMessage("Your account was locked automatically\nHave patience,it will be unlocked by admin as soon as possible.\nTry again latter...");
+                builder.setNeutralButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i)
+                    {
+                        AccountStatusDialog.dismiss();
+                    }
+                });
+                AccountStatusDialog=builder.create();
+                AccountStatusDialog.show();
+                CallDBForSignOut();
             }
         }
         else
@@ -620,6 +658,7 @@ public class EntranceActivity extends AppCompatActivity implements View.OnClickL
             CallDBForSignOut();
         }
     }
+
 
     private void StartActivity(Intent intent)
     {
@@ -686,6 +725,10 @@ public class EntranceActivity extends AppCompatActivity implements View.OnClickL
     {
         myAuthenticationClass.FacebookSignIn(FacebookButtonId);
     }
+    private void CallDBForSendingForgetPasswordLink(String ForgetEmailString)
+    {
+        myAuthenticationClass.ForgetPasswordLinkToEmail(ForgetEmailString);
+    }
     private void CallDBForGoogleSignUp()
     {
         myAuthenticationClass.GoogleSignIn();
@@ -718,7 +761,7 @@ public class EntranceActivity extends AppCompatActivity implements View.OnClickL
     private void CallDBForSavingAccountStatus(String UID)
     {
         ShowLoadingDialog();
-        accountStatusDB.SaveIntoAccountStatusDB(UID,AccoutTypeString,false,false);
+        accountStatusDB.SaveIntoAccountStatusDB(UID,AccoutTypeString,false,false,false);
     }
     private void CallDBForSignOut()
     {

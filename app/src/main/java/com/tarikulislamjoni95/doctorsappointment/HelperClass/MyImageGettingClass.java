@@ -2,9 +2,12 @@ package com.tarikulislamjoni95.doctorsappointment.HelperClass;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.ImageDecoder;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -18,6 +21,8 @@ import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
 
 import com.squareup.picasso.Picasso;
+import com.tarikulislamjoni95.doctorsappointment.DatabasePart.DBConst;
+import com.tarikulislamjoni95.doctorsappointment.Interface.GetDataFromDBInterface;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageActivity;
 import com.theartofdev.edmodo.cropper.CropImageView;
@@ -25,8 +30,10 @@ import com.theartofdev.edmodo.cropper.CropImageView;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -43,11 +50,14 @@ public class MyImageGettingClass
     private MyPermissionClass myPermissionClass;
     private MyPermissionGroup myPermissionGroup;
 
+    private GetDataFromDBInterface getDataFromDBInterface;
+
     public MyImageGettingClass(Activity activity)
     {
         this.activity=activity;
         myPermissionClass=new MyPermissionClass(activity);
         myPermissionGroup=new MyPermissionGroup();
+        getDataFromDBInterface=(GetDataFromDBInterface)activity;
     }
     public void GetImageFromCameraOrGallery()
     {
@@ -91,6 +101,7 @@ public class MyImageGettingClass
     }
 
     public void onActivityResult(String IVType,int IVId,int requestCode, int resultCode, @Nullable Intent data) {
+        Log.d("myError 0","Image Getting Error : "+IVType+IVId+requestCode+resultCode+data.toString());
         if (requestCode==CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE)
         {
             CropImage.ActivityResult result=CropImage.getActivityResult(data);
@@ -109,6 +120,29 @@ public class MyImageGettingClass
                     IV.setImageURI(uri);
                     IV.setEnabled(true);
                 }
+                else if (IVType.matches(VARConst.NO_IMAGE_VIEW))
+                {
+                    Log.d("myError 1","Image Getting Error : ");
+                    try
+                    {
+                        Log.d("myError 2","Image Getting Error : ");
+                        Bitmap bmp=MediaStore.Images.Media.getBitmap(activity.getContentResolver(),uri);
+                        ByteArrayOutputStream bao = new ByteArrayOutputStream();
+                        bmp.compress(Bitmap.CompressFormat.JPEG, 100,bao); // bmp is bitmap from user image file
+                        byte[] byteArray = bao.toByteArray();
+                        HashMap<String,Object> hashMap=new HashMap<>();
+                        hashMap.put(DBConst.RESULT,DBConst.SUCCESSFUL);
+                        hashMap.put("ImageData",byteArray);
+                        getDataFromDBInterface.GetSingleDataFromDatabase("ImageData",hashMap);
+
+                    } catch (Exception e)
+                    {
+                        HashMap<String,Object> hashMap=new HashMap<>();
+                        hashMap.put(DBConst.RESULT,DBConst.UNSUCCESSFUL);
+                        getDataFromDBInterface.GetSingleDataFromDatabase("ImageData",hashMap);
+                        Log.d("myError","Image Getting Error : "+e.toString());
+                    }
+                }
             }
         }
 
@@ -117,6 +151,19 @@ public class MyImageGettingClass
         } else if (requestCode == VARConst.REQUEST_GALLERY_CODE && resultCode == RESULT_OK && data != null) {
             CropImage.activity(data.getData()).start(activity);
         }
+    }
+    byte[] ImageByteArray;
+    private void SetFullImageBytesWithoutImageView(byte[] byteArray)
+    {
+        Log.d("myError 3","Image Getting Error : "+byteArray.toString());
+        ImageByteArray=new byte[byteArray.length];
+        ImageByteArray=byteArray;
+    }
+
+    public byte[] GetFullImageBytesWithoutImageView()
+    {
+        Log.d("myError 4","Image Getting Error : "+ImageByteArray.toString());
+        return ImageByteArray;
     }
 
     public byte[] GetCompressImageBytes(String IVType,int IV_Id)
@@ -136,6 +183,8 @@ public class MyImageGettingClass
         byte[] byteArray = bao.toByteArray();
         return byteArray;
     }
+
+
     public byte[] GetFullImageBytes(String IVType,int IV_Id)
     {
         if (IVType.matches(VARConst.IV))
@@ -155,7 +204,7 @@ public class MyImageGettingClass
         return byteArray;
     }
 
-    private File CreateImageFile() throws IOException
+    public File CreateImageFile() throws IOException
     {
         String timestamp=new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date());
         String ImageFileName="Doctors_Appointment_"+timestamp+"_";

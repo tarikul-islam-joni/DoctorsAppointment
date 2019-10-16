@@ -30,6 +30,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
+import com.tarikulislamjoni95.doctorsappointment.AccountPart.EntranceActivity;
+import com.tarikulislamjoni95.doctorsappointment.AccountPart.WelcomeActivity;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.VARConst;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.MyToastClass;
 import com.tarikulislamjoni95.doctorsappointment.Interface.AccountCreationInterface;
@@ -147,6 +149,25 @@ public class MyAuthenticationClass
         {
             accountCreationInterface.AccountCreationResult(VARConst.EMAIL_VERIFICATION_STATUS,false);
         }
+    }
+
+    public void ForgetPasswordLinkToEmail(String ForgetEmailString)
+    {
+        FirebaseAuth.getInstance().sendPasswordResetEmail(ForgetEmailString).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task)
+            {
+                if (task.isComplete())
+                {
+                    accountCreationInterface.AccountCreationResult(DBConst.GetStatusOnSendingForgetPasswordLinkToEmail,true);
+                }
+                else
+                {
+                    accountCreationInterface.AccountCreationResult(DBConst.GetStatusOnSendingForgetPasswordLinkToEmail,false);
+                }
+            }
+        });
+        SignOut();
     }
     ///*************************Email SignIn Or SignUp Section Ending*************************///
 
@@ -301,6 +322,7 @@ public class MyAuthenticationClass
         {
             FirebaseAuth.getInstance().signOut();
         }
+        activity.startActivity(new Intent(activity, EntranceActivity.class));
     }
     public void DeleteAccount()
     {
@@ -308,6 +330,7 @@ public class MyAuthenticationClass
         {
             FirebaseAuth.getInstance().getCurrentUser().delete();
         }
+        SignOut();
     }
     ///**************************************SignOut And Delete End*********************************************///
 }

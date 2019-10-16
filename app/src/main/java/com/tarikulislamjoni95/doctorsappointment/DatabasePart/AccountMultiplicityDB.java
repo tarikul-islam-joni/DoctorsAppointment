@@ -13,9 +13,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.tarikulislamjoni95.doctorsappointment.HelperClass.DBConst;
 import com.tarikulislamjoni95.doctorsappointment.Interface.GetDataFromDBInterface;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class AccountMultiplicityDB
@@ -102,5 +102,71 @@ public class AccountMultiplicityDB
             DataHashMap.put(DBConst.RESULT,DBConst.NULL_USER);
             myDataInterface.GetSingleDataFromDatabase(DBConst.GetAccountMultiplicityDB,DataHashMap);
         }
+    }
+
+
+    public void GetAccountMultiplicityListByKey(String AccountType,final String OutputKey)
+    {
+        DatabaseReference databaseReference=FirebaseDatabase.getInstance().getReference().child(DBConst.AccountMultiplicity);
+        databaseReference.child(AccountType).addValueEventListener(new ValueEventListener()
+        {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot)
+            {
+                if (dataSnapshot.exists())
+                {
+                    HashMap<String,Object> hashMap=new HashMap<>();
+                    hashMap.put(DBConst.RESULT,DBConst.DATA_EXIST);
+                    hashMap.put(DBConst.DataSnapshot,dataSnapshot);
+                    myDataInterface.GetSingleDataFromDatabase(OutputKey,hashMap);
+                }
+                else
+                {
+                    HashMap<String,Object> hashMap=new HashMap<>();
+                    hashMap.put(DBConst.RESULT,DBConst.DATA_NOT_EXIST);
+                    myDataInterface.GetSingleDataFromDatabase(OutputKey,hashMap);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError)
+            {
+                HashMap<String,Object> hashMap=new HashMap<>();
+                hashMap.put(DBConst.RESULT,DBConst.DATA_NOT_EXIST);
+                myDataInterface.GetSingleDataFromDatabase(OutputKey,hashMap);
+            }
+        });
+    }
+
+    public void GetSpecificAccountBySearchingKey(String WhichOne, String SearchingString, final String OutputKey)
+    {
+        DatabaseReference databaseReference=FirebaseDatabase.getInstance().getReference().child(DBConst.AccountMultiplicity).child(WhichOne).child(SearchingString);
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot)
+            {
+                if (dataSnapshot.exists())
+                {
+                    HashMap<String,Object> hashMap=new HashMap<>();
+                    hashMap.put(DBConst.RESULT,DBConst.DATA_EXIST);
+                    hashMap.put(DBConst.DataSnapshot,dataSnapshot);
+                    myDataInterface.GetSingleDataFromDatabase(OutputKey,hashMap);
+                }
+                else
+                {
+                    HashMap<String,Object> hashMap=new HashMap<>();
+                    hashMap.put(DBConst.RESULT,DBConst.DATA_NOT_EXIST);
+                    myDataInterface.GetSingleDataFromDatabase(OutputKey,hashMap);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError)
+            {
+                HashMap<String,Object> hashMap=new HashMap<>();
+                hashMap.put(DBConst.RESULT,DBConst.DATA_NOT_EXIST);
+                myDataInterface.GetSingleDataFromDatabase(OutputKey,hashMap);
+            }
+        });
     }
 }

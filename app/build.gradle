@@ -20,20 +20,6 @@ android {
         }
     }
 
-    sourceSets {
-        main {
-            res.srcDirs = [
-                    'src/main/res/layouts/account_layouts',
-                    'src/main/res/layouts/patient_layouts',
-                    'src/main/res/layouts/doctor_layouts',
-                    'src/main/res/layouts/admin_layouts',
-                    'src/main/res/layouts/common_layouts',
-                    'src/main/res/layouts/',
-                    'src/main/res/'
-            ]
-        }
-    }
-
 }
 
 dependencies {
@@ -53,6 +39,7 @@ dependencies {
 
     implementation 'com.google.firebase:firebase-auth:18.0.0'
     implementation 'com.google.firebase:firebase-database:18.0.0'
+    implementation 'com.google.firebase:firebase-messaging:18.0.0'
     implementation 'com.google.firebase:firebase-storage:18.0.0'
     implementation 'com.facebook.android:facebook-login:5.1.1'
 

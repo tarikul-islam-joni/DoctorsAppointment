@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:icon="@drawable/profile_icon"
+            android:id="@+id/nav_menu_0"
+            android:title="@string/my_profile" />
+        <item
+            android:id="@+id/nav_menu_1"
+            android:icon="@drawable/edit"
+            android:title="@string/edit_profile" />
+        <item
+            android:id="@+id/nav_menu_2"
+            android:icon="@drawable/appointment_icon"
+            android:title="@string/my_appointment_history" />
+        <item
+            android:icon="@drawable/document_icon_01"
+            android:id="@+id/nav_menu_3"
+            android:title="@string/my_document_history" />
+        <item
+            android:icon="@drawable/location"
+            android:id="@+id/nav_menu_4"
+            android:title="@string/get_near_by_hospital" />
+    </group>
+
+</menu>

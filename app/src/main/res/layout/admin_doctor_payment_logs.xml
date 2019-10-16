@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/gradient_5">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Select Billing Month/Date"
+        android:textSize="20sp"
+        android:textColor="@color/colorBlack"
+        android:textStyle="bold"
+        android:fontFamily="serif-monospace"
+        android:gravity="center"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <Spinner
+            android:id="@+id/spinner_0"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/drop_down_spinner_1"/>
+        <Spinner
+            android:id="@+id/spinner_1"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/drop_down_spinner_1"/>
+        <Button
+            android:id="@+id/button_0"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Get"
+            android:textSize="20sp"
+            android:textColor="@color/colorBlack"
+            android:textStyle="bold"
+            android:fontFamily="serif-monospace"
+            android:textAllCaps="false"
+            android:background="@drawable/button_background_2"/>
+    </LinearLayout>
+    <Button
+        android:id="@+id/button_1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Choose Date"
+        android:textSize="25sp"
+        android:textColor="@color/colorBlack"
+        android:textStyle="bold"
+        android:fontFamily="serif-monospace"
+        android:textAllCaps="false"
+        android:background="@drawable/gradient_5"
+        android:drawableRight="@drawable/calender_1"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view_0"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="5dp"/>
+
+</LinearLayout>

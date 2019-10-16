@@ -17,18 +17,16 @@ import androidx.core.content.ContextCompat;
 import com.tarikulislamjoni95.doctorsappointment.DatabasePart.AccountMultiplicityDB;
 import com.tarikulislamjoni95.doctorsappointment.DatabasePart.AccountStatusDB;
 import com.tarikulislamjoni95.doctorsappointment.DatabasePart.DBHelper;
-import com.tarikulislamjoni95.doctorsappointment.DatabasePart.DataModel;
 import com.tarikulislamjoni95.doctorsappointment.DatabasePart.PatientAccountDB;
 import com.tarikulislamjoni95.doctorsappointment.DatabasePart.StorageDB;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.InitializationUIHelperClass;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.MyLoadingDailog;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.VARConst;
-import com.tarikulislamjoni95.doctorsappointment.HelperClass.DBConst;
+import com.tarikulislamjoni95.doctorsappointment.DatabasePart.DBConst;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.MyImageGettingClass;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.MyTextWatcher;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.MyToastClass;
 import com.tarikulislamjoni95.doctorsappointment.Interface.GetDataFromDBInterface;
-import com.tarikulislamjoni95.doctorsappointment.Interface.GetProgressInterface;
 import com.tarikulislamjoni95.doctorsappointment.R;
 
 import java.util.ArrayList;
@@ -48,13 +46,15 @@ public class EditPatientSecureInfoActivity extends AppCompatActivity implements 
     private String UID=VARConst.UNKNOWN;
     private HashMap<String,String> PatientAccountDataHashMap;
     private HashMap<String,Object> AccountMultiplicityData;
-    private HashMap<String,Object> DataHashMap;
 
     private InitializationUIHelperClass initializationUIHelperClass;
     private MyImageGettingClass myImageGettingClass;
     private MyToastClass myToastClass;
     private MyLoadingDailog myLoadingDailog;
-    private DataModel dataModel;
+
+    private boolean AccountCompletion=true;
+    private boolean AccountValidity=true;
+    private boolean AccountLockState=false;
 
     private int WhichImageViewEnable;
     private ArrayList<String> ImageUrlArrayList=new ArrayList<>();
@@ -70,7 +70,7 @@ public class EditPatientSecureInfoActivity extends AppCompatActivity implements 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_edit_patient_secure_info);
+        setContentView(R.layout.patient_edit_secure_info);
         Initialization();
         InitializationClass();
         InitializationUI();
@@ -83,7 +83,7 @@ public class EditPatientSecureInfoActivity extends AppCompatActivity implements 
     {
         this.activity=EditPatientSecureInfoActivity.this;
         VALIDATION_COLOR=ContextCompat.getColor(activity,R.color.colorGreen);
-        DataHashMap=new HashMap<>();
+        //DataHashMap=new HashMap<>();
         PatientAccountDataHashMap=new HashMap<>();
         AccountMultiplicityData=new HashMap<>();
     }
@@ -96,6 +96,7 @@ public class EditPatientSecureInfoActivity extends AppCompatActivity implements 
         int[] linearLayoutId={R.id.linear_layout_0};
         editTexts= initializationUIHelperClass.setEditTexts(editTextId);
         editTexts[0].addTextChangedListener(new MyTextWatcher(activity,VARConst.VERIFICATION_CODE_VALIDITY,editTexts[0].getId()));
+        editTexts[0].requestFocus();
 
         buttons= initializationUIHelperClass.setButtons(buttonId);
         for(int i=0; i<buttons.length; i++)
@@ -119,7 +120,6 @@ public class EditPatientSecureInfoActivity extends AppCompatActivity implements 
         myImageGettingClass=new MyImageGettingClass(activity);
         myToastClass=new MyToastClass(activity);
         myLoadingDailog=new MyLoadingDailog(activity,R.drawable.spinner);
-        dataModel=new DataModel();
     }
 
     @Override
@@ -212,13 +212,13 @@ public class EditPatientSecureInfoActivity extends AppCompatActivity implements 
 
     //********************************Database Return********************************************///
     //Get UID From Database
-    private void GetAccountUIDFromDB()
+    private void GetAccountUIDFromDB(HashMap<String,Object> hashMap)
     {
-        if (DataHashMap.get(DBConst.RESULT).toString().matches(DBConst.NOT_NULL_USER))
+        if (hashMap.get(DBConst.RESULT).toString().matches(DBConst.NOT_NULL_USER))
         {
-            if (!DataHashMap.get(DBConst.UID).toString().matches(DBConst.UNKNOWN))
+            if (!hashMap.get(DBConst.UID).toString().matches(DBConst.UNKNOWN))
             {
-                this.UID=DataHashMap.get(DBConst.UID).toString();
+                this.UID=hashMap.get(DBConst.UID).toString();
                 CallDBForGetPatientAccountDB();
             }
         }
@@ -229,26 +229,35 @@ public class EditPatientSecureInfoActivity extends AppCompatActivity implements 
     }
 
     //Get Patient Account Information From DB
-    private void GetPatientAccountDataFromDB()
+    private void GetPatientAccountDataFromDB(HashMap<String,Object> hashMap)
     {
-        String[] DataKey=dataModel.GetPatientAccountInformationDataKey();
-        if (DataHashMap.get(DBConst.RESULT).toString().matches(DBConst.DATA_EXIST))
+        String[] DataKey=new String[]{DBConst.ProfileImageUrl,DBConst.Name,DBConst.FatherName,DBConst.MotherName,
+                DBConst.PhoneNumber,DBConst.Height,DBConst.Weight,DBConst.Gender,DBConst.DateOfBirth,DBConst.BloodGroup,DBConst.Address,
+                DBConst.BirthCertificateNumber,DBConst.BirthCertificateImageUrl,DBConst.AnotherDocumentImageUrl};
+        if (hashMap.get(DBConst.RESULT).toString().matches(DBConst.DATA_EXIST))
         {
             for(int i=0; i<DataKey.length; i++)
             {
-                PatientAccountDataHashMap.put(DataKey[i],(String)DataHashMap.get(DataKey[i]));
+                if (hashMap.containsKey(DataKey[i]))
+                {
+                    PatientAccountDataHashMap.put(DataKey[i],(String)hashMap.get(DataKey[i]));
+                }
+                else
+                {
+                    PatientAccountDataHashMap.put(DataKey[i],DBConst.UNKNOWN);
+                }
             }
         }
     }
 
     //Get Account Multiplicity Result From DB
-    private void GetAccountMultiplicityData()
+    private void GetAccountMultiplicityData(HashMap<String,Object> hashMap)
     {
-        String GettingDataResult=DataHashMap.get(DBConst.RESULT).toString();
-        DataHashMap.remove(DBConst.RESULT);
+        String GettingDataResult=hashMap.get(DBConst.RESULT).toString();
+        hashMap.remove(DBConst.RESULT);
 
         AccountMultiplicityData=new HashMap<>();
-        Set KeySet=DataHashMap.keySet();
+        Set KeySet=hashMap.keySet();
         Iterator iterator1=KeySet.iterator();
         int counter=0;
         int check=0;
@@ -257,7 +266,7 @@ public class EditPatientSecureInfoActivity extends AppCompatActivity implements 
             String key=(String) iterator1.next();
             if (key.matches(DBConst.MultipleCheck))
             {
-                AccountMultiplicityData.put(key,DataHashMap.get(key));
+                AccountMultiplicityData.put(key,hashMap.get(key));
             }
             else
             {
@@ -273,6 +282,10 @@ public class EditPatientSecureInfoActivity extends AppCompatActivity implements 
         {
             AccountMultiplicityData.put(DBConst.MultipleCheck,false);
             AccountMultiplicityData.put(UID,counter);
+        }
+        else
+        {
+            AccountLockState=true;
         }
 
         switch (GettingDataResult)
@@ -295,11 +308,11 @@ public class EditPatientSecureInfoActivity extends AppCompatActivity implements 
     }
 
     //Get Image Uploading Result and URL From DB
-    private void GetImageUrlFromDB()
+    private void GetImageUrlFromDB(HashMap<String,Object> hashMap)
     {
-        if (DataHashMap.get(DBConst.RESULT).toString().matches(DBConst.SUCCESSFUL))
+        if (hashMap.get(DBConst.RESULT).toString().matches(DBConst.SUCCESSFUL))
         {
-            ImageUrlArrayList.add(DataHashMap.get(DBConst.URL).toString());
+            ImageUrlArrayList.add(hashMap.get(DBConst.URL).toString());
             if (imageViews[0].isEnabled() && !(imageViews[1].isEnabled()) && ImageUrlArrayList.size()==1)
             {
                 PatientAccountDataHashMap.put(DBConst.BirthCertificateNumber,editTexts[0].getText().toString());
@@ -322,25 +335,25 @@ public class EditPatientSecureInfoActivity extends AppCompatActivity implements 
         }
     }
 
-    private void GetPatientAccountInformationSaveStatusFromDB()
+    private void GetPatientAccountInformationSaveStatusFromDB(HashMap<String,Object> hashMap)
     {
-        if (DataHashMap.get(DBConst.RESULT).toString().matches(DBConst.SUCCESSFUL))
+        if (hashMap.get(DBConst.RESULT).toString().matches(DBConst.SUCCESSFUL))
         {
             CallDBForSaveAccountMultiplicity();
         }
     }
 
-    private void GetAccountMultiplicitySavingStatus()
+    private void GetAccountMultiplicitySavingStatus(HashMap<String,Object> hashMap)
     {
-        if (DataHashMap.get(DBConst.RESULT).toString().matches(DBConst.SUCCESSFUL))
+        if (hashMap.get(DBConst.RESULT).toString().matches(DBConst.SUCCESSFUL))
         {
             CallDBForUpdateAccountStatus();
         }
     }
 
-    private void GetAccountStatusSavingStatusFromDB()
+    private void GetAccountStatusSavingStatusFromDB(HashMap<String,Object> hashMap)
     {
-        if (DataHashMap.get(DBConst.RESULT).toString().matches(DBConst.SUCCESSFUL))
+        if (hashMap.get(DBConst.RESULT).toString().matches(DBConst.SUCCESSFUL))
         {
             CancelDialog();
             intent=new Intent(activity,PatientMainActivity.class);
@@ -397,11 +410,10 @@ public class EditPatientSecureInfoActivity extends AppCompatActivity implements 
         ShowLoadingDialog();
         accountMultiplicityDB.SaveAccountMultiplicity(DBConst.Patient,editTexts[0].getText().toString(),AccountMultiplicityData);
     }
-
     private void CallDBForUpdateAccountStatus()
     {
         ShowLoadingDialog();
-        accountStatusDB.SaveIntoAccountStatusDB(UID,DBConst.Patient,true,true);
+        accountStatusDB.SaveIntoAccountStatusDB(UID,DBConst.Patient,AccountCompletion,AccountValidity,AccountLockState);
     }
 
     ///******************************************************************************************///
@@ -411,31 +423,30 @@ public class EditPatientSecureInfoActivity extends AppCompatActivity implements 
     @Override
     public void GetSingleDataFromDatabase(String WhichDB, HashMap<String, Object> DataHashMap)
     {
+        Log.d("EditPatientSecure",WhichDB+" : "+DataHashMap.toString());
         CancelDialog();
-        this.DataHashMap.clear();
-        this.DataHashMap=DataHashMap;
         switch (WhichDB)
         {
             case DBConst.GetAccountUID:
-                GetAccountUIDFromDB();
+                GetAccountUIDFromDB(DataHashMap);
                 break;
             case DBConst.GetPatientAccountInformation:
-                GetPatientAccountDataFromDB();
+                GetPatientAccountDataFromDB(DataHashMap);
                 break;
             case DBConst.GetSavingFileUrlData:
-                GetImageUrlFromDB();
+                GetImageUrlFromDB(DataHashMap);
                 break;
             case DBConst.SavePatientAccountInformation:
-                GetPatientAccountInformationSaveStatusFromDB();
+                GetPatientAccountInformationSaveStatusFromDB(DataHashMap);
                 break;
             case DBConst.GetAccountMultiplicityDB:
-                GetAccountMultiplicityData();
+                GetAccountMultiplicityData(DataHashMap);
                 break;
             case DBConst.SaveAccountMultiplicityDB:
-                GetAccountMultiplicitySavingStatus();
+                GetAccountMultiplicitySavingStatus(DataHashMap);
                 break;
             case DBConst.SaveAccountStatusDB:
-                GetAccountStatusSavingStatusFromDB();
+                GetAccountStatusSavingStatusFromDB(DataHashMap);
                 break;
 
         }

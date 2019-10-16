@@ -53,8 +53,12 @@ public class MyLocationClass {
                     intent.putExtra(VARConst.RECEIVER, resultReceiver);
                     intent.putExtra(VARConst.FETCH_TYPE, VARConst.TYPE_02_ADDRESS_COORDINATE);
                     intent.putExtra(VARConst.ADDRESS_LOCATION, locationResult.getLastLocation());
-                    activity.startService(intent);
-                    fusedLocationProviderClient.removeLocationUpdates(locationCallback);
+                    if(ServiceProtection())
+                    {
+                        activity.startService(intent);
+                        fusedLocationProviderClient.removeLocationUpdates(locationCallback);
+                    }
+                    ///BackGround e thakle service start kora jabe na
                 }
 
                 @Override
@@ -71,6 +75,12 @@ public class MyLocationClass {
 
             fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null);
         }
+    }
+    
+
+    private boolean ServiceProtection()
+    {
+        return !(activity.isDestroyed() || activity.isFinishing());
     }
 
     public void GetCoOrdinateFromAddress(String AddressString)
@@ -103,6 +113,7 @@ public class MyLocationClass {
                 map.put(0,address.getAddressLine(0));
                 map.put(1,String.valueOf(address.getLatitude()));
                 map.put(2,String.valueOf(address.getLongitude()));
+                map.put(3,String.valueOf(address.getAdminArea()));
                 locationInterface.GetLocation(VARConst.ADDRESS_NAME,map);
             }
             else if (resultCode== VARConst.TYPE_02_ADDRESS_COORDINATE)
@@ -112,6 +123,7 @@ public class MyLocationClass {
                 map.put(0,address.getAddressLine(0));
                 map.put(1,String.valueOf(address.getLatitude()));
                 map.put(2,String.valueOf(address.getLongitude()));
+                map.put(3,String.valueOf(address.getAdminArea()));
                 locationInterface.GetLocation(VARConst.ADDRESS_LOCATION,map);
             }
             else if (resultCode== VARConst.TYPE_03_ERROR)

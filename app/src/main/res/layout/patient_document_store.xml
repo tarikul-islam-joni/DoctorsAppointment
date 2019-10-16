@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/gradient_background_1">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal">
+        <EditText
+            android:id="@+id/edit_text_0"
+            android:layout_weight="3"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:hint="Search Report by title..."
+            android:background="@drawable/design_edit_text_0"/>
+        <Button
+            android:id="@+id/button_0"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:text="Search"
+            android:background="@drawable/button_background_2"/>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/button_1"
+        android:fontFamily="serif-monospace"
+        android:textStyle="bold"
+        android:background="@drawable/edit_text_box"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Add New Report File"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_margin="5dp"
+        android:id="@+id/recycler_view_0"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+</LinearLayout>

@@ -24,11 +24,10 @@ import androidx.core.content.ContextCompat;
 
 import com.squareup.picasso.Picasso;
 import com.tarikulislamjoni95.doctorsappointment.DatabasePart.AccountStatusDB;
-import com.tarikulislamjoni95.doctorsappointment.DatabasePart.DataModel;
 import com.tarikulislamjoni95.doctorsappointment.DatabasePart.PatientAccountDB;
 import com.tarikulislamjoni95.doctorsappointment.DatabasePart.DBHelper;
 import com.tarikulislamjoni95.doctorsappointment.DatabasePart.StorageDB;
-import com.tarikulislamjoni95.doctorsappointment.HelperClass.DBConst;
+import com.tarikulislamjoni95.doctorsappointment.DatabasePart.DBConst;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.InitializationUIHelperClass;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.MyImageGettingClass;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.MyLocationClass;
@@ -59,14 +58,11 @@ public class EditPatientProfileActivity extends AppCompatActivity implements Vie
     private MyImageGettingClass myImageGettingClass;
     private MyLocationClass myLocationClass;
     private InitializationUIHelperClass initializationUIHelperClass;
-    private DataModel dataModel;
 
     //Object Variable
-    private Intent intent;
     private Activity activity;
 
     //Resource Variable
-    private String[] DataKey;
     private String[] BloodGroupRes;
     private int VALIDITY_COLOR;
     //Primitive Variable
@@ -85,7 +81,7 @@ public class EditPatientProfileActivity extends AppCompatActivity implements Vie
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_edit_patient_profile);
+        setContentView(R.layout.patient_edit_profile);
         Initialization();
         InitializationClass();
         InitializationUI();
@@ -97,7 +93,9 @@ public class EditPatientProfileActivity extends AppCompatActivity implements Vie
     private void SetDataHashMap()
     {
         MyFieldDataHashMap=new HashMap<>();
-        DataKey=dataModel.GetPatientAccountInformationDataKey();
+        String[] DataKey=new String[]{DBConst.ProfileImageUrl,DBConst.Name,DBConst.FatherName,DBConst.MotherName,
+                DBConst.PhoneNumber,DBConst.Height,DBConst.Weight,DBConst.Gender,DBConst.DateOfBirth,DBConst.BloodGroup,DBConst.Address,
+                DBConst.BirthCertificateNumber,DBConst.BirthCertificateImageUrl,DBConst.AnotherDocumentImageUrl};
         for(int i=0; i<DataKey.length; i++)
         {
             MyFieldDataHashMap.put(DataKey[i],DBConst.UNKNOWN);
@@ -126,7 +124,7 @@ public class EditPatientProfileActivity extends AppCompatActivity implements Vie
         textViews= initializationUIHelperClass.setTextViews(textViewsId);
         textViews[0].setOnClickListener(this);
 
-        int[] editTextId={R.id.edit_text_0,R.id.edit_text_1,R.id.edit_text_2,R.id.edit_text_3,R.id.edit_text_4};
+        int[] editTextId={R.id.edit_text_0,R.id.edit_text_1,R.id.edit_text_2,R.id.edit_text_3,R.id.edit_text_4,R.id.edit_text_5,R.id.edit_text_6};
         editTexts= initializationUIHelperClass.setEditTexts(editTextId);
         for(int i=0; i<editTextId.length; i++)
         {
@@ -139,6 +137,8 @@ public class EditPatientProfileActivity extends AppCompatActivity implements Vie
                 editTexts[i].addTextChangedListener(new MyTextWatcher(activity,VARConst.PHONE_VALIDITY,editTexts[i].getId()));
             }
         }
+
+        editTexts[0].requestFocus();
 
         int[] buttonId={R.id.button_0};
         buttons= initializationUIHelperClass.setButtons(buttonId);
@@ -186,7 +186,6 @@ public class EditPatientProfileActivity extends AppCompatActivity implements Vie
         myToastClass=new MyToastClass(activity);
         myImageGettingClass=new MyImageGettingClass(activity);
         myLocationClass=new MyLocationClass(activity);
-        dataModel=new DataModel();
     }
     @Override
     public void onClick(View view)
@@ -248,12 +247,12 @@ public class EditPatientProfileActivity extends AppCompatActivity implements Vie
     //Getting Address
     private void GetAddressFromLocationClass()
     {
-        editTexts[4].setVisibility(View.VISIBLE);
+        editTexts[6].setVisibility(View.VISIBLE);
         myLocationClass.GetCoOrdinateFromMaps();
     }
     private void GetLocationFromGoogleMap(String CurrentLocation)
     {
-        editTexts[4].setText(CurrentLocation);
+        editTexts[6].setText(CurrentLocation);
     }
 
     private void SaveDataToDatabase()
@@ -280,13 +279,13 @@ public class EditPatientProfileActivity extends AppCompatActivity implements Vie
         }
         else
         {
-            for(int i=0; i<4; i++)
-            {
-                MyFieldDataHashMap.put(DataKey[i+1],editTexts[i].getText().toString());
-            }
-            MyFieldDataHashMap.put(DataKey[6],textViews[1].getText().toString());
-            MyFieldDataHashMap.put(DataKey[8],editTexts[4].getText().toString());
-
+            MyFieldDataHashMap.put(DBConst.Name,editTexts[0].getText().toString());
+            MyFieldDataHashMap.put(DBConst.FatherName,editTexts[1].getText().toString());
+            MyFieldDataHashMap.put(DBConst.MotherName,editTexts[2].getText().toString());
+            MyFieldDataHashMap.put(DBConst.PhoneNumber,editTexts[3].getText().toString());
+            MyFieldDataHashMap.put(DBConst.Height,editTexts[4].getText().toString());
+            MyFieldDataHashMap.put(DBConst.Weight,editTexts[5].getText().toString());
+            MyFieldDataHashMap.put(DBConst.Address,editTexts[6].getText().toString());
             if (circleImageViews[0].isEnabled())
             {
                 ProfileImageByte=myImageGettingClass.GetCompressImageBytes(VARConst.CIV,R.id.image_civ_0);
@@ -323,16 +322,28 @@ public class EditPatientProfileActivity extends AppCompatActivity implements Vie
 
         if (DataHashMap.get(DBConst.RESULT).toString().matches(DBConst.DATA_EXIST))
         {
-            for(int i=0; i<DataKey.length; i++)
+            String[] DataKey=new String[]{DBConst.ProfileImageUrl,DBConst.Name,DBConst.FatherName,DBConst.MotherName,
+                    DBConst.PhoneNumber,DBConst.Height,DBConst.Weight,DBConst.Gender,DBConst.DateOfBirth,DBConst.BloodGroup,DBConst.Address,
+                    DBConst.BirthCertificateNumber,DBConst.BirthCertificateImageUrl,DBConst.AnotherDocumentImageUrl};
+
+            for (int i=0; i<DataKey.length; i++)
             {
-                MyFieldDataHashMap.put(DataKey[i],(String) DataHashMap.get(DataKey[i]));
-                if (i<4)
+                if (DataHashMap.containsKey(DataKey[i]))
                 {
-                    editTexts[i].setText(DataHashMap.get(DataKey[i+1]).toString());
+                    MyFieldDataHashMap.put(DataKey[i],DataHashMap.get(DataKey[i]).toString());
+                }
+                else
+                {
+                    MyFieldDataHashMap.put(DataKey[i],DBConst.UNKNOWN);
                 }
             }
-
-            if (DataHashMap.get(DataKey[5]).toString().matches("Male"))
+            editTexts[0].setText(MyFieldDataHashMap.get(DBConst.Name));
+            editTexts[1].setText(MyFieldDataHashMap.get(DBConst.FatherName));
+            editTexts[2].setText(MyFieldDataHashMap.get(DBConst.MotherName));
+            editTexts[3].setText(MyFieldDataHashMap.get(DBConst.PhoneNumber));
+            editTexts[4].setText(MyFieldDataHashMap.get(DBConst.Height));
+            editTexts[5].setText(MyFieldDataHashMap.get(DBConst.Weight));
+            if (DataHashMap.get(DBConst.Gender).toString().matches("Male"))
             {
                 radioButtons[0].setChecked(true);
             }
@@ -340,20 +351,19 @@ public class EditPatientProfileActivity extends AppCompatActivity implements Vie
             {
                 radioButtons[1].setChecked(true);
             }
-
-            if (!DataHashMap.get(DataKey[6]).toString().matches(VARConst.UNKNOWN))
+            if (!DataHashMap.get(DBConst.DateOfBirth).toString().matches(VARConst.UNKNOWN))
             {
                 textViews[1].setVisibility(View.VISIBLE);
-                textViews[1].setText(DataHashMap.get(DataKey[6]).toString());
+                textViews[1].setText(DataHashMap.get(DBConst.DateOfBirth).toString());
             }
 
-            if (!DataHashMap.get(DataKey[7]).toString().matches(VARConst.UNKNOWN))
+            if (!DataHashMap.get(DBConst.BloodGroup).toString().matches(VARConst.UNKNOWN))
             {
                 ArrayList<String> BloodGroupArrayList=new ArrayList<>();
-                BloodGroupArrayList.add(DataHashMap.get(DataKey[7]).toString());
+                BloodGroupArrayList.add(DataHashMap.get(DBConst.BloodGroup).toString());
                 for(int k=0; k<BloodGroupRes.length; k++)
                 {
-                    if (!BloodGroupRes[k].matches(DataHashMap.get(DataKey[6]).toString()))
+                    if (!BloodGroupRes[k].matches(DataHashMap.get(DBConst.BloodGroup).toString()))
                     {
                         BloodGroupArrayList.add(BloodGroupRes[k]);
                     }
@@ -361,12 +371,17 @@ public class EditPatientProfileActivity extends AppCompatActivity implements Vie
 
                 ArrayAdapter<String> adapter=new ArrayAdapter<String >(activity,android.R.layout.simple_list_item_1,BloodGroupArrayList);
                 spinners[0].setAdapter(adapter);
+                BloodGroupRes=new String[BloodGroupArrayList.size()];
+                for(int i=0; i<BloodGroupArrayList.size(); i++)
+                {
+                    BloodGroupRes[i]=BloodGroupArrayList.get(i);
+                }
             }
 
-            if (!MyFieldDataHashMap.get(DataKey[8]).matches(DBConst.UNKNOWN))
+            if (!MyFieldDataHashMap.get(DBConst.Address).matches(DBConst.UNKNOWN))
             {
-                editTexts[4].setVisibility(View.VISIBLE);
-                editTexts[4].setText(MyFieldDataHashMap.get(DataKey[8]));
+                editTexts[6].setVisibility(View.VISIBLE);
+                editTexts[6].setText(MyFieldDataHashMap.get(DBConst.Address));
             }
 
             if (!MyFieldDataHashMap.get(DataKey[0]).matches(VARConst.UNKNOWN))
@@ -400,7 +415,7 @@ public class EditPatientProfileActivity extends AppCompatActivity implements Vie
             myToastClass.LToast("Data not saved\nPlease try again... ");
         }
     }
-    private void GetAccountStatusFromDB(String GettingResult,String AccountType,boolean AccountCompletion, boolean AccountValidity)
+    private void GetAccountStatusFromDB(String GettingResult,String AccountType,boolean AccountCompletion, boolean AccountValidity,boolean AccountLockState)
     {
         if (GettingResult.matches(DBConst.DATA_EXIST))
         {
@@ -499,7 +514,7 @@ public class EditPatientProfileActivity extends AppCompatActivity implements Vie
     @Override
     public void GetSingleDataFromDatabase(String WhichDB, HashMap<String, Object> DataHashMap)
     {
-        Log.d("myError","WhichDB :: "+WhichDB);
+        Log.d("EditPatientProfile","WhichDB :: "+WhichDB);
         switch (WhichDB)
         {
             case DBConst.GetAccountUID:
@@ -515,7 +530,7 @@ public class EditPatientProfileActivity extends AppCompatActivity implements Vie
                 GetDataSavedResultFromDB((String) DataHashMap.get(DBConst.RESULT));
                 break;
             case DBConst.GetAccountStatusDB:
-                GetAccountStatusFromDB((String) DataHashMap.get(DBConst.RESULT),(String) DataHashMap.get(DBConst.AccountType),(boolean)DataHashMap.get(DBConst.AccountCompletion),(boolean)DataHashMap.get(DBConst.AccountValidity));
+                GetAccountStatusFromDB((String) DataHashMap.get(DBConst.RESULT),(String) DataHashMap.get(DBConst.AccountType),(boolean)DataHashMap.get(DBConst.AccountCompletion),(boolean)DataHashMap.get(DBConst.AccountValidity),(boolean)DataHashMap.get(DBConst.AccountLockState));
                 break;
         }
     }

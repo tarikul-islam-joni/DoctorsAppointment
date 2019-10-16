@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@color/colorPrimary">
+            <Button
+                android:id="@+id/button_0"
+                android:background="@drawable/button_backgrount_4"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Verify" />
+            <Button
+                android:id="@+id/button_1"
+                android:background="@drawable/button_backgrount_4"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Unverify"/>
+            <Button
+                android:id="@+id/button_2"
+                android:background="@drawable/button_backgrount_4"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Lock"/>
+        </LinearLayout>
+
+        <RadioGroup
+            android:id="@+id/radio_group_0"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <RadioButton
+                android:id="@+id/radio_button_0"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Show Doctor Account Info : "/>
+            <RadioButton
+                android:id="@+id/radio_button_1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Show Doctor Appointment Details : "/>
+            <RadioButton
+                android:id="@+id/radio_button_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Show Doctor Rating And Reviews: "/>
+            <RadioButton
+                android:id="@+id/radio_button_3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Show Doctor Appointment History : "/>
+        </RadioGroup>
+
+        <TextView
+            android:textIsSelectable="true"
+            android:id="@+id/text_view_0"
+            android:layout_marginTop="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textSize="15sp"
+            android:text="Database reply result..."
+            android:textColor="@color/colorBlack"/>
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/button_3"
+            android:text="Delete Account"
+            android:background="@drawable/button_background_2"/>
+    </LinearLayout>
+
+</ScrollView>

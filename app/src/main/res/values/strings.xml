@@ -1,4 +1,205 @@
 <resources>
+
+    <string name="app_name">Doctors Appointment</string>
+    <string name="facebook_app_id">1378098839011681</string>
+    <string name="fb_login_protocol_scheme">fb1378098839011681</string>
+    <string name="google_map_api_key">AIzaSyDDKYNrzEl0dHTuzK52czPK60GALqWLMXY</string>
+    <string name="map_key" translatable="false">
+        AIzaSyAqdSjpPp_Z3rYwQkxTMqwubdPNDpu7Oi8
+    </string>
+
+    <string-array name="blood_group">
+        <item>A+</item>
+        <item>A-</item>
+        <item>B+</item>
+        <item>B-</item>
+        <item>O+</item>
+        <item>O-</item>
+        <item>AB+</item>
+        <item>AB-</item>
+    </string-array>
+    <string-array name="doctor_category_array">
+        <item>Select Category</item>
+        <item>Cardiology</item>
+        <item>Chest Diseases</item>
+        <item>Dentistry</item>
+        <item>Dermatology</item>
+        <item>Diabetic</item>
+        <item>Dietetics</item>
+        <item>Endocrinology</item>
+        <item>ENT</item>
+        <item>Gastroenterology</item>
+        <item>Gynecology</item>
+        <item>Hematology</item>
+        <item>Hepatology</item>
+        <item>Medicine</item>
+        <item>Nephrology</item>
+        <item>Neurology</item>
+        <item>Neorosurgery</item>
+        <item>Neoromedicine</item>
+        <item>Oncology</item>
+        <item>Ophthalmology</item>
+        <item>Orthopedics</item>
+        <item>Paediatrics</item>
+        <item>Psychiatric</item>
+        <item>Pulmonology</item>
+        <item>Physiotherapy</item>
+        <item>Rhematology</item>
+        <item>Urology</item>
+        <item>Cardiac Surgery</item>
+        <item>Dental Surgery</item>
+        <item>ENT Surgery</item>
+        <item>Eye Surgery</item>
+        <item>General Surgery</item>
+        <item>Gynecology Surgery</item>
+        <item>Laparoscopic Surgery</item>
+        <item>Maxillofacial Surgery</item>
+        <item>Orthopedic Surgery</item>
+        <item>Paediatric Surgery</item>
+        <item>Plastic Surgery</item>
+        <item>Surgical Surgery</item>
+        <item>Urology Surgery</item>
+        <item>Vascular Surgery</item>
+    </string-array>
+
+    <string-array name="doctor_category_array_for_patient">
+        <item>Select Category</item>
+        <item>Cardiology (হৃদরোগ)</item>
+        <item>Chest Diseases (বক্ষব্যাধি)</item>
+        <item>Dentistry (দাঁত)</item>
+        <item>Dermatology (চর্ম,এলার্জি ও যৌন)</item>
+        <item>Diabetic (ডায়াবেটিস)</item>
+        <item>Dietetics (খাদ্য ও পুষ্টি)</item>
+        <item>Endocrinology (হরমোন)</item>
+        <item>ENT (নাক,কান ও গলা)</item>
+        <item>Gastroenterology (পরিপাক তন্ত্র)</item>
+        <item>Gynecology (মহিলা ও প্রসূতি)</item>
+        <item>Hematology (রক্ত রোগ)</item>
+        <item>Hepatology (লিভার ও গলব্লাডার)</item>
+        <item>Medicine (মেডিসিন)</item>
+        <item>Nephrology (কিডনি)</item>
+        <item>Neurology (ব্রেন ও স্নায়ু)</item>
+        <item>Neorosurgery (নিউরো সার্জারি)</item>
+        <item>Neoromedicine (নিউরো মেডিসিন)</item>
+        <item>Oncology (ক্যান্সার)</item>
+        <item>Ophthalmology (চোখ)</item>
+        <item>Orthopedics (হাড়)</item>
+        <item>Paediatrics (শিশু ও নবজাতক)</item>
+        <item>Psychiatric (মানসিক স্বাস্থ্য)</item>
+        <item>Pulmonology (ফুসফুস)</item>
+        <item>Physiotherapy (ফিজিওথেরাপি)</item>
+        <item>Rhematology (বাত রোগ)</item>
+        <item>Urology (মূত্র)</item>
+        <item>Cardiac Surgery (হার্ট সার্জারি)</item>
+        <item>Dental Surgery (দন্ত সার্জারি)</item>
+        <item>ENT Surgery (নাক,কান ও গলা সার্জারি)</item>
+        <item>Eye Surgery (চক্ষু সার্জারি)</item>
+        <item>General Surgery (জেনারেল সার্জারি)</item>
+        <item>Gynecology Surgery (মহিলা ও প্রসূতি সার্জারি)</item>
+        <item>Laparoscopic Surgery</item>
+        <item>Maxillofacial Surgery</item>
+        <item>Orthopedic Surgery (হাড় সার্জারি)</item>
+        <item>Paediatric Surgery (শিশু সার্জারি)</item>
+        <item>Plastic Surgery (প্লাস্টিক সার্জারি)</item>
+        <item>Surgical Surgery (ক্যান্সার সার্জারি)</item>
+        <item>Urology Surgery (কিডনি ও মূত্র সার্জারি)</item>
+        <item>Vascular Surgery (রক্তনালী সার্জারি)</item>
+    </string-array>
+
+    <string-array name="division_list">
+        <item>Dhaka Division</item>
+        <item>Rajshahi Division</item>
+        <item>Khulna Division</item>
+        <item>Chittagong Division</item>
+        <item>Sylhet Division</item>
+        <item>Mymensingh Division</item>
+        <item>Rangpur Division</item>
+        <item>Barisal Division</item>
+    </string-array>
+    <string-array name="select_day_array">
+        <item>Saturday</item>
+        <item>Sunday</item>
+        <item>Monday</item>
+        <item>Tuesday</item>
+        <item>Wednesday</item>
+        <item>Thursday</item>
+        <item>Friday</item>
+    </string-array>
+
+
+
+    <string name="welcome_activity_action_bar_title">Welcome</string>
+
+    <string name="entrance_activity_action_bar_title">Login/Registration</string>
+
+    <string name="sign_in_welcome_status">Enter To The Doctor\'s Appointment</string>
+    <string name="patient">Patient</string>
+    <string name="doctor">Doctor</string>
+    <string name="entrance_with_email">Entrance With Email</string>
+    <string name="entrance_with_phone_number">Entrance With Phone Number</string>
+    <string name="entrance_with_google_account">Entrance With Google Account</string>
+    <string name="forget_password">Forget Password ?</string>
+    <string name="get_enter">Get Enter</string>
+    <string name="email_et_hint">Type your email</string>
+    <string name="password_et_hint">Type password</string>
+    <string name="retype_et_hint">Re-type password</string>
+    <string name="phone_et_hint">Type your phone number(e.g. 01**********)</string>
+    <string name="phone_prefix_hint">+88</string>
+    <string name="account_verification">Account Verification</string>
+    <string name="automatically_detection_msg_1">Waiting to automatically detect an sms sent to </string>
+    <string name="automatically_detection_msg_2">Enter the OTP below in case we fail to detect the sms automatically</string>
+    <string name="verification_email_msg_1">Verification email sent to </string>
+    <string name="verification_email_msg_2">Goto your email inbox and please verify first and click the Next button</string>
+    <string name="resend">RESEND</string>
+    <string name="enter_otp">ENTER OTP</string>
+    <string name="check">Check</string>
+    <string name="next">Next</string>
+    <string name="cancel">Cancel</string>
+
+    <!-- DoctorProfileEditActivity Variable -->
+    <string name="upload_profile_image">Upload Profile Image</string>
+    <string name="basic_information">Basic Information</string>
+    <string name="full_name">Full Name : </string>
+    <string name="full_name_hint">Type your full name</string>
+    <string name="mbbs_completion_institute_name">MBBS Completion Institute Name :</string>
+    <string name="mbbs_completion_institute_name_hint">Type MBBS Completion Institute Name</string>
+    <string name="passing_year">Passing year : </string>
+    <string name="passing_year_hint">Passing year...</string>
+    <string name="completed_degree">Completed Degree :</string>
+    <string name="completed_degree_et_hint">Type Completed Degree that you have earned</string>
+    <string name="specialization">Specialization : </string>
+    <string name="no_of_practicing_year">No Of Practicing Year :</string>
+    <string name="no_of_practicing_year_hint">No of practicing year...</string>
+    <string name="phone_number">Contact Number :</string>
+    <string name="available_area">Available Area :</string>
+    <string name="mbbs_fcps_etc_hint">MBBS,FCPS etc</string>
+    <string name="name_of_the_institute_hint">Name of the institute...</string>
+    <string name="confirm_btn">Confirm</string>
+
+
+
+    <string name="upload">Upload</string>
+    <string name="father_name">Father Name : </string>
+    <string name="mother_name">Mother Name : </string>
+    <string name="date_of_birth">Date Of Birth : </string>
+    <string name="gender">Gender :</string>
+    <string name="height">Height :</string>
+    <string name="weight">Weight :</string>
+    <string name="blood_group">Blood Group :</string>
+    <string name="contact_number">Contact Number :</string>
+    <string name="address">Address :</string>
+    <string name="current_address">Current Address</string>
+    <string name="i_am_a">I am a</string>
+    <string name="male">Male</string>
+    <string name="female">Female</string>
+    <string name="example_address">Example - House No, Road No, Town, City</string>
+    <string name="example_date">DD-MM-YY</string>
+
+
+
+    <string name="title_doctor_main_activity">Hello,Doctor</string>
+    <string name="title_patient_main_activity">Welcome</string>
+
     <string name="title_activity_doctor_main">DoctorMainActivity</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -17,282 +218,58 @@
     <string name="title_activity_admin_main">AdminMainActivity</string>
 
 
-    <string name="app_name">Doctors Appointment</string>
-
-    <string name="facebook_app_id">1378098839011681</string>
-
-    <string name="fb_login_protocol_scheme">fb1378098839011681</string>
-
-    <string name="google_map_api_key">AIzaSyDDKYNrzEl0dHTuzK52czPK60GALqWLMXY</string>
-
-    <string name="map_key" translatable="false">
-        AIzaSyAqdSjpPp_Z3rYwQkxTMqwubdPNDpu7Oi8
-    </string>
-
-
-
-    <string-array name="blood_group">
-
-        <item>A+</item>
-
-        <item>A-</item>
-
-        <item>B+</item>
-
-        <item>B-</item>
-
-        <item>O+</item>
-
-        <item>O-</item>
-
-        <item>AB+</item>
-
-        <item>AB-</item>
-
-    </string-array>
-
-    <string-array name="doctor_category_array">
-
-        <item>Cardiology</item>
-
-        <item>Chest Diseases</item>
-
-        <item>Dentistry</item>
-
-        <item>Dermatology</item>
-
-        <item>Diabetic</item>
-
-        <item>Dietetics</item>
-
-        <item>Endocrinology</item>
-
-        <item>ENT</item>
-
-        <item>Gastroenterology</item>
-
-        <item>Gynecology</item>
-
-        <item>Hematology</item>
-
-        <item>Hepatology</item>
-
-        <item>Medicine</item>
-
-        <item>Nephrology</item>
-
-        <item>Neurology</item>
-
-        <item>Neorosurgery</item>
-
-        <item>Neoromedicine</item>
-
-        <item>Oncology</item>
-
-        <item>Ophthalmology</item>
-
-        <item>Orthopedics</item>
-
-        <item>Paediatrics</item>
-
-        <item>Psychiatric</item>
-
-        <item>Pulmonology</item>
-
-        <item>Physiotherapy</item>
-
-        <item>Rhematology</item>
-
-        <item>Urology</item>
-
-        <item>Cardiac Surgery</item>
-
-        <item>Dental Surgery</item>
-
-        <item>ENT Surgery</item>
-
-        <item>Eye Surgery</item>
-
-        <item>General Surgery</item>
-
-        <item>Gynecology Surgery</item>
-
-        <item>Laparoscopic Surgery</item>
-
-        <item>Maxillofacial Surgery</item>
-
-        <item>Orthopedic Surgery</item>
-
-        <item>Paediatric Surgery</item>
-
-        <item>Plastic Surgery</item>
-
-        <item>Surgical Surgery</item>
-
-        <item>Urology Surgery</item>
-
-        <item>Vascular Surgery</item>
-
-    </string-array>
-
-    <string-array name="doctor_for_patient_category_array">
-
-        <item>Select Category</item>
-
-        <item>Cardiology(হৃদরোগ)</item>
-
-        <item>Chest Diseases(বক্ষব্যাধি)</item>
-
-        <item>Dentistry(দাঁত)</item>
-
-        <item>Dermatology(চর্ম,এলার্জি ও যৌন)</item>
-
-        <item>Diabetic(ডায়াবেটিস)</item>
-
-        <item>Dietetics(খাদ্য ও পুষ্টি)</item>
-
-        <item>Endocrinology(হরমোন)</item>
-
-        <item>ENT(নাক,কান ও গলা)</item>
-
-        <item>Gastroenterology(পরিপাক তন্ত্র)</item>
-
-        <item>Gynecology(মহিলা ও প্রসূতি)</item>
-
-        <item>Hematology(রক্ত রোগ)</item>
-
-        <item>Hepatology(লিভার ও গলব্লাডার)</item>
-
-        <item>Medicine(মেডিসিন)</item>
-
-        <item>Nephrology(কিডনি)</item>
-
-        <item>Neurology(ব্রেন ও স্নায়ু)</item>
-
-        <item>Neorosurgery(নিউরো সার্জারি)</item>
-
-        <item>Neoromedicine(নিউরো মেডিসিন)</item>
-
-        <item>Oncology(ক্যান্সার)</item>
-
-        <item>Ophthalmology(চোখ)</item>
-
-        <item>Orthopedics(হাড়)</item>
-
-        <item>Paediatrics(শিশু ও নবজাতক)</item>
-
-        <item>Psychiatric(মানসিক স্বাস্থ্য)</item>
-
-        <item>Pulmonology(ফুসফুস)</item>
-
-        <item>Physiotherapy(ফিজিওথেরাপি)</item>
-
-        <item>Rhematology(বাত রোগ)</item>
-
-        <item>Urology(মূত্র)</item>
-
-        <item>Cardiac Surgery(হার্ট সার্জারি)</item>
-
-        <item>Dental Surgery(দন্ত সার্জারি)</item>
-
-        <item>ENT Surgery(নাক,কান ও গলা সার্জারি)</item>
-
-        <item>Eye Surgery(চক্ষু সার্জারি)</item>
-
-        <item>General Surgery(জেনারেল সার্জারি)</item>
-
-        <item>Gynecology Surgery(মহিলা ও প্রসূতি সার্জারি)</item>
-
-        <item>Laparoscopic Surgery</item>
-
-        <item>Maxillofacial Surgery</item>
-
-        <item>Orthopedic Surgery(হাড় সার্জারি)</item>
-
-        <item>Paediatric Surgery(শিশু সার্জারি)</item>
-
-        <item>Plastic Surgery(প্লাস্টিক সার্জারি)</item>
-
-        <item>Surgical Surgery(ক্যান্সার সার্জারি)</item>
-
-        <item>Urology Surgery(কিডনি ও মূত্র সার্জারি)</item>
-
-        <item>Vascular Surgery(রক্তনালী সার্জারি)</item>
-
-
-
-
-
-    </string-array>
-
-
-    <string-array name="division_list">
-        <item>Dhaka</item>
-        <item>Rajshahi</item>
-        <item>Khulna</item>
-        <item>Chittagong</item>
-        <item>Sylhet</item>
-        <item>Mymensingh</item>
-        <item>Rangpur</item>
-        <item>Barishal</item>
-    </string-array>
-
-
-    <string-array name="select_day_arrya">
-
-        <item>Saturday</item>
-
-        <item>Sunday</item>
-
-        <item>Monday</item>
-
-        <item>Tuesday</item>
-
-        <item>Wednesday</item>
-
-        <item>Thursday</item>
-
-        <item>Friday</item>
-
-    </string-array>
-
-
-
-    <string name="sign_in_up_status">Enter To The Doctor\'s Appointment</string>
-    <string name="email_et_hint">Type your email</string>
-    <string name="password_et_hint">Type password</string>
-    <string name="retype_et_hint">Re-type password</string>
-    <string name="phone_et_hint">Type your phone number</string>
-    <string name="confirm_btn">Confirm</string>
-    <string name="phone_prefix_hint">+88</string>
-    <string name="doctor">Doctor</string>
-    <string name="patient">Patient</string>
-    <string name="NeedAccount">Haven\'t Account yet ? Sign Up</string>
-    <string name="AccountVerificationStatus">Account Verification Status</string>
-    <string name="Automatically_Detection_String_1">Waiting to automatically detect an sms sent to </string>
-    <string name="Automatically_Detection_String_2">Enter the OTP below in case we fail to detect the sms automatically</string>
-    <string name="Verification_email_hint_1">Verification email sent to </string>
-    <string name="Verification_email_hint_2">Goto your email inbox and please verify first and click the Next button</string>
-    <string name="RESEND">RESEND</string>
-    <string name="ENTER_OTP">ENTER OTP</string>
-    <string name="Check">Check</string>
-    <string name="Next">Next</string>
-    <string name="Cancel">Cancel</string>
-
-    <string name="Upload">Upload</string>
-    <string name="Full_Name">Full Name : </string>
-    <string name="Father_Name">Father Name : </string>
-    <string name="Mother_Name">Mother Name : </string>
-    <string name="Phone_Number">Phone Number : </string>
-    <string name="Date_Of_Birth">Date Of Birth : </string>
-    <string name="Blood_Group">Blood Group : </string>
-    <string name="Current_Address">Current Address</string>
-    <string name="I_Am_A">I am a</string>
-    <string name="Male">Male</string>
-    <string name="Female">Female</string>
-    <string name="Save">Save</string>
-    <string name="Basic_Information">Basic Information</string>
-    <string name="example_address">Example - House No, Road No, Town, City</string>
-    <string name="example_date">DD-MM-YY</string>
-
+    <string name="profile_image">Profile Image</string>
+    <string name="birth_certificate_hint_text_1">Attention ! ! !</string>
+    <string name="birth_certificate_hint_text_2">Provide your birth certificate information carefully.It can\'t be re-editable unless we found wrong !</string>
+    <string name="birth_certificat_hint_et">Birth Certificate Number</string>
+    <string name="upload_birth_certificate_hint_btn">Upload Birth certificate photo</string>
+    <string name="aanother_document_image_hint">Another Document Image</string>
+    <string name="another_document_hint_tv">This birth certificate number is already registered. Please upload another document like NID/Passport/Educational Document so that we can verify that it is you.</string>
+    <string name="another_document_btn_hint">Upload another valid document</string>
+
+    <string name="attention">Attention ! ! !</string>
+    <string name="hint_nid_number_for_security_purpose">Input NID number...</string>
+    <string name="text_upload_nid_image">Upload NID Image</string>
+    <string name="hint_bmdc_registration_number">Input BMDC Registration number...</string>
+    <string name="text_upload_bmdc_reg_image">Upload BMDC Reg Image</string>
+    <string name="without_bmdc_registration_number_verification_you_can_not_be_able_to_online_appointment_feature_so_make_sure_the_valid_information_and_get_those_feature_if_you_doesn_t_have_the_number_do_not_input_anything_just_enter_the_nid_number_and_keep_blank_bmdc_registration_and_click_the_confirm_button">Without BMDC registration number verification , you can not be able to online appointment feature. So make sure the valid information and get those feature.If you doesn\'t have the number,do not input anything. Just enter the NID number and keep blank bmdc registration and click the confirm button</string>
+    <string name="welcome_activity_toast">Welcome To The  Doctor\'s Appointment</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="my_profile">My Profile</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="my_appointment_history">My Appointment History</string>
+    <string name="my_document_history">My Document History</string>
+    <string name="check_old_medical_history">Check Old Medical History</string>
+    <string name="call_to_the_patient">Call to the patient</string>
+    <string name="cover_image">Cover Image</string>
+    <string name="hospital_name">Hospital Name</string>
+    <string name="specialized_field">Specialized Field</string>
+    <string name="available_day">Available Day</string>
+    <string name="select_available_day">Select Available Day</string>
+    <string name="time_slot">Time Slot</string>
+    <string name="starting_time">Starting Time</string>
+    <string name="ending_time">Ending Time</string>
+    <string name="appointment_capacity">Appointment Capacity</string>
+    <string name="no_of_person">No of person</string>
+    <string name="persons">Persons</string>
+    <string name="appointment_fee">Appointment Fee</string>
+    <string name="advance_leave">Advance Leave</string>
+    <string name="check_radion_button_for_advance_leave">Check Radion Button For Advance Leave</string>
+    <string name="leave_starting_time">Starting Date</string>
+    <string name="select_your_specialization">Select your specialization</string>
+    <string name="amount">Amount</string>
+    <string name="hospital_name_place_name">Hospital Name/Place Name</string>
+    <string name="set_appointment_schedule">Set Appointment Schedule</string>
+    <string name="go_back">Go Back</string>
+    <string name="taka">Taka</string>
+    <string name="ending_date">Ending Date</string>
+    <string name="add_new">Add New</string>
+    <string name="appointment_schedule">Appointment Schedule</string>
+    <string name="no_appointment_schedule_has_created_yet">No Appointment Schedule Has Created Yet</string>
+    <string name="add_new_nappointment_schedule">Add New Appointment Schedule</string>
+    <string name="save">Save</string>
+    <string name="chekced_the_radio_button_for_advance_leave">Chekced the radio button for advance leave</string>
+    <string name="get_near_by_hospital">Get Near By Hospital</string>
+    <string name="weight_kg">Weight(kg) :</string>
+    <string name="height_ft_inch">Height(ft.inch) :</string>
 </resources>

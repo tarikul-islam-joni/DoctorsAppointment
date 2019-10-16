@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group
+        android:checkableBehavior="single">
+        <item
+            android:icon="@drawable/profile_icon"
+            android:id="@+id/expanded_menu_0"
+            android:title="My Profile" />
+        <item
+            android:icon="@drawable/edit"
+            android:id="@+id/expanded_menu_1"
+            android:title="Update Profile" />
+        <item
+            android:icon="@drawable/document_icon_01"
+            android:id="@+id/expanded_menu_2"
+            android:title="Update Secure Data" />
+        <item
+            android:icon="@drawable/appointment_icon"
+            android:id="@+id/expanded_menu_3"
+            android:title="Set Appointment Schedule" />
+        <item
+            android:icon="@drawable/payment_icon"
+            android:id="@+id/expanded_menu_4"
+            android:title="My Payment History" />
+    </group>
+</menu>

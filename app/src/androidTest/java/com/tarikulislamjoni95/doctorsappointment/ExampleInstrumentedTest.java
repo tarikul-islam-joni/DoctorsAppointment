@@ -1,6 +1,8 @@
 package com.tarikulislamjoni95.doctorsappointment;
 
+import android.app.Instrumentation;
 import android.content.Context;
+import android.content.pm.InstrumentationInfo;
 
 import androidx.test.InstrumentationRegistry;
 import androidx.test.runner.AndroidJUnit4;

@@ -1,7 +1,10 @@
 package com.tarikulislamjoni95.doctorsappointment.AccountPart;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -13,14 +16,17 @@ import com.tarikulislamjoni95.doctorsappointment.DatabasePart.DBHelper;
 import com.tarikulislamjoni95.doctorsappointment.DoctorPart.DoctorMainActivity;
 import com.tarikulislamjoni95.doctorsappointment.DoctorPart.EditDoctorProfileActivity;
 import com.tarikulislamjoni95.doctorsappointment.DoctorPart.EditDoctorSecureInfoActivity;
-import com.tarikulislamjoni95.doctorsappointment.HelperClass.DBConst;
+import com.tarikulislamjoni95.doctorsappointment.DatabasePart.DBConst;
 import com.tarikulislamjoni95.doctorsappointment.HelperClass.MyLoadingDailog;
+import com.tarikulislamjoni95.doctorsappointment.HelperClass.MyPermissionClass;
+import com.tarikulislamjoni95.doctorsappointment.HelperClass.MyPermissionGroup;
 import com.tarikulislamjoni95.doctorsappointment.Interface.GetDataFromDBInterface;
 import com.tarikulislamjoni95.doctorsappointment.PatientPart.EditPatientProfileActivity;
 import com.tarikulislamjoni95.doctorsappointment.PatientPart.EditPatientSecureInfoActivity;
 import com.tarikulislamjoni95.doctorsappointment.PatientPart.PatientMainActivity;
 import com.tarikulislamjoni95.doctorsappointment.R;
 
+import java.security.acl.Permission;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -31,11 +37,12 @@ public class WelcomeActivity extends AppCompatActivity implements GetDataFromDBI
     private Intent intent;
     private Activity activity;
 
-    private MyLoadingDailog myLoadingDailog;
+    private AlertDialog AccountStatusDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_welcome);
+        setContentView(R.layout.app_welcome_layout);
 
         Initialization();
         InitializationUI();
@@ -50,18 +57,17 @@ public class WelcomeActivity extends AppCompatActivity implements GetDataFromDBI
     }
     private void InitializationUI()
     {
-
+        activity=WelcomeActivity.this;
     }
+
     private void InitializationClass()
     {
-        myLoadingDailog=new MyLoadingDailog(WelcomeActivity.this,R.drawable.spinner);
+        //myLoadingDailog=new MyLoadingDailog(WelcomeActivity.this,R.drawable.spinner);
     }
+
     private void CheckLoggedInOrNot()
     {
-        if (!myLoadingDailog.isShowing())
-        {
-            myLoadingDailog.show();
-        }
+
         //Call Database For Account UID
         CallDBForAccountUID();
     }
@@ -87,53 +93,72 @@ public class WelcomeActivity extends AppCompatActivity implements GetDataFromDBI
         if (GetResult.matches(DBConst.DATA_EXIST))
         {
             String AccountType=(String)DataHashMap.get(DBConst.AccountType);
-            if (AccountType.matches(DBConst.Patient))
+            if (!(boolean)DataHashMap.get(DBConst.AccountLockState))
             {
-                if (!(boolean)DataHashMap.get(DBConst.AccountCompletion))
+                if (AccountType.matches(DBConst.Patient))
                 {
-                    intent=new Intent(activity, EditPatientProfileActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(intent);
+                    if (!(boolean)DataHashMap.get(DBConst.AccountCompletion))
+                    {
+                        intent=new Intent(activity, EditPatientProfileActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+                    }
+                    else if (!(boolean)DataHashMap.get(DBConst.AccountValidity))
+                    {
+                        intent=new Intent(activity, EditPatientSecureInfoActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+                    }
+                    else
+                    {
+                        intent=new Intent(activity, PatientMainActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+                    }
                 }
-                else if (!(boolean)DataHashMap.get(DBConst.AccountValidity))
+                else if (AccountType.matches(DBConst.Doctor))
                 {
-                    intent=new Intent(activity, EditPatientSecureInfoActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(intent);
+                    if (!(boolean)DataHashMap.get(DBConst.AccountCompletion))
+                    {
+                        intent=new Intent(WelcomeActivity.this, EditDoctorProfileActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+                    }
+                    else if (!(boolean)DataHashMap.get(DBConst.AccountValidity))
+                    {
+                        intent=new Intent(activity, EditDoctorSecureInfoActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+                    }
+                    else
+                    {
+                        intent=new Intent(activity,DoctorMainActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+                    }
                 }
-                else
+                else if (AccountType.matches(DBConst.Admin))
                 {
-                    intent=new Intent(activity, PatientMainActivity.class);
+                    intent=new Intent(activity, AdminMainActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                 }
             }
-            else if (AccountType.matches(DBConst.Doctor))
+            else
             {
-                if (!(boolean)DataHashMap.get(DBConst.AccountCompletion))
-                {
-                    intent=new Intent(WelcomeActivity.this, EditDoctorProfileActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(intent);
-                }
-                else if (!(boolean)DataHashMap.get(DBConst.AccountValidity))
-                {
-                    intent=new Intent(activity, EditDoctorSecureInfoActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(intent);
-                }
-                else
-                {
-                    intent=new Intent(activity,DoctorMainActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(intent);
-                }
-            }
-            else if (AccountType.matches(DBConst.Admin))
-            {
-                intent=new Intent(activity, AdminMainActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
+                AlertDialog.Builder builder=new AlertDialog.Builder(activity);
+                builder.setTitle("App Entrance Status");
+                builder.setMessage("Your account was locked automatically\nHave patience,it will be unlocked by admin as soon as possible.\nTry again latter...");
+                builder.setNeutralButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i)
+                    {
+                        AccountStatusDialog.dismiss();
+                    }
+                });
+                AccountStatusDialog=builder.create();
+                AccountStatusDialog.show();
+                CallDBForSignOut();
             }
         }
         else
@@ -155,10 +180,6 @@ public class WelcomeActivity extends AppCompatActivity implements GetDataFromDBI
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (myLoadingDailog.isShowing())
-                {
-                    myLoadingDailog.dismiss();
-                }
                 startActivity(intent);
             }
         },2000);
@@ -166,14 +187,8 @@ public class WelcomeActivity extends AppCompatActivity implements GetDataFromDBI
 
     @Override
     protected void onDestroy() {
-        if (myLoadingDailog.isShowing() ) {
-            myLoadingDailog.dismiss();
-        }
         super.onDestroy();
     }
-
-
-
 
 
 
@@ -205,7 +220,7 @@ public class WelcomeActivity extends AppCompatActivity implements GetDataFromDBI
     @Override
     public void GetSingleDataFromDatabase(String WhichDB, HashMap<String, Object> DataHashMap)
     {
-        Log.d("WelcomeActivity",WhichDB+" ::: "+DataHashMap.toString());
+        Log.d("WelcomeActivity Called",WhichDB+" ::: "+DataHashMap.toString());
         if (WhichDB.matches(DBConst.GetAccountUID))
         {
             GetAccountUIDFromDB(DataHashMap);

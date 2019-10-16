@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/medical_image_1">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Payment Gateway"
+            android:textSize="35sp"
+            android:textColor="@color/colorRed"
+            android:gravity="center"
+            android:background="@drawable/gradient_background_2"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_marginTop="50dp">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorBlack"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:fontFamily="monospace"
+                android:gravity="center"
+                android:background="@drawable/gradient_background_2"
+                android:text="Make Payment to this merchant : 01XXXXXXXXX with reference key given below and put the traxId In the field"/>
+            <TextView
+                android:id="@+id/text_view_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorBlack"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:fontFamily="monospace"
+                android:gravity="center"
+                android:background="@drawable/gradient_background_2" />
+            <TextView
+                android:id="@+id/text_view_0"
+                android:layout_gravity="center"
+                android:background="@color/colorRed"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:textColor="@color/colorBlack"
+                android:textStyle="bold"
+                android:textSize="35sp"/>
+            <TextView
+                android:id="@+id/text_view_1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorRed"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:fontFamily="monospace"
+                android:textSize="35sp"
+                android:text="20 Minutes Left"/>
+            <EditText
+                android:imeOptions="actionDone"
+                android:layout_marginRight="30dp"
+                android:layout_marginLeft="30dp"
+                android:background="@color/colorWhite"
+                android:layout_marginTop="20dp"
+                android:id="@+id/edit_text_0"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:hint="Enter TraxId"
+                android:gravity="center"/>
+            <Button
+                android:background="@drawable/button_background_3"
+                android:layout_marginTop="20dp"
+                android:id="@+id/button_0"
+                android:layout_gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorWhite"
+                android:text="Confirm"/>
+            <Button
+                android:background="@drawable/button_background_2"
+                android:layout_marginTop="20dp"
+                android:id="@+id/button_1"
+                android:layout_gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorWhite"
+                android:text="Cancel"/>
+
+            <TextView
+                android:layout_marginTop="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorBlack"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:fontFamily="monospace"
+                android:gravity="center"
+                android:background="@drawable/edit_text_box"
+                android:text="Got problem ? Then infrom us to support e-mail "/>
+            <TextView
+                android:background="@drawable/edit_text_box"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="30sp"
+                android:textStyle="bold"
+                android:fontFamily="monospace"
+                android:gravity="center"
+                android:text="support@doctorsappointment.com"
+                android:textColor="@color/colorRed"/>
+
+        </LinearLayout>
+    </LinearLayout>
+
+</ScrollView>
